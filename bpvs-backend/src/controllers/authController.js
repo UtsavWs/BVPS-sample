@@ -35,14 +35,19 @@ const setOtp = async (user, action, email) => {
   }).catch((e) => console.error("❌ Email failed:", e.message));
 };
 
-// ── Clear Expired OTPs every minute ─────────────────────────────────────────
-setInterval(async () => {
-  await User.clearExpiredOtps();
-}, 60 * 1000);
+// ── Clear Expired OTPs (lightweight per-request cleanup for serverless) ──────
+// setInterval doesn't work on Vercel serverless functions.
+// Instead, run cleanup probabilistically (~1 in 10 requests) to keep it lightweight.
+const maybeCleanExpiredOtps = async () => {
+  if (Math.random() < 0.1) {
+    User.clearExpiredOtps().catch(() => {});
+  }
+};
 
 // ── POST /api/auth/register ──────────────────────────────────────────────────
 exports.register = async (req, res) => {
   try {
+    maybeCleanExpiredOtps();
     const { fullName, mobile, email, password } = req.body;
     const lowerEmail = email.toLowerCase();
 
@@ -146,6 +151,7 @@ exports.sendOtp = async (req, res) => {
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 exports.login = async (req, res) => {
   try {
+    maybeCleanExpiredOtps();
     const { email, password } = req.body;
     const lowerEmail = email.toLowerCase();
 
@@ -202,6 +208,7 @@ exports.login = async (req, res) => {
 // ── POST /api/auth/forgot-password ───────────────────────────────────────────
 exports.forgotPassword = async (req, res) => {
   try {
+    maybeCleanExpiredOtps();
     const { email } = req.body;
     const lowerEmail = email.toLowerCase();
     const user = await User.findOne({ email: lowerEmail });
