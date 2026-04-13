@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "../context/AuthContext";
+import { apiGet, apiPost } from "../api/api";
 import InputFields from "../components/InputFields";
 import Dropdown from "../components/Dropdown";
 
@@ -20,8 +21,33 @@ const AddB2B = () => {
   const auth = useContext(AuthContext);
   const user = auth?.user;
 
+  // ── Active members for the dropdown ──
+  const [members, setMembers] = useState([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await apiGet("/members");
+        if (res.success && res.data?.members) {
+          setMembers(res.data.members);
+        }
+      } catch (err) {
+        console.error("Failed to load members:", err);
+      } finally {
+        setMembersLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
+
+  // Filter out the current user and build dropdown options
+  const filteredMembers = members.filter((m) => m._id !== user?.id);
+  const memberOptions = ["Select Member", ...filteredMembers.map((m) => m.fullName)];
+
   const [form, setForm] = useState({
-    memberName: "",
+    memberName: "Select Member",
+    memberId: "",
     initiatedBy: "My self",
     location: "",
     topicOfConversation: "",
@@ -37,9 +63,21 @@ const AddB2B = () => {
     setErrors((e) => ({ ...e, [key]: "" }));
   };
 
+  // When a member is selected from the dropdown, also store their _id
+  const handleMemberSelect = (name) => {
+    const selected = filteredMembers.find((m) => m.fullName === name);
+    setForm((f) => ({
+      ...f,
+      memberName: name,
+      memberId: selected?._id || "",
+    }));
+    setErrors((e) => ({ ...e, memberName: "" }));
+  };
+
   const validate = () => {
     const e = {};
-    if (!form.memberName.trim()) e.memberName = "Member name is required";
+    if (!form.memberName || form.memberName === "Select Member")
+      e.memberName = "Please select a member";
     if (!form.location.trim()) e.location = "Location is required";
     if (!form.topicOfConversation.trim())
       e.topicOfConversation = "Topic is required";
@@ -55,11 +93,27 @@ const AddB2B = () => {
       return;
     }
     setSubmitting(true);
-    // TODO: wire up real API call here
-    await new Promise((r) => setTimeout(r, 800));
-    setSubmitting(false);
-    setSubmitted(true);
-    setTimeout(() => navigate(-1), 1200);
+    try {
+      const res = await apiPost("/b2b", {
+        memberId: form.memberId,
+        memberName: form.memberName,
+        initiatedBy: form.initiatedBy,
+        location: form.location,
+        topicOfConversation: form.topicOfConversation,
+        eventMaster: form.eventMaster,
+      });
+      if (res.success) {
+        setSubmitted(true);
+        setTimeout(() => navigate(-1), 1200);
+      } else {
+        setErrors({ memberName: res.message || "Something went wrong" });
+      }
+    } catch (err) {
+      console.error("B2B submit error:", err);
+      setErrors({ memberName: "Failed to submit. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -92,14 +146,30 @@ const AddB2B = () => {
           "
         >
           {/* Member Name */}
-          <InputFields
-            label="Member Name"
-            placeholder="Enter member name"
-            value={form.memberName}
-            isEditing={true}
-            onChange={(e) => set("memberName", e.target.value)}
-            error={errors.memberName}
-          />
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-semibold text-gray-700">
+              Member Name
+            </label>
+            {membersLoading ? (
+              <div className="w-full h-13 px-4 flex items-center rounded-xl border border-gray-200 bg-gray-50 text-[15px] text-gray-400">
+                Loading members…
+              </div>
+            ) : (
+              <Dropdown
+                value={form.memberName}
+                options={memberOptions}
+                onChange={handleMemberSelect}
+                error={errors.memberName}
+                searchable
+                maxHeight="max-h-60"
+              />
+            )}
+            {errors.memberName && (
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.memberName}
+              </p>
+            )}
+          </div>
 
           {/* Initiated By */}
           <div className="flex flex-col gap-1.5">

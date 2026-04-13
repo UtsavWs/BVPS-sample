@@ -212,6 +212,16 @@ const UserSchema = new mongoose.Schema(
         ref: "ThankyouSlip",
       },
     ],
+
+    // ─────────────────────────────
+    // B2B ENTRIES
+    // ─────────────────────────────
+    totalB2b: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "B2b",
+      },
+    ],
   },
   { timestamps: true },
 );

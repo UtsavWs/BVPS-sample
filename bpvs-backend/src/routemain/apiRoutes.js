@@ -7,6 +7,7 @@ const memberRoutes = require("../routes/memberRoutes");
 const thankyouSlipRoutes = require("../routes/thankyouSlipRoutes");
 const referralRoutes = require("../routes/referralRoutes");
 const visitorRoutes = require("../routes/visitorRoutes");
+const b2bRoutes = require("../routes/b2bRoutes");
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
@@ -15,5 +16,7 @@ router.use("/members", memberRoutes);
 router.use("/thankyouslip", thankyouSlipRoutes);
 router.use("/referrals", referralRoutes);
 router.use("/visitors", visitorRoutes);
+router.use("/b2b", b2bRoutes);
+
 
 module.exports = router;
