@@ -23,7 +23,7 @@ const setOtp = async (user, action, email) => {
     expiresAt: Date.now() + 5 * 60 * 1000,
   };
   await user.save();
-  console.log(`🔑 OTP for ${email}: ${otp}`);
+
   const subject =
     action === "account verification"
       ? "BPVS — Verify Your Account"
