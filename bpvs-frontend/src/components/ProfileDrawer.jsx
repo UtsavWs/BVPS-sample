@@ -4,9 +4,8 @@ import { getProfileImage } from "./RoleBadge";
 
 const MenuItem = ({ icon, label, active = false }) => (
   <button
-    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${
-      active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
-    }`}
+    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
+      }`}
   >
     <span className={active ? "text-[#D64B2A]" : "text-gray-500"}>{icon}</span>
     <span className="text-sm font-medium">{label}</span>
@@ -23,7 +22,7 @@ const ProfileDrawer = ({ onClose, onLogout, user, isApproved = true, isAdmin = f
         {/* Header: Logo + Close */}
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <img
-            src="/src/assets/logos/BPVS Logo.svg"
+            src="/assets/logos/BPVS Logo.svg"
             alt="BPVS"
             className="h-10 object-contain"
           />
@@ -87,7 +86,7 @@ const ProfileDrawer = ({ onClose, onLogout, user, isApproved = true, isAdmin = f
           >
             <span className="text-[#D64B2A]">
               <img
-                src="/src/assets/logos/logout-04.svg"
+                src="/assets/logos/logout-04.svg"
                 alt="Logout"
                 className="h-4.5 w-4.5"
               />

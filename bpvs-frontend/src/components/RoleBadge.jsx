@@ -1,4 +1,4 @@
-export const DEFAULT_PROFILE_IMAGE = "/src/assets/logos/myProfile.svg";
+export const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
 
 /**
  * Returns the profile image URL, falling back to the default.
@@ -42,11 +42,10 @@ export const StatusPill = ({ status, isApproved, variant = "approval" }) => {
       <span
         className={`
         inline-flex px-2.5 py-0.5 rounded-full text-[11.5px] font-semibold
-        ${
-          isActive
+        ${isActive
             ? "bg-green-50 text-green-700 border border-green-200"
             : "bg-red-50 text-red-500 border border-red-200"
-        }
+          }
       `}
       >
         {isActive ? "Active" : "Inactive"}
@@ -86,11 +85,10 @@ export const StatusPill = ({ status, isApproved, variant = "approval" }) => {
     <span
       className={`
       inline-flex px-2.5 py-0.5 rounded-full text-[11.5px] font-semibold
-      ${
-        status === "active"
+      ${status === "active"
           ? "bg-green-50 text-green-700 border border-green-200"
           : "bg-red-50 text-red-500 border border-red-200"
-      }
+        }
     `}
     >
       {status === "active" ? "Active" : "Inactive"}

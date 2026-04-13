@@ -127,7 +127,7 @@ const MentorSection = ({ maxW = "max-w-xs sm:max-w-sm" }) => (
         className={`relative w-full overflow-hidden rounded-2xl aspect-3/4 max-w-120`}
       >
         <img
-          src='/src/assets/images/Kanjibhai Bhalala 1.svg'
+          src='/assets/images/Kanjibhai Bhalala 1.svg'
           alt="Mentor"
           className="w-full h-full object-cover object-top"
         />

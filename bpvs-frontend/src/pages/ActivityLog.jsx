@@ -10,10 +10,10 @@ const ITEMS_PER_PAGE = 20;
 const MOBILE_BATCH_SIZE = 8;
 
 const ACTIVITY_ICONS = {
-  thankYouGiven: "/src/assets/logos/thankYouslipG.svg",
-  thankYouReceived: "/src/assets/logos/thankYouSlipR.svg",
-  referralGiven: "/src/assets/logos/referralsG.svg",
-  referralReceived: "/src/assets/logos/refrralsR.svg",
+  thankYouGiven: "/assets/logos/thankYouslipG.svg",
+  thankYouReceived: "/assets/logos/thankYouSlipR.svg",
+  referralGiven: "/assets/logos/referralsG.svg",
+  referralReceived: "/assets/logos/refrralsR.svg",
 };
 
 // ── Format helpers ─────────────────────────────────────────────────────────────
@@ -179,8 +179,8 @@ export default function ActivityLog() {
         const refReceived =
           referralRes.success && referralRes.data
             ? (referralRes.data.received || []).map((r) =>
-                mapReferral(r, "Received"),
-              )
+              mapReferral(r, "Received"),
+            )
             : [];
 
         // Merge and sort by date descending
@@ -280,7 +280,7 @@ export default function ActivityLog() {
           </h2>
           <button className="p-1.5 rounded-lg text-stone-400 hover:text-[#C94621] hover:bg-[#FEF0EA] transition-colors">
             <img
-              src="/src/assets/logos/filter-horizontal.svg"
+              src="/assets/logos/filter-horizontal.svg"
               className="w-5 h-5"
             />
           </button>
@@ -340,11 +340,10 @@ export default function ActivityLog() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -365,7 +364,7 @@ export default function ActivityLog() {
               </span>
               <button className="flex items-center gap-1.5 px-3 py-1.75 rounded-lg border border-stone-200 text-stone-500 text-[13px] hover:border-[#C94621] hover:text-[#C94621] hover:bg-[#FEF8F6] transition-all cursor-pointer">
                 <img
-                  src="/src/assets/logos/filter-horizontal.svg"
+                  src="/assets/logos/filter-horizontal.svg"
                   className="w-4 h-4"
                 />
                 <span>Filter</span>

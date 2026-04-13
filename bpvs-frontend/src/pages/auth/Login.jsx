@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import bpvsLogo from "/src/assets/logos/BPVS Logo.svg";
-import loginIllustration from "/src/assets/images/Powerful-pana 1.svg";
+import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import loginIllustration from "/assets/images/Powerful-pana 1.svg";
 import { AuthContext } from "../../context/AuthContext";
 import AuthInput from "../../components/AuthInput";
 
@@ -121,11 +121,10 @@ export default function Login() {
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <div
                   onClick={() => setRememberMe(!rememberMe)}
-                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${
-                    rememberMe
+                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${rememberMe
                       ? "bg-[#C1512D] border-[#C1512D]"
                       : "bg-white border-gray-300"
-                  }`}
+                    }`}
                   style={{ width: "18px", height: "18px", minWidth: "18px" }}
                 >
                   {rememberMe && (
@@ -162,9 +161,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${
-                isLoading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>

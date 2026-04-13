@@ -9,7 +9,7 @@ import { apiGet } from "../api/api";
 import { StatusPill } from "../components/RoleBadge";
 
 const ITEMS_PER_PAGE = 20;
-const DEFAULT_PROFILE_IMAGE = "/src/assets/logos/myProfile.svg";
+const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
 
 const DATE_OPTIONS = [
   { label: "All time", days: null },
@@ -78,18 +78,16 @@ const FilterDropdown = ({
   const CheckRow = ({ checked, label, onClick }) => (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${
-        checked
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${checked
           ? "bg-[#FEF3EF] text-[#C94621] font-medium"
           : "bg-transparent text-gray-700 hover:bg-stone-50"
-      }`}
+        }`}
     >
       <span
-        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-          checked
+        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${checked
             ? "bg-[#C94621] border-[#C94621]"
             : "border-stone-300 bg-white"
-        }`}
+          }`}
       >
         {checked && (
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
@@ -253,10 +251,10 @@ const TableRow = ({ member, onClick }) => (
     <td className="py-2.5 px-3 text-[12px] text-gray-500 whitespace-nowrap">
       {member.createdAt
         ? new Date(member.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -481,16 +479,16 @@ export default function BvpsMembers() {
 
   const modalMember = selectedMember
     ? {
-        name: selectedMember.fullName,
-        company: selectedMember.businessInformation?.companyName || "—",
-        profession: selectedMember.businessInformation?.profession || "—",
-        mobile: selectedMember.mobile,
-        email: selectedMember.email,
-        badge: null,
-        status: selectedMember.status || "active",
-        profileImage: selectedMember.profileImage,
-        contactInformation: selectedMember.contactInformation,
-      }
+      name: selectedMember.fullName,
+      company: selectedMember.businessInformation?.companyName || "—",
+      profession: selectedMember.businessInformation?.profession || "—",
+      mobile: selectedMember.mobile,
+      email: selectedMember.email,
+      badge: null,
+      status: selectedMember.status || "active",
+      profileImage: selectedMember.profileImage,
+      contactInformation: selectedMember.contactInformation,
+    }
     : null;
 
   return (
@@ -590,11 +588,10 @@ export default function BvpsMembers() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -622,11 +619,10 @@ export default function BvpsMembers() {
                 <button
                   ref={filterBtnRef}
                   onClick={() => setFilterOpen((v) => !v)}
-                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
-                    activeFilterCount > 0 || filterOpen
+                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${activeFilterCount > 0 || filterOpen
                       ? "bg-[#C94621] text-white border-[#C94621]"
                       : "bg-white text-stone-600 border-stone-200 hover:border-[#C94621] hover:text-[#C94621]"
-                  }`}
+                    }`}
                 >
                   <Filter size={13} />
                   <span>Filters</span>

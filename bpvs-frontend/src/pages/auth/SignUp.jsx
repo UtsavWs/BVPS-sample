@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import bpvsLogo from "/src/assets/logos/BPVS Logo.svg";
-import teamIllustration from "/src/assets/images/unity.jpg";
+import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import teamIllustration from "/assets/images/unity.jpg";
 import { AuthContext } from "../../context/AuthContext";
 import AuthInput from "../../components/AuthInput";
 
@@ -165,9 +165,8 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${
-                isLoading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
             >
               {isLoading ? "Processing..." : "Create Account"}
             </button>

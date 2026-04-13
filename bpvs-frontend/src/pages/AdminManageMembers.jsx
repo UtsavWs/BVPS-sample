@@ -19,7 +19,7 @@ import DesktopPagination from "../components/DesktopPagination";
 import { StatusPill } from "../components/RoleBadge";
 
 const ITEMS_PER_PAGE = 10;
-const DEFAULT_PROFILE_IMAGE = "/src/assets/logos/myProfile.svg";
+const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
 
 // ── Tab config ────────────────────────────────────────────────────────────────
 const TABS = [
@@ -89,10 +89,10 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
       {u.createdAt
         ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -168,8 +168,8 @@ const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
   <button
     onClick={onClick}
     className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${active
-        ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
-        : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
+      ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
+      : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
       }`}
   >
     <div
@@ -388,8 +388,8 @@ export default function AdminManageMembers() {
                   key={key}
                   onClick={() => handleTabChange(key)}
                   className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${activeTab === key
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-stone-500 hover:text-gray-700 bg-transparent"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-stone-500 hover:text-gray-700 bg-transparent"
                     }`}
                 >
                   {label}

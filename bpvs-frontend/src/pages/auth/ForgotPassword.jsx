@@ -1,8 +1,8 @@
 import { ChevronLeft } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import bpvsLogo from "/src/assets/logos/BPVS Logo.svg";
-import securityIllustration from "/src/assets/images/Team spirit-pana 1.svg";
+import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import securityIllustration from "/assets/images/Team spirit-pana 1.svg";
 import { apiPost } from "../../api/api";
 import AuthInput from "../../components/AuthInput";
 
@@ -176,13 +176,12 @@ export default function ForgotPassword() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className={`h-2 rounded-full transition-all duration-300 ${
-            i < current
+          className={`h-2 rounded-full transition-all duration-300 ${i < current
               ? "w-2 bg-[#C1512D]"
               : i === current
                 ? "w-6 bg-[#C1512D]"
                 : "w-2 bg-gray-200"
-          }`}
+            }`}
         />
       ))}
     </div>
@@ -299,15 +298,14 @@ export default function ForgotPassword() {
                       onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                       onFocus={(e) => e.target.select()}
                       className={`flex-1 min-w-0 aspect-square text-center text-base sm:text-lg font-semibold rounded-lg border outline-none transition-all duration-200
-                                 ${
-                                   error
-                                     ? "border-red-400 text-red-500"
-                                     : digit
-                                       ? "border-[#C1512D] bg-[#fff5f2] text-[#C1512D]"
-                                       : "border-gray-300 bg-white text-gray-900"
-                                 }
+                                 ${error
+                          ? "border-red-400 text-red-500"
+                          : digit
+                            ? "border-[#C1512D] bg-[#fff5f2] text-[#C1512D]"
+                            : "border-gray-300 bg-white text-gray-900"
+                        }
                                  focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D]`}
-                             />
+                    />
                   ))}
                 </div>
                 {error && (

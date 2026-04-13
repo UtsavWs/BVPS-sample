@@ -9,22 +9,22 @@ import LoadingScreen from "../components/LoadingScreen";
 const INFO_CARDS = [
   {
     to: "/edit-profile",
-    icon: "/src/assets/logos/elements.svg",
+    icon: "/assets/logos/elements.svg",
     label: "Personal Information",
   },
   {
     to: "/contact-info",
-    icon: "/src/assets/logos/call.svg",
+    icon: "/assets/logos/call.svg",
     label: "Contact Information",
   },
   {
     to: "/business-info",
-    icon: "/src/assets/logos/briefcase-01.svg",
+    icon: "/assets/logos/briefcase-01.svg",
     label: "Business Information",
   },
   {
     to: "/other-info",
-    icon: "/src/assets/logos/information-circle.svg",
+    icon: "/assets/logos/information-circle.svg",
     label: "Other Information",
   },
 ];
@@ -72,7 +72,7 @@ export default function MyProfile() {
         <div className="relative w-full">
           <div className="h-40 sm:h-48 w-full overflow-hidden bg-linear-to-b from-[#F9EDE8] to-white">
             <img
-              src="/src/assets/logos/BPVS Logo.svg"
+              src="/assets/logos/BPVS Logo.svg"
               alt="banner"
               className="w-full h-full object-contain"
               onError={(e) => {

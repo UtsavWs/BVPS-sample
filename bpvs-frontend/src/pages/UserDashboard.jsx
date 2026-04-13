@@ -25,28 +25,28 @@ const getStats = (counts) => [
   {
     label: "Business to Business",
     value: 0,
-    img: "/src/assets/logos/b2b.svg",
+    img: "/assets/logos/b2b.svg",
   },
-  { label: "Total Visitors", value: counts.visitorCount || 0, img: "/src/assets/logos/visitors.svg" },
+  { label: "Total Visitors", value: counts.visitorCount || 0, img: "/assets/logos/visitors.svg" },
   {
     label: "Referrals Received",
     value: counts.referralReceivedCount || 0,
-    img: "/src/assets/logos/refrralsR.svg",
+    img: "/assets/logos/refrralsR.svg",
   },
   {
     label: "Referrals Given",
     value: counts.referralGivenCount || 0,
-    img: "/src/assets/logos/referralsG.svg",
+    img: "/assets/logos/referralsG.svg",
   },
   {
     label: "Thankyou Slip Received",
     value: counts.thankyouslipReceivedCount || 0,
-    img: "/src/assets/logos/thankYouSlipR.svg",
+    img: "/assets/logos/thankYouSlipR.svg",
   },
   {
     label: "Thankyou Slip Given",
     value: counts.thankyouslipGivenCount || 0,
-    img: "/src/assets/logos/thankYouslipG.svg",
+    img: "/assets/logos/thankYouslipG.svg",
   },
 ];
 
@@ -83,20 +83,20 @@ const getTabDateRange = (tab) => {
 const TABS = ["Current Week", "Last Week", "Month"];
 
 const MENU_ITEMS = [
-  { label: "Add B2B", img: "/src/assets/logos/b2b.svg", route: "/add-b2b" },
+  { label: "Add B2B", img: "/assets/logos/b2b.svg", route: "/add-b2b" },
   {
     label: "Add Visitor",
-    img: "/src/assets/logos/visitors.svg",
+    img: "/assets/logos/visitors.svg",
     route: "/add-visitor",
   },
   {
     label: "Add Referrals",
-    img: "/src/assets/logos/referralsG.svg",
+    img: "/assets/logos/referralsG.svg",
     route: "/add-referral",
   },
   {
     label: "Add Thankyou Slip",
-    img: "/src/assets/logos/thankYouslipG.svg",
+    img: "/assets/logos/thankYouslipG.svg",
     route: "/add-thankyouslip",
   },
 ];
@@ -378,19 +378,19 @@ const UserDashboard = () => {
             className="p-1 border-none bg-transparent cursor-pointer"
           >
             <img
-              src="/src/assets/logos/menu-02.svg"
+              src="/assets/logos/menu-02.svg"
               className="w-6 h-6"
               alt="menu"
             />
           </button>
           <img
-            src="/src/assets/logos/BPVS Logo.svg"
+            src="/assets/logos/BPVS Logo.svg"
             alt="BPVS"
             className="h-11 object-contain"
           />
           <button className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center cursor-pointer">
             <img
-              src="/src/assets/logos/notification-bing.svg"
+              src="/assets/logos/notification-bing.svg"
               className="w-5 h-5"
               alt="notifications"
             />
@@ -457,14 +457,13 @@ const UserDashboard = () => {
             <button
               onClick={handleFilterClick}
               className={`flex items-center rounded-lg gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
-                ${
-                  dateRange
-                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                ${dateRange
+                  ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                 }`}
             >
               <img
-                src="/src/assets/logos/filter-horizontal.svg"
+                src="/assets/logos/filter-horizontal.svg"
                 className="w-4 h-4"
               />
               <span className="text-[13px] font-normal text-[#111111]">
@@ -494,10 +493,9 @@ const UserDashboard = () => {
                   key={tab}
                   onClick={() => handleTabClick(tab)}
                   className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-                    ${
-                      activeTab === tab
-                        ? "bg-[#C94621] text-white"
-                        : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
+                    ${activeTab === tab
+                      ? "bg-[#C94621] text-white"
+                      : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
                     }`}
                 >
                   {tab}
@@ -553,13 +551,13 @@ const UserDashboard = () => {
               className="p-2 rounded-xl hover:bg-[#F9EDE8] transition cursor-pointer border-none bg-transparent"
             >
               <img
-                src="/src/assets/logos/menu-02.svg"
+                src="/assets/logos/menu-02.svg"
                 className="w-5 h-5 lg:w-6 lg:h-6"
                 alt="menu"
               />
             </button>
             <img
-              src="/src/assets/logos/BPVS Logo.svg"
+              src="/assets/logos/BPVS Logo.svg"
               alt="BPVS"
               className="h-9 md:h-10 lg:h-12 object-contain"
             />
@@ -567,7 +565,7 @@ const UserDashboard = () => {
           <div className="flex items-center gap-2 lg:gap-3">
             <button className="relative w-9 h-9 md:w-10 md:h-8 lg:w-11 lg:h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-[#F9EDE8] hover:border-[#D64B2A] transition cursor-pointer">
               <img
-                src="/src/assets/logos/notification-bing.svg"
+                src="/assets/logos/notification-bing.svg"
                 className="w-5 h-5"
                 alt="notifications"
               />
@@ -642,14 +640,13 @@ const UserDashboard = () => {
               <button
                 onClick={handleFilterClick}
                 className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 lg:px-5 lg:py-1.5 rounded-xl border font-medium text-sm lg:text-base transition cursor-pointer
-                  ${
-                    dateRange
-                      ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                      : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                  ${dateRange
+                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                   }`}
               >
                 <img
-                  src="/src/assets/logos/filter-horizontal.svg"
+                  src="/assets/logos/filter-horizontal.svg"
                   className="w-4 h-4 lg:w-5 lg:h-5"
                 />
                 <span className="hidden sm:inline">

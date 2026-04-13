@@ -11,7 +11,7 @@ import { uploadToCloudinary } from "../utils/cloudinary";
 import LoadingScreen from "../components/LoadingScreen";
 import { getProfileImageDisplay, getBannerImageDisplay } from "../components/RoleBadge";
 
-const DEFAULT_BANNER_IMAGE = "/src/assets/logos/BPVS Logo.svg";
+const DEFAULT_BANNER_IMAGE = "/assets/logos/BPVS Logo.svg";
 
 const INITIAL_DATA = {
   fullName: "",
@@ -326,7 +326,7 @@ export default function EditProfile() {
                   className="bg-white p-1 rounded-full shadow-md md:p-2 hover:bg-gray-50"
                 >
                   <img
-                    src="/src/assets/logos/edit.svg"
+                    src="/assets/logos/edit.svg"
                     alt="Edit"
                     className="text-[#C94621]"
                   />
@@ -373,7 +373,7 @@ export default function EditProfile() {
                     className="bg-white p-0.5 md:p-2 rounded-full shadow-md hover:bg-gray-50"
                   >
                     <img
-                      src="/src/assets/logos/edit.svg"
+                      src="/assets/logos/edit.svg"
                       alt="Edit"
                       className="text-[#C94621]"
                     />
@@ -424,7 +424,7 @@ export default function EditProfile() {
                 : saved.dateOfBirth || "Not set"}
             </span>
             <img
-              src="/src/assets/logos/calender.svg"
+              src="/assets/logos/calender.svg"
               alt="Calendar"
               className="text-gray-400 shrink-0 w-5"
             />
@@ -568,11 +568,10 @@ export default function EditProfile() {
                 <button
                   onClick={drawerHasPhoto ? handleRemoveClick : undefined}
                   disabled={!drawerHasPhoto}
-                  className={`flex items-center gap-3 py-4 px-2 rounded-xl transition-colors text-left ${
-                    drawerHasPhoto
+                  className={`flex items-center gap-3 py-4 px-2 rounded-xl transition-colors text-left ${drawerHasPhoto
                       ? "hover:bg-red-50 cursor-pointer"
                       : "opacity-40 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
                     <Trash2 size={20} className="text-red-500" />

@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "image": "/src/assets/images/Team spirit-pana 1.svg",
+    "image": "/assets/images/Team spirit-pana 1.svg",
     "title": "Connecting the Bhalala",
     "highlight": "Business Community",
     "description": "BPVS is a platform that brings together members of the Bhalala family to connect, collaborate, and grow their businesses through strong networking.",
@@ -9,7 +9,7 @@
   },
   {
     "id": 2,
-    "image": "/src/assets/images/Business growth-amico 1.svg",
+    "image": "/assets/images/Business growth-amico 1.svg",
     "title": "Empowering Every",
     "highlight": "Member's Growth",
     "description": "Our vision is to support the personal and business development of every family member and take our community businesses to a global level.",
@@ -17,7 +17,7 @@
   },
   {
     "id": 3,
-    "image": "/src/assets/images/Powerful-pana 1.svg",
+    "image": "/assets/images/Powerful-pana 1.svg",
     "title": "Building Powerful",
     "highlight": "Business Opportunities",
     "description": "Our goal is to generate ₹5 Crore+ business within the next 6 meetings through collaboration and support among Bhalala family members.",

@@ -165,7 +165,7 @@ const AddTestimonial = () => {
                 {form.date ? formatDateDisplay(form.date) : "Select Date"}
               </span>
               <img
-                src="/src/assets/logos/calender.svg"
+                src="/assets/logos/calender.svg"
                 alt="Calendar"
                 className="text-gray-400 shrink-0 md:w-5"
               />

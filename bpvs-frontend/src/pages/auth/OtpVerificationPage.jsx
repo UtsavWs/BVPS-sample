@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import bpvsLogo from "/src/assets/logos/BPVS Logo.svg";
+import bpvsLogo from "/assets/logos/BPVS Logo.svg";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function OtpVerificationPage() {
@@ -203,10 +203,9 @@ export default function OtpVerificationPage() {
                   text-center text-lg sm:text-xl font-bold
                   bg-white rounded-[10px] outline-none transition-all
                   focus:border-[#C1512D] focus:ring-2 focus:ring-[#C1512D]/20
-                  ${
-                    isError
-                      ? "border border-[#C1512D] text-[#C1512D]"
-                      : "border border-gray-300 text-gray-800"
+                  ${isError
+                    ? "border border-[#C1512D] text-[#C1512D]"
+                    : "border border-gray-300 text-gray-800"
                   }
                 `}
               />
