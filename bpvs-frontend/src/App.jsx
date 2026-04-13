@@ -54,7 +54,6 @@ function App() {
         <Route path='/add-testimonial' element={<AddTestimonial />} />
         <Route path="/pending-approval" element={<PendingApproval />} />
         <Route path="/admin" element={<AdminManageMembers />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
