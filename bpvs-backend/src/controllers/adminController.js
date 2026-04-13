@@ -9,7 +9,7 @@ exports.getStats = async (req, res) => {
     const [total, active, pending, inactive] = await Promise.all([
       User.countDocuments({ role: "member" }),
       User.countDocuments({ role: "member", status: "active" }),
-      User.countDocuments({ role: "member", isApproved: null }),
+      User.countDocuments({ role: "member", isApproved: null, isVerified: true }),
       User.countDocuments({ role: "member", status: "inactive" }),
     ]);
 
@@ -34,6 +34,7 @@ exports.getUsers = async (req, res) => {
 
     if (tab === "pending") {
       filter.isApproved = null;
+      filter.isVerified = true;
     } else if (tab === "active") {
       filter.status = "active";
     } else if (tab === "inactive") {
