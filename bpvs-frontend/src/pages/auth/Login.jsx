@@ -19,34 +19,36 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
-
     try {
       const result = await login(email, password);
-
       if (result.success) {
         navigate("/dashboard");
-      } else {
-        if (result.status === "inactive") {
-          navigate("/pending-approval");
-        } else if (
-          result.message?.includes("verify") ||
-          result.message?.includes("Verify")
-        ) {
-          navigate("/verify-otp", { state: { email } });
-        } else {
-          setError(result.message || "Login failed.");
-        }
+        return;                    // ← exit, don't touch state
       }
+      if (result.status === "inactive") {
+        navigate("/pending-approval");
+        return;                    // ← exit, don't touch state
+      }
+      if (
+        result.message?.includes("verify") ||
+        result.message?.includes("Verify")
+      ) {
+        navigate("/verify-otp", { state: { email } });
+        return;                    // ← exit, don't touch state
+      }
+      setError(result.message || "Login failed.");
+      setLoading(false);           // ← only when staying on this page
     } catch {
       setError("Network error. Please try again.");
-    } finally {
-      setLoading(false);
+      setLoading(false);           // ← only when staying on this page
     }
-  };
+    // NO finally block
+};
+
 
   const isLoading = loading || authLoading;
 
