@@ -259,40 +259,6 @@ exports.addReferralSchema = Joi.object({
   description: Joi.string().trim().allow("").optional(),
 });
 
-// ── B2B Schema ──────────────────────────────────────────────────────────────
-
-exports.addB2bSchema = Joi.object({
-  memberId: Joi.string()
-    .trim()
-    .pattern(/^[0-9a-fA-F]{24}$/)
-    .required()
-    .messages({
-      "string.empty": "Please select a member.",
-      "string.pattern.base": "Invalid member selected.",
-      "any.required": "Please select a member.",
-    }),
-  memberName: Joi.string().trim().required().messages({
-    "string.empty": "Member name is required.",
-    "any.required": "Member name is required.",
-  }),
-  initiatedBy: Joi.string().valid("My self", "Other Member").required().messages({
-    "any.only": "Initiated by must be 'My self' or 'Other Member'.",
-    "any.required": "Initiated by is required.",
-  }),
-  location: Joi.string().trim().required().messages({
-    "string.empty": "Location is required.",
-    "any.required": "Location is required.",
-  }),
-  topicOfConversation: Joi.string().trim().required().messages({
-    "string.empty": "Topic of conversation is required.",
-    "any.required": "Topic of conversation is required.",
-  }),
-  eventMaster: Joi.string().trim().required().messages({
-    "string.empty": "Please select an event master.",
-    "any.required": "Please select an event master.",
-  }),
-});
-
 // ── Visitor Schema ─────────────────────────────────────────────────────────
 
 exports.addVisitorSchema = Joi.object({
@@ -334,6 +300,36 @@ exports.addVisitorSchema = Joi.object({
   chapterOfInvite: Joi.string().trim().required().messages({
     "string.empty": "Chapter of invite is required.",
     "any.required": "Chapter of invite is required.",
+  }),
+});
+
+// ── B2B Schema ────────────────────────────────────────────────────────────
+
+exports.addB2bSchema = Joi.object({
+  memberId: Joi.string()
+    .trim()
+    .pattern(/^[0-9a-fA-F]{24}$/)
+    .required()
+    .messages({
+      "string.empty": "Please select a member.",
+      "string.pattern.base": "Invalid member selected.",
+      "any.required": "Please select a member.",
+    }),
+  initiatedBy: Joi.string().valid("My self", "Other Member").required().messages({
+    "any.only": "Initiated by must be 'My self' or 'Other Member'.",
+    "any.required": "Initiated by is required.",
+  }),
+  location: Joi.string().trim().required().messages({
+    "string.empty": "Location is required.",
+    "any.required": "Location is required.",
+  }),
+  topicOfConversation: Joi.string().trim().required().messages({
+    "string.empty": "Topic of conversation is required.",
+    "any.required": "Topic of conversation is required.",
+  }),
+  eventMaster: Joi.string().trim().required().messages({
+    "string.empty": "Please select an event master.",
+    "any.required": "Please select an event master.",
   }),
 });
 

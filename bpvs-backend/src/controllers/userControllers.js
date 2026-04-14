@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Referral = require("../models/Referral");
 const ThankyouSlip = require("../models/ThankyouSlip");
 const Visitor = require("../models/Visitor");
+const B2b = require("../models/B2b");
 const { deleteCloudinaryImage } = require("../utils/cloudinary");
 
 /**
@@ -44,6 +45,8 @@ exports.getProfile = async (req, res) => {
           referralReceivedCount: (user.referralReceived || []).length,
           thankyouslipGivenCount: (user.thankyouslipGiven || []).length,
           thankyouslipReceivedCount: (user.thankyouslipReceived || []).length,
+          b2bCount:
+            (user.b2bGiven || []).length + (user.b2bReceived || []).length,
           visitorCount: (user.totalVisitors || []).length,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
@@ -272,12 +275,17 @@ exports.getDashboardStats = async (req, res) => {
       thankyouslipGivenCount,
       thankyouslipReceivedCount,
       visitorCount,
+      b2bCount,
     ] = await Promise.all([
       Referral.countDocuments({ givenBy: userId, ...dateFilter }),
       Referral.countDocuments({ receivedBy: userId, ...dateFilter }),
       ThankyouSlip.countDocuments({ givenBy: userId, ...dateFilter }),
       ThankyouSlip.countDocuments({ receivedBy: userId, ...dateFilter }),
       Visitor.countDocuments({ addedBy: userId, ...dateFilter }),
+      B2b.countDocuments({
+        $or: [{ addedBy: userId }, { memberId: userId }],
+        ...dateFilter,
+      }),
     ]);
 
     res.status(200).json({
@@ -288,6 +296,7 @@ exports.getDashboardStats = async (req, res) => {
         thankyouslipGivenCount,
         thankyouslipReceivedCount,
         visitorCount,
+        b2bCount,
       },
     });
   } catch (err) {

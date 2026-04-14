@@ -9,7 +9,7 @@ const User = require("../models/User");
  */
 exports.addB2b = async (req, res) => {
   try {
-    const { memberId, memberName, initiatedBy, location, topicOfConversation, eventMaster } =
+    const { memberId, initiatedBy, location, topicOfConversation, eventMaster } =
       req.body;
     const addedBy = req.user._id;
 
@@ -32,16 +32,19 @@ exports.addB2b = async (req, res) => {
     const b2b = await B2b.create({
       addedBy,
       memberId,
-      memberName,
       initiatedBy,
       location,
       topicOfConversation,
       eventMaster,
     });
 
-    // Push B2B reference into the creator's array
+    // Push B2B reference into both users' arrays
     await User.findByIdAndUpdate(addedBy, {
-      $push: { totalB2b: b2b._id },
+      $push: { b2bGiven: b2b._id },
+    });
+
+    await User.findByIdAndUpdate(memberId, {
+      $push: { b2bReceived: b2b._id },
     });
 
     res.status(201).json({
@@ -68,17 +71,23 @@ exports.getMyB2b = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const b2bList = await B2b.find({ addedBy: userId })
-      .populate(
-        "memberId",
-        "fullName businessInformation.companyName businessInformation.brandName",
-      )
-      .sort({ createdAt: -1 })
-      .lean();
+    const populateFields =
+      "fullName businessInformation.companyName businessInformation.brandName";
+
+    const [given, received] = await Promise.all([
+      B2b.find({ addedBy: userId })
+        .populate("memberId", populateFields)
+        .sort({ createdAt: -1 })
+        .lean(),
+      B2b.find({ memberId: userId })
+        .populate("addedBy", populateFields)
+        .sort({ createdAt: -1 })
+        .lean(),
+    ]);
 
     res.status(200).json({
       success: true,
-      data: { b2bList },
+      data: { given, received },
     });
   } catch (err) {
     console.error("Get B2B error:", err);

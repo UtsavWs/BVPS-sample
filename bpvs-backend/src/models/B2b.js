@@ -7,11 +7,6 @@ const B2bSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "addedBy (creator) is required"],
     },
-    memberName: {
-      type: String,
-      trim: true,
-      required: [true, "Member name is required"],
-    },
     memberId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

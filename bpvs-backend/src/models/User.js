@@ -214,9 +214,15 @@ const UserSchema = new mongoose.Schema(
     ],
 
     // ─────────────────────────────
-    // B2B ENTRIES
+    // B2B (Business to Business)
     // ─────────────────────────────
-    totalB2b: [
+    b2bGiven: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "B2b",
+      },
+    ],
+    b2bReceived: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "B2b",

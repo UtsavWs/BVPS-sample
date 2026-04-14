@@ -96,7 +96,6 @@ const AddB2B = () => {
     try {
       const res = await apiPost("/b2b", {
         memberId: form.memberId,
-        memberName: form.memberName,
         initiatedBy: form.initiatedBy,
         location: form.location,
         topicOfConversation: form.topicOfConversation,

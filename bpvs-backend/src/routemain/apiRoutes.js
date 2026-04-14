@@ -18,5 +18,4 @@ router.use("/referrals", referralRoutes);
 router.use("/visitors", visitorRoutes);
 router.use("/b2b", b2bRoutes);
 
-
 module.exports = router;
