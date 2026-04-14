@@ -212,24 +212,16 @@ export default function OtpVerificationPage() {
             ))}
           </div>
 
-          {/* Status Message */}
+          {/* Error Message */}
+          {isError && (
+            <p className="text-[#C1512D] text-sm font-medium text-center transition-all">
+              {isExpired ? "OTP expired." : "Wrong code, please try again"}
+            </p>
+          )}
+
+          {/* Timer / Resend */}
           <div className="text-center h-6 flex items-center justify-center mb-8">
-            {isExpired ? (
-              <p className="text-gray-500 text-sm font-medium transition-all">
-                OTP expired.{" "}
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  className="text-[#C1512D] font-bold hover:text-[#A8432A] transition-colors ml-0.5 cursor-pointer"
-                >
-                  Resend
-                </button>
-              </p>
-            ) : isError ? (
-              <p className="text-[#C1512D] text-sm font-medium transition-all">
-                Wrong code, please try again
-              </p>
-            ) : timeLeft > 0 ? (
+            {timeLeft > 0 && !isExpired ? (
               <p className="text-gray-500 text-sm font-medium transition-all">
                 Send code again{" "}
                 <span className="text-[#C1512D] font-bold ml-0.5 whitespace-nowrap">
@@ -238,7 +230,7 @@ export default function OtpVerificationPage() {
               </p>
             ) : (
               <p className="text-gray-500 text-sm font-medium transition-all">
-                I didn't receive a code{" "}
+                {isExpired ? "OTP expired. " : "I didn't receive a code "}
                 <button
                   type="button"
                   onClick={handleResend}

@@ -133,6 +133,7 @@ export default function SignUp() {
               value={email}
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
 

@@ -105,6 +105,7 @@ const handleLogin = async (e) => {
               value={email}
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="username"
               required
             />
 
