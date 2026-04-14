@@ -36,7 +36,7 @@ export default function Login() {
           result.message?.includes("verify") ||
           result.message?.includes("Verify")
         ) {
-          navigate("/verify-otp", { state: { email } });
+          navigate("/verify-otp", { state: { email }, replace: true });
         } else {
           setError(result.message || "Login failed.");
         }
@@ -122,8 +122,8 @@ export default function Login() {
                 <div
                   onClick={() => setRememberMe(!rememberMe)}
                   className={`rounded border flex items-center justify-center transition-all cursor-pointer ${rememberMe
-                      ? "bg-[#C1512D] border-[#C1512D]"
-                      : "bg-white border-gray-300"
+                    ? "bg-[#C1512D] border-[#C1512D]"
+                    : "bg-white border-gray-300"
                     }`}
                   style={{ width: "18px", height: "18px", minWidth: "18px" }}
                 >

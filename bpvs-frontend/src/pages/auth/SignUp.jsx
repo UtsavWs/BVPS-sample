@@ -48,7 +48,7 @@ export default function SignUp() {
 
       if (result.success) {
         sessionStorage.setItem("signup_flow", "true");
-        navigate("/verify-otp", { state: { email } });
+        navigate("/verify-otp", { state: { email }, replace: true });
       } else {
         setError(result.message || "Registration failed. Please try again.");
       }

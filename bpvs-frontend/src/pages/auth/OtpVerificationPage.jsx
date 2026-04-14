@@ -128,7 +128,7 @@ export default function OtpVerificationPage() {
       const result = await verifyOtp(email, enteredOtp);
       if (result.success) {
         sessionStorage.removeItem("signup_flow");
-        navigate("/pending-approval");
+        navigate("/pending-approval", { replace: true });
       } else {
         setIsError(true);
         // Check if OTP is expired
