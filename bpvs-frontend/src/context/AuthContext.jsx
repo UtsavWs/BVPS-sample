@@ -100,7 +100,7 @@ export function AuthProvider({ children }) {
         return {
           success: false,
           message: res.message,
-          status: res.data?.user?.status,
+          status: res.inactive ? "inactive" : res.data?.user?.status,
         };
       }
     } catch (err) {

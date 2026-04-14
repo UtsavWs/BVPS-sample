@@ -36,7 +36,7 @@ export default function Login() {
           result.message?.includes("verify") ||
           result.message?.includes("Verify")
         ) {
-          navigate("/verify-otp", { state: { email }, replace: true });
+          navigate("/verify-otp", { state: { email } });
         } else {
           setError(result.message || "Login failed.");
         }
