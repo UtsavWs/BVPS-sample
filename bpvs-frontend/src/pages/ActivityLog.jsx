@@ -14,6 +14,8 @@ const ACTIVITY_ICONS = {
   thankYouReceived: "/assets/logos/thankYouSlipR.svg",
   referralGiven: "/assets/logos/referralsG.svg",
   referralReceived: "/assets/logos/refrralsR.svg",
+  b2bGiven: "/assets/logos/b2b.svg",
+  b2bReceived: "/assets/logos/b2b.svg",
 };
 
 // ── Format helpers ─────────────────────────────────────────────────────────────
@@ -59,6 +61,20 @@ const mapReferral = (referral, tab) => {
     rawDate: referral.createdAt,
     type: tab === "Given" ? "referralGiven" : "referralReceived",
     typeLabel: "Referral",
+  };
+};
+
+// Map a raw B2B entry from the API into the row shape used by the UI.
+const mapB2b = (b2b, tab) => {
+  const counterparty = tab === "Given" ? b2b.memberId : b2b.addedBy;
+  return {
+    id: b2b._id,
+    name: counterparty?.fullName || "Unknown member",
+    company: getCompany(counterparty),
+    date: formatDate(b2b.createdAt),
+    rawDate: b2b.createdAt,
+    type: tab === "Given" ? "b2bGiven" : "b2bReceived",
+    typeLabel: "B2B",
   };
 };
 
@@ -158,9 +174,10 @@ export default function ActivityLog() {
       setLoading(true);
       setError("");
       try {
-        const [slipRes, referralRes] = await Promise.all([
+        const [slipRes, referralRes, b2bRes] = await Promise.all([
           apiGet("/thankyouslip"),
           apiGet("/referrals"),
+          apiGet("/b2b"),
         ]);
         if (cancelled) return;
 
@@ -182,13 +199,21 @@ export default function ActivityLog() {
               mapReferral(r, "Received"),
             )
             : [];
+        const b2bGiven =
+          b2bRes.success && b2bRes.data
+            ? (b2bRes.data.given || []).map((b) => mapB2b(b, "Given"))
+            : [];
+        const b2bReceived =
+          b2bRes.success && b2bRes.data
+            ? (b2bRes.data.received || []).map((b) => mapB2b(b, "Received"))
+            : [];
 
         // Merge and sort by date descending
         const sortByDate = (a, b) => new Date(b.rawDate) - new Date(a.rawDate);
-        setGivenLogs([...slipGiven, ...refGiven].sort(sortByDate));
-        setReceivedLogs([...slipReceived, ...refReceived].sort(sortByDate));
+        setGivenLogs([...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate));
+        setReceivedLogs([...slipReceived, ...refReceived, ...b2bReceived].sort(sortByDate));
 
-        if (!slipRes.success && !referralRes.success) {
+        if (!slipRes.success && !referralRes.success && !b2bRes.success) {
           setError("Failed to load activity");
         }
       } catch (err) {

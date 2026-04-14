@@ -24,7 +24,7 @@ const DRAWER_W = "clamp(260px, 22vw, 320px)";
 const getStats = (counts) => [
   {
     label: "Business to Business",
-    value: 0,
+    value: counts.b2bCount || 0,
     img: "/assets/logos/b2b.svg",
   },
   { label: "Total Visitors", value: counts.visitorCount || 0, img: "/assets/logos/visitors.svg" },

@@ -8,7 +8,7 @@ router.get("/", protect, async (req, res) => {
   try {
     const { page, limit, search, tab, days, status, role } = req.query;
 
-    const filter = { role: "member" };
+    const filter = { role: "member", _id: { $ne: req.user.id } };
 
     // Status: honor explicit filter if provided, otherwise default to active
     if (status) {

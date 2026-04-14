@@ -23,7 +23,6 @@ const setOtp = async (user, action, email) => {
     expiresAt: Date.now() + 5 * 60 * 1000,
   };
   await user.save();
-  console.log(`🔑 OTP for ${email}: ${otp}`);
   const subject =
     action === "account verification"
       ? "BPVS — Verify Your Account"
@@ -35,7 +34,7 @@ const setOtp = async (user, action, email) => {
       html: otpEmailHtml(otp, action, user.fullName),
     });
   } catch (e) {
-    console.error("❌ Email failed:", e.message);
+    console.error("❌Error while sending OTP", e.message);
   }
 };
 
