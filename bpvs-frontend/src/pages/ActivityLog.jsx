@@ -160,13 +160,6 @@ export default function ActivityLog() {
   const { isAuthenticated, loading: authLoading } = useContext(AuthContext);
   const mobileSentinelRef = useRef(null);
 
-  // Redirect unauthenticated users to login once auth has finished initializing.
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/login", { replace: true });
-    }
-  }, [authLoading, isAuthenticated, navigate]);
-
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
     let cancelled = false;

@@ -83,17 +83,6 @@ export function AuthProvider({ children }) {
         setToken(newToken);
         setUser(userData);
 
-        // Fetch full profile to get stats counts (login response may not include them)
-        try {
-          const profileRes = await apiGet('/users/profile', newToken);
-          if (profileRes.success) {
-            setUser(profileRes.data.user);
-            localStorage.setItem(USER_KEY, JSON.stringify(profileRes.data.user));
-          }
-        } catch (err) {
-          console.warn('Could not fetch full profile after login:', err);
-        }
-
         return { success: true, user: userData };
       } else {
         setError(res.message);

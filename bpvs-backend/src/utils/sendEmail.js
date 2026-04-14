@@ -60,8 +60,7 @@ const sendEmail = async ({ to, subject, html }) => {
     html,
     text: htmlToPlainText(html),
     headers: {
-      "X-Priority": "1",
-      "X-Mailer": "BPVS App Mailer",
+      "List-Unsubscribe": `<mailto:${process.env.EMAIL_USER}?subject=unsubscribe>`,
     },
   };
 
