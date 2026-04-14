@@ -46,8 +46,8 @@ export default function ResetPassword() {
       setError("All fields are required.");
       return;
     }
-    if (form.newPassword.length < 6) {
-      setError("New password must be at least 6 characters.");
+    if (form.newPassword.length < 8) {
+      setError("New password must be at least 8 characters.");
       return;
     }
     if (form.newPassword !== form.confirmPassword) {

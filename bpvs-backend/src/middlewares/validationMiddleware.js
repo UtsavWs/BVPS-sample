@@ -98,8 +98,8 @@ exports.resetPasswordSchema = Joi.object({
       "string.length": "OTP must be 6 digits.",
       "any.required": "OTP is required.",
     }),
-  newPassword: Joi.string().min(6).required().messages({
-    "string.min": "Password must be at least 6 characters.",
+  newPassword: Joi.string().min(8).required().messages({
+    "string.min": "Password must be at least 8 characters.",
     "any.required": "New password is required.",
   }),
   confirmPassword: Joi.string()
@@ -176,8 +176,8 @@ exports.changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required().messages({
     "any.required": "Current password is required.",
   }),
-  newPassword: Joi.string().min(6).required().messages({
-    "string.min": "New password must be at least 6 characters.",
+  newPassword: Joi.string().min(8).required().messages({
+    "string.min": "New password must be at least 8 characters.",
     "any.required": "New password is required.",
   }),
   confirmPassword: Joi.string()

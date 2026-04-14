@@ -128,6 +128,8 @@ exports.updateProfile = async (req, res) => {
           email: updatedUser.email,
           mobile: updatedUser.mobile,
           isVerified: updatedUser.isVerified,
+          role: updatedUser.role,
+          status: updatedUser.status,
           profileImage: updatedUser.profileImage,
           bannerImage: updatedUser.bannerImage,
           dateOfBirth: updatedUser.dateOfBirth,

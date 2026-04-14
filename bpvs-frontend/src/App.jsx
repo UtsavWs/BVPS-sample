@@ -24,39 +24,45 @@ import ActivityLog from "./pages/ActivityLog";
 import AddTestimonial from "./pages/AddTestimonial";
 import PendingApproval from "./pages/PendingApproval";
 import AdminManageMembers from "./pages/AdminManageMembers";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public routes */}
         <Route path="/" element={<SplashScreen />} />
         <Route path="/onboarding" element={<Onboarding />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify-otp" element={<OtpVerificationPage />} />
-        {/* Protected routes */}
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/my-profile" element={<MyProfile />} />
-        <Route path="/contact-info" element={<ContactInfo />} />
-        <Route path="/business-info" element={<BusinessInfo />} />
-        <Route path="/other-info" element={<OtherInfo />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/about-us" element={<AboutUs />} />
-        <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/members" element={<BvpsMembers />} />
-        <Route path="/add-b2b" element={<AddB2B />} />
-        <Route path="/add-visitor" element={<AddVisitor />} />
-        <Route path="/add-referral" element={<AddReferral />} />
-        <Route path="/add-thankyouslip" element={<AddThankYouSlip />} />
-        <Route path='/activity' element={<ActivityLog />} />
-        <Route path='/add-testimonial' element={<AddTestimonial />} />
         <Route path="/pending-approval" element={<PendingApproval />} />
-        <Route path="/admin" element={<AdminManageMembers />} />
+
+        {/* Protected routes — require authentication */}
+        <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+        <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+        <Route path="/contact-info" element={<ProtectedRoute><ContactInfo /></ProtectedRoute>} />
+        <Route path="/business-info" element={<ProtectedRoute><BusinessInfo /></ProtectedRoute>} />
+        <Route path="/other-info" element={<ProtectedRoute><OtherInfo /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        <Route path="/reset-password" element={<ProtectedRoute><ResetPassword /></ProtectedRoute>} />
+        <Route path="/about-us" element={<ProtectedRoute><AboutUs /></ProtectedRoute>} />
+        <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+        <Route path="/members" element={<ProtectedRoute><BvpsMembers /></ProtectedRoute>} />
+        <Route path="/add-b2b" element={<ProtectedRoute><AddB2B /></ProtectedRoute>} />
+        <Route path="/add-visitor" element={<ProtectedRoute><AddVisitor /></ProtectedRoute>} />
+        <Route path="/add-referral" element={<ProtectedRoute><AddReferral /></ProtectedRoute>} />
+        <Route path="/add-thankyouslip" element={<ProtectedRoute><AddThankYouSlip /></ProtectedRoute>} />
+        <Route path="/activity" element={<ProtectedRoute><ActivityLog /></ProtectedRoute>} />
+        <Route path="/add-testimonial" element={<ProtectedRoute><AddTestimonial /></ProtectedRoute>} />
+
+        {/* Admin-only route */}
+        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminManageMembers /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
 }
 
 export default App;
+

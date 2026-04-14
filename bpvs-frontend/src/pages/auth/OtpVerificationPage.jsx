@@ -266,7 +266,7 @@ export default function OtpVerificationPage() {
 
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 md:pb-2">
-            Already have an account?
+            Already have an account?{" "}
             <button
               type="button"
               onClick={() => navigate('/login')}

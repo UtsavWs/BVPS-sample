@@ -98,7 +98,7 @@ export default function SignUp() {
               Sign Up
             </h1>
             <p className="text-gray-500 mt-1 text-sm sm:text-base">
-              Welcome Back!
+              Create your account
             </p>
           </div>
 
@@ -146,10 +146,10 @@ export default function SignUp() {
             />
 
             <AuthInput
-              label="Password"
+              label="Confirm Password"
               type="password"
               value={confirmPassword}
-              placeholder="Enter password"
+              placeholder="Confirm password"
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
