@@ -28,11 +28,15 @@ const setOtp = async (user, action, email) => {
     action === "account verification"
       ? "BPVS — Verify Your Account"
       : "BPVS — Your New OTP";
-  sendEmail({
-    to: email,
-    subject,
-    html: otpEmailHtml(otp, action, user.fullName),
-  }).catch((e) => console.error("❌ Email failed:", e.message));
+  try {
+    await sendEmail({
+      to: email,
+      subject,
+      html: otpEmailHtml(otp, action, user.fullName),
+    });
+  } catch (e) {
+    console.error("❌ Email failed:", e.message);
+  }
 };
 
 // ── Clear Expired OTPs every minute ─────────────────────────────────────────
