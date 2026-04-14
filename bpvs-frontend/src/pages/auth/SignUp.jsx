@@ -143,6 +143,7 @@ export default function SignUp() {
               value={password}
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
 
@@ -152,6 +153,7 @@ export default function SignUp() {
               value={confirmPassword}
               placeholder="Confirm password"
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
 

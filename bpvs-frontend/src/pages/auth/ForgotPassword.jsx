@@ -239,6 +239,7 @@ export default function ForgotPassword() {
                   placeholder="Enter Email"
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
+                  autoComplete="email"
                 />
                 {error && (
                   <p className="text-red-500 text-sm font-medium -mt-2">
@@ -365,6 +366,7 @@ export default function ForgotPassword() {
                   value={password}
                   placeholder="Enter New Password"
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
                 />
                 <AuthInput
                   label="Confirm Password"
@@ -375,6 +377,7 @@ export default function ForgotPassword() {
                   onKeyDown={(e) =>
                     e.key === "Enter" && handlePasswordSubmit()
                   }
+                  autoComplete="new-password"
                 />
                 {error && (
                   <p className="text-red-500 text-sm font-medium -mt-2">

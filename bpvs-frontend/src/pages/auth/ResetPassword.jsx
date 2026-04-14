@@ -1,9 +1,10 @@
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { apiPut } from "../../api/api";
 import LoadingScreen from "../../components/LoadingScreen";
+import AuthInput from "../../components/AuthInput";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -13,12 +14,6 @@ export default function ResetPassword() {
     currentPassword: "",
     newPassword:     "",
     confirmPassword: "",
-  });
-
-  const [show, setShow] = useState({
-    currentPassword: false,
-    newPassword:     false,
-    confirmPassword: false,
   });
 
   const [error,   setError]   = useState("");
@@ -33,9 +28,6 @@ export default function ResetPassword() {
 
   const set = (key) => (e) =>
     setForm((prev) => ({ ...prev, [key]: e.target.value }));
-
-  const toggleShow = (key) =>
-    setShow((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleUpdate = async (e) => {
     e.preventDefault()
@@ -132,41 +124,15 @@ export default function ResetPassword() {
 
           {/* ── Current Password + Forgot Password link ── */}
           <div className="flex flex-col gap-1.5">
-
-            {/* Label */}
-            <label className="text-sm font-medium text-gray-800 sm:text-[15px]">
-              Current Password
-              <span className="text-[#C94621] ml-0.5">*</span>
-            </label>
-
-            {/* Input */}
-            <div className="relative">
-              <input
-                type={show.currentPassword ? "text" : "password"}
-                value={form.currentPassword}
-                onChange={set("currentPassword")}
-                autoComplete="current-password"
-                placeholder="Enter Password"
-                className="
-                  w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white
-                  text-sm text-gray-800 placeholder:text-gray-400
-                  focus:outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10
-                  transition-all duration-150
-                  sm:text-[15px] sm:py-4
-                  lg:text-base lg:py-4
-                "
-              />
-              <button
-                type="button"
-                onClick={() => toggleShow("currentPassword")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {show.currentPassword
-                  ? <EyeOff size={18} strokeWidth={1.8} />
-                  : <Eye    size={18} strokeWidth={1.8} />
-                }
-              </button>
-            </div>
+            <AuthInput
+              label="Current Password"
+              showRequired
+              type="password"
+              value={form.currentPassword}
+              onChange={set("currentPassword")}
+              placeholder="Enter Password"
+              autoComplete="current-password"
+            />
 
             {/* Forgot Password — right-aligned below the input, matching Figma */}
             <div className="flex justify-end">
@@ -185,26 +151,24 @@ export default function ResetPassword() {
           </div>
 
           {/* ── New Password ── */}
-          <PasswordField
+          <AuthInput
             label="New Password"
-            required
-            placeholder="Enter Password"
+            showRequired
+            type="password"
             value={form.newPassword}
             onChange={set("newPassword")}
-            show={show.newPassword}
-            onToggle={() => toggleShow("newPassword")}
+            placeholder="Enter Password"
             autoComplete="new-password"
           />
 
           {/* ── Confirm Password ── */}
-          <PasswordField
+          <AuthInput
             label="Confirm Password"
-            required
-            placeholder="Enter Password"
+            showRequired
+            type="password"
             value={form.confirmPassword}
             onChange={set("confirmPassword")}
-            show={show.confirmPassword}
-            onToggle={() => toggleShow("confirmPassword")}
+            placeholder="Enter Password"
             autoComplete="new-password"
           />
 
@@ -234,45 +198,6 @@ export default function ResetPassword() {
           </button>
 
         </form>
-      </div>
-    </div>
-  );
-}
-
-// ── Reusable Password Field (New Password + Confirm Password) ─────────────────
-function PasswordField({ label, required, placeholder, value, onChange, show, onToggle, autoComplete }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-800 sm:text-[15px]">
-        {label}
-        {required && <span className="text-[#C94621] ml-0.5">*</span>}
-      </label>
-      <div className="relative">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={onChange}
-          autoComplete={autoComplete}
-          placeholder={placeholder}
-          className="
-            w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white
-            text-sm text-gray-800 placeholder:text-gray-400
-            focus:outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10
-            transition-all duration-150
-            sm:text-[15px] sm:py-4
-            lg:text-base lg:py-4
-          "
-        />
-        <button
-          type="button"
-          onClick={onToggle}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          {show
-            ? <EyeOff size={18} strokeWidth={1.8} />
-            : <Eye    size={18} strokeWidth={1.8} />
-          }
-        </button>
       </div>
     </div>
   );
