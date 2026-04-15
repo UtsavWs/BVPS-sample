@@ -48,6 +48,51 @@ const TableColgroup = () => (
 );
 
 // ── Filter Dropdown ───────────────────────────────────────────────────────────
+const CheckRow = ({ checked, label, onClick }) => (
+  <button
+    onClick={onClick}
+    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${
+      checked
+        ? "bg-[#FEF3EF] text-[#C94621] font-medium"
+        : "bg-transparent text-gray-700 hover:bg-stone-50"
+    }`}
+  >
+    <span
+      className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+        checked
+          ? "bg-[#C94621] border-[#C94621]"
+          : "border-stone-300 bg-white"
+      }`}
+    >
+      {checked && (
+        <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+          <path
+            d="M1 3.5L3.5 6L8 1"
+            stroke="white"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </span>
+    {label}
+  </button>
+);
+
+const SectionToggle = ({ label, open, onToggle, hasBorder }) => (
+  <button
+    onClick={onToggle}
+    className={`flex items-center justify-between w-full py-2.5 text-[13px] font-semibold text-gray-800 border-none bg-transparent cursor-pointer ${hasBorder ? "border-t border-stone-100 mt-1 pt-3" : ""}`}
+  >
+    <span>{label}</span>
+    <ChevronDown
+      size={14}
+      className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+    />
+  </button>
+);
+
 const FilterDropdown = ({
   dateFilter,
   setDateFilter,
@@ -82,50 +127,7 @@ const FilterDropdown = ({
 
   const activeCount = (dateFilter.days !== null ? 1 : 0) + statusFilters.length;
 
-  const CheckRow = ({ checked, label, onClick }) => (
-    <button
-      onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${
-        checked
-          ? "bg-[#FEF3EF] text-[#C94621] font-medium"
-          : "bg-transparent text-gray-700 hover:bg-stone-50"
-      }`}
-    >
-      <span
-        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-          checked
-            ? "bg-[#C94621] border-[#C94621]"
-            : "border-stone-300 bg-white"
-        }`}
-      >
-        {checked && (
-          <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-            <path
-              d="M1 3.5L3.5 6L8 1"
-              stroke="white"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        )}
-      </span>
-      {label}
-    </button>
-  );
 
-  const SectionToggle = ({ label, open, onToggle, hasBorder }) => (
-    <button
-      onClick={onToggle}
-      className={`flex items-center justify-between w-full py-2.5 text-[13px] font-semibold text-gray-800 border-none bg-transparent cursor-pointer ${hasBorder ? "border-t border-stone-100 mt-1 pt-3" : ""}`}
-    >
-      <span>{label}</span>
-      <ChevronDown
-        size={14}
-        className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
-      />
-    </button>
-  );
 
   return (
     <div
