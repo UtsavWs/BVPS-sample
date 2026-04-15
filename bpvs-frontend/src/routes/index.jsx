@@ -49,7 +49,6 @@ const authRoutes = [
   { path: PUBLIC_PATHS.SIGNUP, element: <SignUp /> },
   { path: PUBLIC_PATHS.VERIFY_OTP, element: <OtpVerificationPage /> },
   { path: PUBLIC_PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
-  { path: PUBLIC_PATHS.RESET_PASSWORD, element: <ResetPassword /> },
 ];
 
 const privateRoutes = [
@@ -69,6 +68,7 @@ const privateRoutes = [
   { path: PROTECTED_PATHS.ADD_REFERRAL, element: <AddReferral /> },
   { path: PROTECTED_PATHS.ADD_THANKYOU_SLIP, element: <AddThankYouSlip /> },
   { path: PROTECTED_PATHS.ADD_TESTIMONIAL, element: <AddTestimonial /> },
+  { path: PROTECTED_PATHS.RESET_PASSWORD, element: <ResetPassword /> },
 ];
 
 const adminRoutes = [
