@@ -400,7 +400,7 @@ export default function EditProfile() {
               placeholder="Enter Full Name"
               value={isEditing ? form.fullName : saved.fullName}
               isEditing={isEditing}
-              onChange={set("fullName")}
+              onChange={(e) => set("fullName")(e.target.value)}
             />
           </div>
 
