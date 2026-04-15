@@ -363,7 +363,7 @@ const UserDashboard = () => {
       {/* ══════════════════════════════
           MOBILE  < 768px
       ══════════════════════════════ */}
-      <div className="md:hidden flex flex-col flex-1 pb-16">
+      <div className="md:hidden flex flex-col h-full overflow-y-auto">
         {/* Top Nav */}
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
           <button
@@ -450,10 +450,9 @@ const UserDashboard = () => {
             <button
               onClick={handleFilterClick}
               className={`flex items-center rounded-lg gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
-                ${
-                  dateRange
-                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                ${dateRange
+                  ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                  : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                 }`}
             >
               <img
@@ -487,10 +486,9 @@ const UserDashboard = () => {
                   key={tab}
                   onClick={() => handleTabClick(tab)}
                   className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-                    ${
-                      activeTab === tab
-                        ? "bg-[#C94621] text-white"
-                        : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
+                    ${activeTab === tab
+                      ? "bg-[#C94621] text-white"
+                      : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
                     }`}
                 >
                   {tab}
@@ -544,7 +542,7 @@ const UserDashboard = () => {
           NO SCROLL — fits viewport height
       ══════════════════════════════ */}
       <div
-        className="hidden md:flex flex-col flex-1 h-full transition-all duration-300 ease-in-out"
+        className="hidden md:flex flex-col h-full transition-all duration-300 ease-in-out"
         style={{
           transform: drawerOpen ? `translateX(${DRAWER_W})` : "translateX(0)",
         }}
@@ -646,10 +644,9 @@ const UserDashboard = () => {
               <button
                 onClick={handleFilterClick}
                 className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 lg:px-5 lg:py-1.5 rounded-xl border font-medium text-sm lg:text-base transition cursor-pointer
-                  ${
-                    dateRange
-                      ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                      : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                  ${dateRange
+                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                   }`}
               >
                 <img

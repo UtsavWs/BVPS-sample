@@ -96,10 +96,10 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
       {u.createdAt
         ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -174,11 +174,10 @@ const PendingRow = ({ u, onApprove, onReject, actionLoading }) => (
 const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${
-      active
+    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${active
         ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
         : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
-    }`}
+      }`}
   >
     <div
       className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
@@ -360,7 +359,7 @@ export default function AdminManageMembers() {
   }
 
   return (
-    <div className="min-h-screen md:h-screen flex flex-col bg-[#F9EDE8] md:overflow-hidden">
+    <div className="h-screen flex flex-col bg-[#F9EDE8] overflow-hidden">
       {/* ── Header ── */}
       <div className="shrink-0 bg-white border-b border-stone-100 px-4 sm:px-6 py-4 flex items-center gap-4 z-10">
         <button
@@ -400,11 +399,10 @@ export default function AdminManageMembers() {
                 <button
                   key={key}
                   onClick={() => handleTabChange(key)}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${
-                    activeTab === key
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${activeTab === key
                       ? "bg-white text-gray-900 shadow-sm"
                       : "text-stone-500 hover:text-gray-700 bg-transparent"
-                  }`}
+                    }`}
                 >
                   {label}
                   <span
