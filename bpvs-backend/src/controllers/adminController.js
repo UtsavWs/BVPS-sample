@@ -8,11 +8,14 @@ const { approvalEmailHtml } = require("../utils/emailTemplates");
  */
 exports.getStats = async (req, res) => {
   try {
+    const roleFilter =
+      req.user.role === "admin" ? { $in: ["member", "subadmin"] } : "member";
+
     const [total, active, pending, inactive] = await Promise.all([
-      User.countDocuments({ role: "member" }),
-      User.countDocuments({ role: "member", status: "active" }),
-      User.countDocuments({ role: "member", isApproved: null, isVerified: true }),
-      User.countDocuments({ role: "member", status: "inactive" }),
+      User.countDocuments({ role: roleFilter }),
+      User.countDocuments({ role: roleFilter, status: "active" }),
+      User.countDocuments({ role: roleFilter, isApproved: null, isVerified: true }),
+      User.countDocuments({ role: roleFilter, status: "inactive" }),
     ]);
 
     res.status(200).json({
