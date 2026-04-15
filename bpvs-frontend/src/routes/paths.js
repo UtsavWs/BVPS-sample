@@ -5,7 +5,6 @@ export const PUBLIC_PATHS = {
   SIGNUP: "/signup",
   VERIFY_OTP: "/verify-otp",
   FORGOT_PASSWORD: "/forgot-password",
-  RESET_PASSWORD: "/reset-password",
 };
 
 export const PROTECTED_PATHS = {
@@ -25,6 +24,7 @@ export const PROTECTED_PATHS = {
   ADD_REFERRAL: "/add-referral",
   ADD_THANKYOU_SLIP: "/add-thankyouslip",
   ADD_TESTIMONIAL: "/add-testimonial",
+  RESET_PASSWORD: "/reset-password",
 };
 
 export const ADMIN_PATHS = {
