@@ -328,7 +328,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="bg-[#F9EDE8] min-h-screen md:h-screen md:overflow-hidden flex flex-col">
+    <div className="bg-[#F9EDE8] h-screen overflow-hidden">
       {/* Date Range Picker */}
       {showRangePicker && (
         <DatePicker
