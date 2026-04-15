@@ -8,6 +8,7 @@ const thankyouSlipRoutes = require("../routes/thankyouSlipRoutes");
 const referralRoutes = require("../routes/referralRoutes");
 const visitorRoutes = require("../routes/visitorRoutes");
 const b2bRoutes = require("../routes/b2bRoutes");
+const activityLogRoutes = require("../routes/activityLogRoutes");
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
@@ -17,5 +18,6 @@ router.use("/thankyouslip", thankyouSlipRoutes);
 router.use("/referrals", referralRoutes);
 router.use("/visitors", visitorRoutes);
 router.use("/b2b", b2bRoutes);
+router.use("/activity-log", activityLogRoutes);
 
 module.exports = router;

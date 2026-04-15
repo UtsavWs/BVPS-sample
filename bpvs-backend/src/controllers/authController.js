@@ -23,19 +23,14 @@ const setOtp = async (user, action, email) => {
     expiresAt: Date.now() + 5 * 60 * 1000,
   };
   await user.save();
-  const subject =
-    action === "account verification"
-      ? "BPVS — Verify Your Account"
-      : "BPVS — Your New OTP";
-  try {
-    await sendEmail({
-      to: email,
-      subject,
-      html: otpEmailHtml(otp, action, user.fullName),
-    });
-  } catch (e) {
-    console.error("❌Error while sending OTP", e.message);
-  }
+  // Putting the OTP in the subject is what banks/large apps do — Gmail treats
+  // these as transactional and is far less likely to spam-filter them.
+  const subject = `${otp} is your BPVS verification code`;
+  sendEmail({
+    to: email,
+    subject,
+    html: otpEmailHtml(otp, action, user.fullName),
+  }).catch((e) => console.error("❌ Email failed:", e.message));
 };
 
 // ── Clear Expired OTPs every minute ─────────────────────────────────────────
@@ -63,14 +58,16 @@ exports.register = async (req, res) => {
       user.password = password;
       await user.save();
     } else {
+      const isFirstUser = (await User.countDocuments()) === 0;
       user = await User.create({
         fullName,
         mobile,
         email: lowerEmail,
         password,
         isVerified: false,
-        role: "member",
-        status: "inactive",
+        role: isFirstUser ? "admin" : "member",
+        status: isFirstUser ? "active" : "inactive",
+        isApproved: isFirstUser ? true : null,
       });
     }
 

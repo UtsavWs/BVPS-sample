@@ -128,7 +128,7 @@ export default function OtpVerificationPage() {
       const result = await verifyOtp(email, enteredOtp);
       if (result.success) {
         sessionStorage.removeItem("signup_flow");
-        navigate("/pending-approval", { replace: true });
+        navigate("/pending-approval");
       } else {
         setIsError(true);
         // Check if OTP is expired
@@ -203,25 +203,34 @@ export default function OtpVerificationPage() {
                   text-center text-lg sm:text-xl font-bold
                   bg-white rounded-[10px] outline-none transition-all
                   focus:border-[#C1512D] focus:ring-2 focus:ring-[#C1512D]/20
-                  ${isError
-                    ? "border border-[#C1512D] text-[#C1512D]"
-                    : "border border-gray-300 text-gray-800"
+                  ${
+                    isError
+                      ? "border border-[#C1512D] text-[#C1512D]"
+                      : "border border-gray-300 text-gray-800"
                   }
                 `}
               />
             ))}
           </div>
 
-          {/* Error Message */}
-          {isError && (
-            <p className="text-[#C1512D] text-sm font-medium text-center transition-all">
-              {isExpired ? "OTP expired." : "Wrong code, please try again"}
-            </p>
-          )}
-
-          {/* Timer / Resend */}
+          {/* Status Message */}
           <div className="text-center h-6 flex items-center justify-center mb-8">
-            {timeLeft > 0 && !isExpired ? (
+            {isExpired ? (
+              <p className="text-gray-500 text-sm font-medium transition-all">
+                OTP expired.{" "}
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  className="text-[#C1512D] font-bold hover:text-[#A8432A] transition-colors ml-0.5 cursor-pointer"
+                >
+                  Resend
+                </button>
+              </p>
+            ) : isError ? (
+              <p className="text-[#C1512D] text-sm font-medium transition-all">
+                Wrong code, please try again
+              </p>
+            ) : timeLeft > 0 ? (
               <p className="text-gray-500 text-sm font-medium transition-all">
                 Send code again{" "}
                 <span className="text-[#C1512D] font-bold ml-0.5 whitespace-nowrap">
@@ -230,7 +239,7 @@ export default function OtpVerificationPage() {
               </p>
             ) : (
               <p className="text-gray-500 text-sm font-medium transition-all">
-                {isExpired ? "OTP expired. " : "I didn't receive a code "}
+                I didn't receive a code{" "}
                 <button
                   type="button"
                   onClick={handleResend}
@@ -258,7 +267,7 @@ export default function OtpVerificationPage() {
 
           {/* Footer */}
           <p className="text-center text-sm text-gray-500 md:pb-2">
-            Already have an account?{" "}
+            Already have an account?
             <button
               type="button"
               onClick={() => navigate('/login')}

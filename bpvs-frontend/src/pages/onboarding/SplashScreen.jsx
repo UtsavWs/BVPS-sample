@@ -1,16 +1,24 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, loading } = useContext(AuthContext);
 
   useEffect(() => {
+    if (loading) return;
+
     const timer = setTimeout(() => {
-      navigate("/onboarding");
-    }, 2000);
+      if (isAuthenticated) {
+        navigate("/dashboard", { replace: true });
+      } else {
+        navigate("/onboarding");
+      }
+    }, 2500);
 
     return () => clearTimeout(timer);
-  }, [navigate]);
+  }, [navigate, isAuthenticated, loading]);
   return (
     <>
       <div

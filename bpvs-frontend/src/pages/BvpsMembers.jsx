@@ -1,4 +1,11 @@
-import { useState, useEffect, useContext, useRef, useCallback, memo } from "react";
+import {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback,
+  memo,
+} from "react";
 import { ArrowLeft, Search, ChevronDown, Filter, X } from "lucide-react";
 import TabBar from "../components/TabBar";
 import MemberDetailModal from "../components/modals/MemberDetailModal";
@@ -78,16 +85,18 @@ const FilterDropdown = ({
   const CheckRow = ({ checked, label, onClick }) => (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${checked
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${
+        checked
           ? "bg-[#FEF3EF] text-[#C94621] font-medium"
           : "bg-transparent text-gray-700 hover:bg-stone-50"
-        }`}
+      }`}
     >
       <span
-        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${checked
+        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+          checked
             ? "bg-[#C94621] border-[#C94621]"
             : "border-stone-300 bg-white"
-          }`}
+        }`}
       >
         {checked && (
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
@@ -198,6 +207,8 @@ const MemberCard = memo(({ member, onClick }) => (
     <img
       src={member.profileImage || DEFAULT_PROFILE_IMAGE}
       alt={member.fullName}
+      loading="lazy"
+      decoding="async"
       className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover shrink-0"
       style={{ border: "2px solid #F3F4F6" }}
     />
@@ -212,6 +223,11 @@ const MemberCard = memo(({ member, onClick }) => (
         {member.businessInformation?.profession || "—"}
       </p>
     </div>
+    {member.role === "subadmin" && (
+      <span className="shrink-0 ml-2 px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide uppercase bg-[#C946211F] text-[#C94621]">
+        Admin
+      </span>
+    )}
   </div>
 ));
 
@@ -225,6 +241,8 @@ const TableRow = ({ member, onClick }) => (
       <img
         src={member.profileImage || DEFAULT_PROFILE_IMAGE}
         alt={member.fullName}
+        loading="lazy"
+        decoding="async"
         className="w-9 h-9 rounded-xl object-cover block"
         style={{ border: "1px solid #F3F4F6" }}
       />
@@ -244,17 +262,23 @@ const TableRow = ({ member, onClick }) => (
       {member.businessInformation?.profession || "—"}
     </td>
     <td className="py-2.5 px-3">
-      <span className="inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-500 border border-stone-200 whitespace-nowrap">
-        {member.role || "Member"}
+      <span
+        className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border whitespace-nowrap ${
+          member.role === "subadmin"
+            ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]/30"
+            : "bg-stone-100 text-stone-500 border-stone-200"
+        }`}
+      >
+        {member.role === "subadmin" ? "Admin" : "Member"}
       </span>
     </td>
     <td className="py-2.5 px-3 text-[12px] text-gray-500 whitespace-nowrap">
       {member.createdAt
         ? new Date(member.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -436,7 +460,10 @@ export default function BvpsMembers() {
     setCurrentPage(1);
     resetMobile();
   };
-  const handleMemberClick = useCallback((member) => setSelectedMember(member), []);
+  const handleMemberClick = useCallback(
+    (member) => setSelectedMember(member),
+    [],
+  );
   const handleCloseModal = useCallback(() => setSelectedMember(null), []);
 
   const handleSetDateFilter = (opt) => {
@@ -479,16 +506,16 @@ export default function BvpsMembers() {
 
   const modalMember = selectedMember
     ? {
-      name: selectedMember.fullName,
-      company: selectedMember.businessInformation?.companyName || "—",
-      profession: selectedMember.businessInformation?.profession || "—",
-      mobile: selectedMember.mobile,
-      email: selectedMember.email,
-      badge: null,
-      status: selectedMember.status || "active",
-      profileImage: selectedMember.profileImage,
-      contactInformation: selectedMember.contactInformation,
-    }
+        name: selectedMember.fullName,
+        company: selectedMember.businessInformation?.companyName || "—",
+        profession: selectedMember.businessInformation?.profession || "—",
+        mobile: selectedMember.mobile,
+        email: selectedMember.email,
+        badge: null,
+        status: selectedMember.status || "active",
+        profileImage: selectedMember.profileImage,
+        contactInformation: selectedMember.contactInformation,
+      }
     : null;
 
   return (
@@ -567,7 +594,7 @@ export default function BvpsMembers() {
       </div>
 
       {/* ══ DESKTOP (lg+) ═══════════════════════════════════════════════════ */}
-      <div className="hidden lg:flex lg:flex-col h-screen w-full max-w-7xl mx-auto px-8 pt-6 pb-6">
+      <div className="hidden lg:flex lg:flex-col h-screen w-full max-w-412.5 mx-auto px-8 pt-6 pb-6">
         <div className="flex items-center gap-4 mb-6 shrink-0">
           <button className="p-1 text-gray-800 hover:text-[#C94621] transition-colors">
             <ArrowLeft
@@ -588,10 +615,11 @@ export default function BvpsMembers() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
+                    activeTab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                    }`}
+                  }`}
                 >
                   {tab}
                 </button>
@@ -619,10 +647,11 @@ export default function BvpsMembers() {
                 <button
                   ref={filterBtnRef}
                   onClick={() => setFilterOpen((v) => !v)}
-                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${activeFilterCount > 0 || filterOpen
+                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
+                    activeFilterCount > 0 || filterOpen
                       ? "bg-[#C94621] text-white border-[#C94621]"
                       : "bg-white text-stone-600 border-stone-200 hover:border-[#C94621] hover:text-[#C94621]"
-                    }`}
+                  }`}
                 >
                   <Filter size={13} />
                   <span>Filters</span>

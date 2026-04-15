@@ -42,25 +42,43 @@ const htmlToPlainText = (html) =>
 
 /**
  * Sends an email.
- * @param {Object} options - { to, subject, html }
+ * @param {Object} options - { to, subject, html, text? }
+ *
+ * Gmail SMTP deliverability rules enforced here:
+ *  - "From" address MUST equal EMAIL_USER (SPF/DKIM alignment).
+ *  - Envelope sender (Return-Path) MUST equal EMAIL_USER.
+ *  - Message-ID domain MUST match the From domain.
+ *  - One-click List-Unsubscribe headers (RFC 8058) → big deliverability boost.
  */
-const sendEmail = async ({ to, subject, html }) => {
-  // IMPORTANT: "from" MUST match the actual Gmail account sending the email.
-  // Using a fake/different domain (e.g. noreply@bpvs.com) when sending via
-  // Gmail SMTP causes SPF/DKIM failures → emails land in spam.
-  const fromAddress =
-    process.env.EMAIL_FROM ||
-    `"BPVS" <${process.env.EMAIL_USER}>`;
+const sendEmail = async ({ to, subject, html, text }) => {
+  const emailUser = process.env.EMAIL_USER;
+  if (!emailUser) throw new Error("EMAIL_USER env var is not set");
+
+  const senderDomain = emailUser.split("@")[1];
+  const fromName = process.env.EMAIL_FROM_NAME || "BPVS";
+  // Force From address to equal EMAIL_USER for SPF/DKIM alignment with Gmail.
+  const fromAddress = `"${fromName}" <${emailUser}>`;
+
+  // RFC-compliant Message-ID using the sending domain.
+  const messageId = `<${Date.now()}.${Math.random()
+    .toString(36)
+    .slice(2)}@${senderDomain}>`;
 
   const mailOptions = {
     from: fromAddress,
-    replyTo: process.env.EMAIL_USER,
+    sender: emailUser,
+    replyTo: emailUser,
+    envelope: { from: emailUser, to },
     to,
     subject,
     html,
-    text: htmlToPlainText(html),
+    text: text || htmlToPlainText(html),
+    messageId,
     headers: {
-      "List-Unsubscribe": `<mailto:${process.env.EMAIL_USER}?subject=unsubscribe>`,
+      "List-Unsubscribe": `<mailto:${emailUser}?subject=unsubscribe>`,
+      "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      "X-Entity-Ref-ID": messageId,
+      "X-Mailer": "BPVS-Mailer",
     },
   };
 

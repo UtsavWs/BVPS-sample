@@ -52,13 +52,14 @@ exports.addReferral = async (req, res) => {
     });
 
     // Push referral reference into both users
-    await User.findByIdAndUpdate(givenBy, {
-      $push: { referralGiven: referral._id },
-    });
-
-    await User.findByIdAndUpdate(receivedBy, {
-      $push: { referralReceived: referral._id },
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(givenBy, {
+        $push: { referralGiven: referral._id },
+      }),
+      User.findByIdAndUpdate(receivedBy, {
+        $push: { referralReceived: referral._id },
+      }),
+    ]);
 
     res.status(201).json({
       success: true,
@@ -76,40 +77,41 @@ exports.addReferral = async (req, res) => {
   }
 };
 
-/**
- * GET /api/referrals
- * Fetch the logged-in user's referrals, split into `given` and `received`.
- * Each referral is populated with the counterparty's name and company.
- */
-exports.getMyReferrals = async (req, res) => {
-  try {
-    const userId = req.user._id;
-
-    const populateFields =
-      "fullName businessInformation.companyName businessInformation.brandName";
-
-    const [given, received] = await Promise.all([
-      Referral.find({ givenBy: userId })
-        .populate("receivedBy", populateFields)
-        .sort({ createdAt: -1 })
-        .lean(),
-      Referral.find({ receivedBy: userId })
-        .populate("givenBy", populateFields)
-        .sort({ createdAt: -1 })
-        .lean(),
-    ]);
-
-    res.status(200).json({
-      success: true,
-      data: { given, received },
-    });
-  } catch (err) {
-    console.error("Get referrals error:", err);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error. Please try again later.",
-      });
-  }
-};
+// Unused — superseded by GET /api/activity-log (batched feed).
+// /**
+//  * GET /api/referrals
+//  * Fetch the logged-in user's referrals, split into `given` and `received`.
+//  * Each referral is populated with the counterparty's name and company.
+//  */
+// exports.getMyReferrals = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//
+//     const populateFields =
+//       "fullName businessInformation.companyName businessInformation.brandName";
+//
+//     const [given, received] = await Promise.all([
+//       Referral.find({ givenBy: userId })
+//         .populate("receivedBy", populateFields)
+//         .sort({ createdAt: -1 })
+//         .lean(),
+//       Referral.find({ receivedBy: userId })
+//         .populate("givenBy", populateFields)
+//         .sort({ createdAt: -1 })
+//         .lean(),
+//     ]);
+//
+//     res.status(200).json({
+//       success: true,
+//       data: { given, received },
+//     });
+//   } catch (err) {
+//     console.error("Get referrals error:", err);
+//     res
+//       .status(500)
+//       .json({
+//         success: false,
+//         message: "Server error. Please try again later.",
+//       });
+//   }
+// };

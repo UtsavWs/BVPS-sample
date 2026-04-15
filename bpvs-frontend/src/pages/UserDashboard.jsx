@@ -50,36 +50,6 @@ const getStats = (counts) => [
   },
 ];
 
-/** Compute start/end ISO date strings for a given tab */
-const getTabDateRange = (tab) => {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const dayOfWeek = today.getDay(); // 0=Sun
-  // Week starts on Monday
-  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-
-  if (tab === "Current Week") {
-    const start = new Date(today);
-    start.setDate(today.getDate() + mondayOffset);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    return { startDate: start.toISOString(), endDate: end.toISOString() };
-  }
-  if (tab === "Last Week") {
-    const start = new Date(today);
-    start.setDate(today.getDate() + mondayOffset - 7);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 6);
-    return { startDate: start.toISOString(), endDate: end.toISOString() };
-  }
-  if (tab === "Month") {
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return { startDate: start.toISOString(), endDate: end.toISOString() };
-  }
-  return null;
-};
-
 const TABS = ["Current Week", "Last Week", "Month"];
 
 const MENU_ITEMS = [
@@ -101,94 +71,98 @@ const MENU_ITEMS = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────
-//  FabMenu (module-level to avoid re-mount on every render)
-// ─────────────────────────────────────────────────────────────
-const FabMenu = ({ mobile = false, wrapRef, menuOpen, setMenuOpen, isApproved, navigate }) => (
-    <div
-      ref={wrapRef}
-      style={{ backdropFilter: menuOpen ? "blur(2px)" : "" }}
-      className={[
-        "flex flex-col items-end gap-2.5",
-        mobile
-          ? "fixed bottom-5 right-4 z-200"
-          : "absolute bottom-8 right-10 z-60",
-      ].join(" ")}
-    >
-      {isApproved &&
-        MENU_ITEMS.map((item, i) => {
-          const delay = menuOpen
-            ? `${(MENU_ITEMS.length - 1 - i) * 50}ms`
-            : `${i * 30}ms`;
-          return (
-            <div
-              key={item.label}
-              className="flex items-center gap-2.5"
-              style={{
-                transitionProperty: "opacity, transform",
-                transitionDuration: "220ms",
-                transitionTimingFunction: "ease",
-                transitionDelay: delay,
-                opacity: menuOpen ? 1 : 0,
-                transform: menuOpen
-                  ? "translateY(0) scale(1)"
-                  : "translateY(10px) scale(0.9)",
-                pointerEvents: menuOpen ? "auto" : "none",
+const FabMenu = ({
+  mobile = false,
+  wrapRef,
+  menuOpen,
+  setMenuOpen,
+  isApproved,
+  navigate,
+}) => (
+  <div
+    ref={wrapRef}
+    style={{ backdropFilter: menuOpen ? "blur(2px)" : "" }}
+    className={[
+      "flex flex-col items-end gap-2.5",
+      mobile
+        ? "fixed bottom-5 right-4 z-200"
+        : "absolute bottom-8 right-8 z-60",
+    ].join(" ")}
+  >
+    {isApproved &&
+      MENU_ITEMS.map((item, i) => {
+        const delay = menuOpen
+          ? `${(MENU_ITEMS.length - 1 - i) * 50}ms`
+          : `${i * 30}ms`;
+        return (
+          <div
+            key={item.label}
+            className="flex items-center gap-2.5"
+            style={{
+              transitionProperty: "opacity, transform",
+              transitionDuration: "220ms",
+              transitionTimingFunction: "ease",
+              transitionDelay: delay,
+              opacity: menuOpen ? 1 : 0,
+              transform: menuOpen
+                ? "translateY(0) scale(1)"
+                : "translateY(10px) scale(0.9)",
+              pointerEvents: menuOpen ? "auto" : "none",
+            }}
+          >
+            <span
+              onClick={() => {
+                setMenuOpen(false);
+                if (item.route) navigate(item.route);
+              }}
+              className="bg-white text-gray-800 text-[13px] font-medium px-3 py-1.5 rounded-full shadow-md whitespace-nowrap border border-gray-100 select-none"
+            >
+              {item.label}
+            </span>
+            <button
+              type="button"
+              className={[
+                mobile
+                  ? "w-13 h-13"
+                  : "w-11 h-11 md:w-15 md:h-15 lg:w-16 lg:h-16",
+                "rounded-full bg-white shadow-lg border border-gray-100",
+                "flex items-center justify-center overflow-hidden",
+                "active:scale-95 transition-transform cursor-pointer",
+              ].join(" ")}
+              onClick={() => {
+                setMenuOpen(false);
+                if (item.route) navigate(item.route);
               }}
             >
-              <span
-                onClick={() => {
-                  setMenuOpen(false);
-                  if (item.route) navigate(item.route);
-                }}
-                className="bg-white text-gray-800 text-[13px] font-medium px-3 py-1.5 rounded-full shadow-md whitespace-nowrap border border-gray-100 select-none"
-              >
-                {item.label}
-              </span>
-              <button
-                type="button"
-                className={[
-                  mobile
-                    ? "w-13 h-13"
-                    : "w-11 h-11 md:w-15 md:h-15 lg:w-16 lg:h-16",
-                  "rounded-full bg-white shadow-lg border border-gray-100",
-                  "flex items-center justify-center overflow-hidden",
-                  "active:scale-95 transition-transform cursor-pointer",
-                ].join(" ")}
-                onClick={() => {
-                  setMenuOpen(false);
-                  if (item.route) navigate(item.route);
-                }}
-              >
-                <img
-                  src={item.img}
-                  alt={item.label}
-                  className="w-full h-full object-cover"
-                />
-              </button>
-            </div>
-          );
-        })}
-      <button
-        type="button"
-        className={[
-          mobile
-            ? "w-14 h-14 rounded-2xl sticky bottom-4 right-4"
-            : "w-12 h-12 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl",
-          "bg-[#D64B2A] text-white flex items-center justify-center",
-          "shadow-[0_6px_20px_rgba(214,75,42,0.45)]",
-          "hover:bg-[#c0392b] active:scale-95 border-none cursor-pointer",
-        ].join(" ")}
-        style={{
-          transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
-          transition: "transform 0.3s ease, background-color 0.2s ease",
-        }}
-        onClick={() => setMenuOpen((v) => !v)}
-      >
-        <Plus className={mobile ? "w-7 h-7" : "w-6 h-6 lg:w-7 lg:h-7"} />
-      </button>
-    </div>
-  );
+              <img
+                src={item.img}
+                alt={item.label}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          </div>
+        );
+      })}
+    <button
+      type="button"
+      className={[
+        mobile
+          ? "w-14 h-14 rounded-2xl sticky bottom-4 right-4"
+          : "w-12 h-12 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl",
+        "bg-[#D64B2A] text-white flex items-center justify-center",
+        "shadow-[0_6px_20px_rgba(214,75,42,0.45)]",
+        "hover:bg-[#c0392b] active:scale-95 border-none cursor-pointer",
+      ].join(" ")}
+      style={{
+        transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
+        transition: "transform 0.3s ease, background-color 0.2s ease",
+      }}
+      onClick={() => setMenuOpen((v) => !v)}
+    >
+      <Plus className={mobile ? "w-7 h-7" : "w-6 h-6 lg:w-7 lg:h-7"} />
+    </button>
+  </div>
+);
 
 // ─────────────────────────────────────────────────────────────
 //  UserDashboard
@@ -203,7 +177,7 @@ const UserDashboard = () => {
   const logout = auth.logout;
   const loading = auth.loading;
   const isApproved = auth.isApproved;
-  const isAdmin = auth.isAdmin;
+  const isAdmin = auth.isStaff;
 
   const [filteredCounts, setFilteredCounts] = useState({
     referralGivenCount: 0,
@@ -211,6 +185,8 @@ const UserDashboard = () => {
     thankyouslipGivenCount: 0,
     thankyouslipReceivedCount: 0,
   });
+  const [statsLoading, setStatsLoading] = useState(true);
+  const tabCacheRef = useRef({});
 
   const stats = useMemo(() => getStats(filteredCounts), [filteredCounts]);
 
@@ -256,35 +232,49 @@ const UserDashboard = () => {
     };
   }, [menuOpen]);
 
-  // Fetch filtered dashboard stats whenever tab or date range changes
+  // Prefetch all 3 tabs in one request on mount
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    setStatsLoading(true);
+    (async () => {
+      const res = await apiGet("/users/dashboard-stats-all");
+      if (cancelled) return;
+      if (res.success) {
+        tabCacheRef.current = { ...tabCacheRef.current, ...res.data };
+        const initial = res.data[activeTab] || res.data["Current Week"];
+        if (initial) setFilteredCounts(initial);
+      }
+      setStatsLoading(false);
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Serve cached tab instantly; fetch only for custom date range
   useEffect(() => {
     if (!user) return;
 
-    let range = null;
     if (dateRange) {
       const start = parseDateDisplay(dateRange.start);
       const end = parseDateDisplay(dateRange.end);
-      if (start && end) {
-        range = { startDate: start.toISOString(), endDate: end.toISOString() };
-      }
-    } else if (activeTab) {
-      range = getTabDateRange(activeTab);
+      if (!start || !end) return;
+      let cancelled = false;
+      setStatsLoading(true);
+      (async () => {
+        const res = await apiGet(
+          `/users/dashboard-stats?startDate=${encodeURIComponent(start.toISOString())}&endDate=${encodeURIComponent(end.toISOString())}`
+        );
+        if (!cancelled && res.success) setFilteredCounts(res.data);
+        if (!cancelled) setStatsLoading(false);
+      })();
+      return () => { cancelled = true; };
     }
 
-    if (!range) return;
-
-    let cancelled = false;
-    const fetchStats = async () => {
-      const res = await apiGet(
-        `/users/dashboard-stats?startDate=${encodeURIComponent(range.startDate)}&endDate=${encodeURIComponent(range.endDate)}`
-      );
-      if (!cancelled && res.success) {
-        setFilteredCounts(res.data);
-      }
-    };
-    fetchStats();
-
-    return () => { cancelled = true; };
+    if (activeTab && tabCacheRef.current[activeTab]) {
+      setFilteredCounts(tabCacheRef.current[activeTab]);
+      setStatsLoading(false);
+    }
   }, [activeTab, dateRange, user]);
 
   const handleTabClick = (tab) => {
@@ -460,9 +450,10 @@ const UserDashboard = () => {
             <button
               onClick={handleFilterClick}
               className={`flex items-center rounded-lg gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
-                ${dateRange
-                  ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                  : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                ${
+                  dateRange
+                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                 }`}
             >
               <img
@@ -496,9 +487,10 @@ const UserDashboard = () => {
                   key={tab}
                   onClick={() => handleTabClick(tab)}
                   className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-                    ${activeTab === tab
-                      ? "bg-[#C94621] text-white"
-                      : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
+                    ${
+                      activeTab === tab
+                        ? "bg-[#C94621] text-white"
+                        : "bg-[#C946211F] text-[#D64B2A] border-[#D64B2A]"
                     }`}
                 >
                   {tab}
@@ -523,16 +515,27 @@ const UserDashboard = () => {
                     className="w-12 h-12 object-contain"
                   />
                 </div>
-                <p className="text-[26px] font-semibold text-gray-600 leading-none">
-                  {stat.value}
-                </p>
+                {statsLoading ? (
+                  <div className="h-7 w-10 bg-gray-200 rounded animate-pulse" />
+                ) : (
+                  <p className="text-[26px] font-semibold text-gray-600 leading-none">
+                    {stat.value}
+                  </p>
+                )}
                 <p className="text-[11px] font-medium text-gray-500 text-center leading-snug">
                   {stat.label}
                 </p>
               </div>
             ))}
           </div>
-          <FabMenu mobile wrapRef={fabWrapRefMobile} menuOpen={menuOpen} setMenuOpen={setMenuOpen} isApproved={isApproved} navigate={navigate} />
+          <FabMenu
+            mobile
+            wrapRef={fabWrapRefMobile}
+            menuOpen={menuOpen}
+            setMenuOpen={setMenuOpen}
+            isApproved={isApproved}
+            navigate={navigate}
+          />
         </div>
       </div>
 
@@ -643,9 +646,10 @@ const UserDashboard = () => {
               <button
                 onClick={handleFilterClick}
                 className={`flex items-center gap-2 px-3 py-2 md:px-4 md:py-2 lg:px-5 lg:py-1.5 rounded-xl border font-medium text-sm lg:text-base transition cursor-pointer
-                  ${dateRange
-                    ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
-                    : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
+                  ${
+                    dateRange
+                      ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]"
+                      : "border-gray-200 bg-white text-gray-500 hover:bg-[#F9EDE8] hover:text-[#D64B2A] hover:border-[#D64B2A]"
                   }`}
               >
                 <img
@@ -712,12 +716,19 @@ const UserDashboard = () => {
                       className="object-contain w-full h-full"
                     />
                   </div>
-                  <p
-                    className="font-semibold text-gray-800 leading-none"
-                    style={{ fontSize: "clamp(1.1rem, 2.8vh, 2.25rem)" }}
-                  >
-                    {stat.value}
-                  </p>
+                  {statsLoading ? (
+                    <div
+                      className="bg-gray-200 rounded animate-pulse"
+                      style={{ height: "clamp(1.1rem, 2.8vh, 2.25rem)", width: "2.5rem" }}
+                    />
+                  ) : (
+                    <p
+                      className="font-semibold text-gray-800 leading-none"
+                      style={{ fontSize: "clamp(1.1rem, 2.8vh, 2.25rem)" }}
+                    >
+                      {stat.value}
+                    </p>
+                  )}
                   <p
                     className="font-medium text-gray-600 leading-tight px-1"
                     style={{ fontSize: "clamp(9px, 1.3vh, 13px)" }}
@@ -727,7 +738,13 @@ const UserDashboard = () => {
                 </div>
               ))}
             </div>
-            <FabMenu wrapRef={fabWrapRefDesktop} menuOpen={menuOpen} setMenuOpen={setMenuOpen} isApproved={isApproved} navigate={navigate} />
+            <FabMenu
+              wrapRef={fabWrapRefDesktop}
+              menuOpen={menuOpen}
+              setMenuOpen={setMenuOpen}
+              isApproved={isApproved}
+              navigate={navigate}
+            />
           </div>
         </main>
       </div>

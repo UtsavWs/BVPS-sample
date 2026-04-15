@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import LoadingScreen from "../components/LoadingScreen";
+import LoadingScreen from "../../components/LoadingScreen";
 import {
   ArrowLeft,
   Pencil,
@@ -12,11 +12,11 @@ import {
   Clock,
   UserX,
 } from "lucide-react";
-import { AuthContext } from "../context/AuthContext";
-import { apiGet, apiPatch, apiDelete, apiPost } from "../api/api";
-import AdminEditModal from "../components/modals/AdminEditModal";
-import DesktopPagination from "../components/DesktopPagination";
-import { StatusPill } from "../components/RoleBadge";
+import { AuthContext } from "../../context/AuthContext";
+import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
+import AdminEditModal from "../../components/modals/AdminEditModal";
+import DesktopPagination from "../../components/DesktopPagination";
+import { StatusPill } from "../../components/RoleBadge";
 
 const ITEMS_PER_PAGE = 10;
 const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
@@ -69,9 +69,16 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
       />
     </td>
     <td className="py-2.5 px-3 max-w-0 w-[22%]">
-      <p className="text-[13px] font-semibold text-gray-900 truncate">
-        {u.fullName}
-      </p>
+      <div className="flex items-center gap-1.5 min-w-0">
+        <p className="text-[13px] font-semibold text-gray-900 truncate">
+          {u.fullName}
+        </p>
+        {u.role === "subadmin" && (
+          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#FEF8F6] text-[#C94621] border border-[#C94621]/30">
+            Sub-admin
+          </span>
+        )}
+      </div>
     </td>
     <td className="py-2.5 px-3 text-[13px] text-gray-500 max-w-0 w-[26%] truncate">
       {u.email}
@@ -89,10 +96,10 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
       {u.createdAt
         ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -167,10 +174,11 @@ const PendingRow = ({ u, onApprove, onReject, actionLoading }) => (
 const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${active
-      ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
-      : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
-      }`}
+    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${
+      active
+        ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
+        : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
+    }`}
   >
     <div
       className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
@@ -220,7 +228,7 @@ const EmptyState = ({ tab, searchQuery, onClearSearch }) => (
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function AdminManageMembers() {
   const navigate = useNavigate();
-  const { user, loading, isAdmin } = useContext(AuthContext);
+  const { user, loading, isStaff } = useContext(AuthContext);
 
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -238,8 +246,8 @@ export default function AdminManageMembers() {
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) navigate("/dashboard");
-  }, [loading, user, isAdmin, navigate]);
+    if (!loading && (!user || !isStaff)) navigate("/dashboard");
+  }, [loading, user, isStaff, navigate]);
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const refreshStats = async () => {
@@ -248,15 +256,11 @@ export default function AdminManageMembers() {
   };
 
   useEffect(() => {
-    if (isAdmin) refreshStats();
-  }, [isAdmin]);
+    if (isStaff) refreshStats();
+  }, [isStaff]);
 
   // ── Fetch users ───────────────────────────────────────────────────────────
   // The backend handles tab-based filtering:
-  //   tab=pending  → only pending users
-  //   tab=active   → only active users
-  //   tab=inactive → only inactive users
-  //   tab=all      → all non-pending users
   const fetchUsers = async () => {
     setFetching(true);
     const res = await apiGet(
@@ -270,8 +274,8 @@ export default function AdminManageMembers() {
   };
 
   useEffect(() => {
-    if (isAdmin) fetchUsers();
-  }, [isAdmin, currentPage, activeTab]);
+    if (isStaff) fetchUsers();
+  }, [isStaff, currentPage, activeTab]);
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const handleTabChange = (tab) => {
@@ -292,7 +296,18 @@ export default function AdminManageMembers() {
   };
 
   const handleSaveEdit = async (userId, updates) => {
-    const res = await apiPatch(`/admin/users/${userId}`, updates);
+    const { role: newRole, previousRole, ...patch } = updates;
+
+    if (newRole && newRole !== previousRole) {
+      const endpoint =
+        newRole === "subadmin"
+          ? `/admin/users/${userId}/promote`
+          : `/admin/users/${userId}/demote`;
+      const roleRes = await apiPost(endpoint, {});
+      if (!roleRes.success) throw new Error(roleRes.message);
+    }
+
+    const res = await apiPatch(`/admin/users/${userId}`, patch);
     if (!res.success) throw new Error(res.message);
     fetchUsers();
     refreshStats();
@@ -329,21 +344,19 @@ export default function AdminManageMembers() {
       (u) =>
         u.fullName?.toLowerCase().includes(q) ||
         u.email?.toLowerCase().includes(q) ||
-        u.mobile?.includes(q)
+        u.mobile?.includes(q),
     );
   }, [searchQuery, users]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE)),
-    [totalItems]
+    [totalItems],
   );
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const isPendingTab = activeTab === "pending";
 
-  if (loading || !isAdmin) {
-    return (
-      <LoadingScreen />
-    );
+  if (loading || !isStaff) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -360,7 +373,7 @@ export default function AdminManageMembers() {
       </div>
 
       {/* ── Body ── */}
-      <div className="flex-1 flex flex-col min-h-0 max-w-7xl w-full mx-auto px-4 sm:px-6 py-5 gap-4">
+      <div className="flex-1 flex flex-col min-h-0 max-w-412.5 w-full mx-auto px-4 sm:px-6 py-5 gap-4">
         {/* ── Stat Cards ── */}
         <div className="shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3">
           {TABS.map(({ key, label, icon, color, bg, statKey }) => (
@@ -387,10 +400,11 @@ export default function AdminManageMembers() {
                 <button
                   key={key}
                   onClick={() => handleTabChange(key)}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${activeTab === key
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-stone-500 hover:text-gray-700 bg-transparent"
-                    }`}
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${
+                    activeTab === key
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-stone-500 hover:text-gray-700 bg-transparent"
+                  }`}
                 >
                   {label}
                   <span
@@ -403,7 +417,7 @@ export default function AdminManageMembers() {
             </div>
 
             {/* Search */}
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <Search
                 size={14}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
@@ -418,7 +432,7 @@ export default function AdminManageMembers() {
                 placeholder={
                   isPendingTab ? "Search requests..." : "Search members..."
                 }
-                className="pl-8 pr-8 py-1.75 text-[13px] w-44 sm:w-52 rounded-lg border border-stone-200 bg-stone-50 text-gray-800 placeholder-stone-400 outline-none focus:border-[#C94621] focus:bg-white transition-colors"
+                className="pl-8 pr-8 py-1.75 text-[13px] w-full sm:w-52 rounded-lg border border-stone-200 bg-stone-50 text-gray-800 placeholder-stone-400 outline-none focus:border-[#C94621] focus:bg-white transition-colors"
               />
               {searchQuery && (
                 <button
@@ -543,6 +557,7 @@ export default function AdminManageMembers() {
           user={editingUser}
           onClose={() => setEditingUser(null)}
           onSave={handleSaveEdit}
+          canManageRole={user?.role === "admin"}
         />
       )}
     </div>

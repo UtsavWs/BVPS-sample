@@ -124,8 +124,8 @@ export default function ForgotPassword() {
       setError("Please enter a password.");
       return;
     }
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters.");
       return;
     }
     if (password !== confirmPassword) {
@@ -176,22 +176,23 @@ export default function ForgotPassword() {
       {[0, 1, 2].map((i) => (
         <div
           key={i}
-          className={`h-2 rounded-full transition-all duration-300 ${i < current
+          className={`h-2 rounded-full transition-all duration-300 ${
+            i < current
               ? "w-2 bg-[#C1512D]"
               : i === current
                 ? "w-6 bg-[#C1512D]"
                 : "w-2 bg-gray-200"
-            }`}
+          }`}
         />
       ))}
     </div>
   );
 
   return (
-    <div className="h-screen bg-gray-50 flex items-center justify-center p-4 md:p-6 lg:p-8">
-      <div className="w-full max-w-275 bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+    <div className="min-h-screen bg-white md:bg-gray-50 flex items-center justify-center md:p-6 lg:p-8">
+      <div className="w-full md:max-w-275 bg-white md:rounded-3xl md:shadow-xl overflow-hidden flex flex-col md:flex-row md:min-h-0 min-h-screen">
         {/* ── Left: Form ── */}
-        <div className="w-full md:w-1/2 p-6 sm:p-10 lg:p-12 flex flex-col justify-center">
+        <div className="w-full md:w-1/2 px-6 pt-4 pb-8 md:p-10 lg:p-12 flex flex-col md:justify-center">
           {/* Back button */}
           <div className="md:mb-0 mb-2">
             <button
@@ -239,7 +240,6 @@ export default function ForgotPassword() {
                   placeholder="Enter Email"
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleConfirm()}
-                  autoComplete="email"
                 />
                 {error && (
                   <p className="text-red-500 text-sm font-medium -mt-2">
@@ -299,14 +299,15 @@ export default function ForgotPassword() {
                       onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                       onFocus={(e) => e.target.select()}
                       className={`flex-1 min-w-0 aspect-square text-center text-base sm:text-lg font-semibold rounded-lg border outline-none transition-all duration-200
-                                 ${error
-                          ? "border-red-400 text-red-500"
-                          : digit
-                            ? "border-[#C1512D] bg-[#fff5f2] text-[#C1512D]"
-                            : "border-gray-300 bg-white text-gray-900"
-                        }
+                                 ${
+                                   error
+                                     ? "border-red-400 text-red-500"
+                                     : digit
+                                       ? "border-[#C1512D] bg-[#fff5f2] text-[#C1512D]"
+                                       : "border-gray-300 bg-white text-gray-900"
+                                 }
                                  focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D]`}
-                    />
+                             />
                   ))}
                 </div>
                 {error && (
@@ -366,7 +367,6 @@ export default function ForgotPassword() {
                   value={password}
                   placeholder="Enter New Password"
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
                 />
                 <AuthInput
                   label="Confirm Password"
@@ -377,7 +377,6 @@ export default function ForgotPassword() {
                   onKeyDown={(e) =>
                     e.key === "Enter" && handlePasswordSubmit()
                   }
-                  autoComplete="new-password"
                 />
                 {error && (
                   <p className="text-red-500 text-sm font-medium -mt-2">

@@ -1,48 +1,14 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import aboutData from "../static-data/aboutData.json";
 
-// ── Static data ───────────────────────────────────────────────────────────────
-const TEAM = [
-  {
-    role: "PRESIDENT",
-    name: "DR. SHAILESH (AGNIVESH AYURVED HOSPITAL)",
-    location: "DADHIYA",
-  },
-  {
-    role: "VICE PRESIDENT",
-    name: "DRASHTANT (BHAKTINANDAN WEALTH CREATION)",
-    location: "KAKIDI MOLI",
-  },
-  {
-    role: "SECRETARY & TREASURER",
-    name: "SUHANI (FRANKLIN HOLIDAYS)",
-    location: "CHITAL",
-  },
-  {
-    role: "LEAD VISITOR HOST",
-    name: "PARTH (J K FOOD PVT LTD)",
-    location: "ITALI",
-  },
-];
-
-const PILLARS = [
-  {
-    title: "OUR VISION:",
-    text: "પરિવારના  દરેક સભ્યના વ્યક્તિગત અને ધંધાકીય વિકાસ કરવો.",
-  },
-  {
-    title: "OUR MISSION :",
-    text: "પરિવારના બિઝનેસ ને વૈશ્વિક લેવલ પર લઈ જઈ પરિવારને સમૃધ્ધિ તરફ લઈ જવા.",
-  },
-  {
-    title: "BPVS GOAL :",
-    text: "ભાલાળા પરિવારના સભ્યો વચ્ચે આવતી 6 મિટિંગ સુધી માં 5CR + નો બિઝનેસ કરવાનો.",
-  },
-  {
-    title: "OUR TAGLINE :",
-    text: 'આપણી ટૅગલાઇન છે "!! એકતા, વિકાસ , પ્રેરણા!!" જે આપણે હંમેશા સાર્થક કરતા આવીએ છીએ.',
-  },
-];
+const {
+  termLabel,
+  about: ABOUT_PARAGRAPHS,
+  team: TEAM,
+  pillars: PILLARS,
+  mentor: MENTOR,
+} = aboutData;
 
 const HR = () => (
   <div className="w-full border-t border-gray-100 my-6 lg:my-7" />
@@ -55,30 +21,16 @@ const AboutText = () => (
       About BPVS
     </h2>
     <div className="text-sm text-gray-700 leading-relaxed flex flex-col gap-4">
-      <p>
-        Bhalala Parivar Vepar Setu (BPVS) is a business networking platform
-        created to connect members of the Bhalala community and help them grow
-        personally and professionally. BPVS provides a supportive environment
-        where family members can collaborate, share opportunities, and expand
-        their businesses together.
-      </p>
-      <p>
-        With a strong focus on unity, growth, and inspiration, BPVS encourages
-        meaningful business connections and mutual support among members.
-        Through regular meetings, networking opportunities, and business
-        collaborations, BPVS aims to strengthen the economic progress of the
-        entire community.
-      </p>
-      <p>
-        Our mission is to empower every member of the Bhalala family by
-        providing opportunities for business development, knowledge sharing, and
-        partnership building. By working together, we strive to take our
-        community's businesses to a global level and create long-term prosperity
-        for future generations.
-        <br />
-        BPVS believes that when the community grows together, success becomes
-        stronger and more sustainable.
-      </p>
+      {ABOUT_PARAGRAPHS.map((para, i) => (
+        <p key={i}>
+          {para.split("\n").map((line, j, arr) => (
+            <span key={j}>
+              {line}
+              {j < arr.length - 1 && <br />}
+            </span>
+          ))}
+        </p>
+      ))}
     </div>
   </section>
 );
@@ -86,7 +38,7 @@ const AboutText = () => (
 const TeamSection = () => (
   <section>
     <h2 className="font-bold text-gray-900 mb-4 tracking-wide text-sm">
-      JAN - JUNE 2026 LT2 TEAM
+      {termLabel}
     </h2>
     <div className="flex flex-col gap-4">
       {TEAM.map(({ role, name, location }) => (
@@ -127,7 +79,7 @@ const MentorSection = ({ maxW = "max-w-xs sm:max-w-sm" }) => (
         className={`relative w-full overflow-hidden rounded-2xl aspect-3/4 max-w-120`}
       >
         <img
-          src='/assets/images/Kanjibhai Bhalala 1.svg'
+          src={MENTOR.image}
           alt="Mentor"
           className="w-full h-full object-cover object-top"
         />
@@ -135,7 +87,7 @@ const MentorSection = ({ maxW = "max-w-xs sm:max-w-sm" }) => (
         <div className="absolute bottom-0 left-0 right-0 flex items-center justify-center px-4 py-4">
           <div className="bg-[#1A2D5A] text-white px-5 py-2.5 rounded-xl text-center">
             <p className="text-sm font-bold tracking-wide leading-snug">
-              શ્રીમાન કાનજીભાઈ ભાલાળા
+              {MENTOR.name}
             </p>
           </div>
         </div>

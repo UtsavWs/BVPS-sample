@@ -69,7 +69,7 @@ exports.updateProfile = async (req, res) => {
   try {
     const user = req.user;
     const updates = req.body;
-    console.log("[updateProfile] req.body:", JSON.stringify(updates));
+    //console.log("[updateProfile] req.body:", JSON.stringify(updates));
 
     const allowedUpdates = [
       "fullName",
@@ -128,8 +128,6 @@ exports.updateProfile = async (req, res) => {
           email: updatedUser.email,
           mobile: updatedUser.mobile,
           isVerified: updatedUser.isVerified,
-          role: updatedUser.role,
-          status: updatedUser.status,
           profileImage: updatedUser.profileImage,
           bannerImage: updatedUser.bannerImage,
           dateOfBirth: updatedUser.dateOfBirth,
@@ -252,6 +250,78 @@ exports.changePassword = async (req, res) => {
  * GET /api/users/dashboard-stats?startDate=...&endDate=...
  * Get dashboard counts filtered by date range
  */
+const computeStatsForRange = async (userId, startDate, endDate) => {
+  const start = new Date(startDate);
+  start.setHours(0, 0, 0, 0);
+  const end = new Date(endDate);
+  end.setHours(23, 59, 59, 999);
+
+  const inRange = { $gte: start, $lte: end };
+
+  const [referralAgg, thankyouAgg, visitorAgg, b2bAgg] = await Promise.all([
+    Referral.aggregate([
+      { $match: { createdAt: inRange, $or: [{ givenBy: userId }, { receivedBy: userId }] } },
+      {
+        $facet: {
+          given: [{ $match: { givenBy: userId } }, { $count: "n" }],
+          received: [{ $match: { receivedBy: userId } }, { $count: "n" }],
+        },
+      },
+    ]),
+    ThankyouSlip.aggregate([
+      { $match: { createdAt: inRange, $or: [{ givenBy: userId }, { receivedBy: userId }] } },
+      {
+        $facet: {
+          given: [{ $match: { givenBy: userId } }, { $count: "n" }],
+          received: [{ $match: { receivedBy: userId } }, { $count: "n" }],
+        },
+      },
+    ]),
+    Visitor.countDocuments({ addedBy: userId, createdAt: inRange }),
+    B2b.countDocuments({
+      $or: [{ addedBy: userId }, { memberId: userId }],
+      createdAt: inRange,
+    }),
+  ]);
+
+  const pick = (agg, key) => agg?.[0]?.[key]?.[0]?.n || 0;
+
+  return {
+    referralGivenCount: pick(referralAgg, "given"),
+    referralReceivedCount: pick(referralAgg, "received"),
+    thankyouslipGivenCount: pick(thankyouAgg, "given"),
+    thankyouslipReceivedCount: pick(thankyouAgg, "received"),
+    visitorCount: visitorAgg,
+    b2bCount: b2bAgg,
+  };
+};
+
+const getTabDateRanges = () => {
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const dayOfWeek = today.getDay();
+  const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+
+  const currentWeekStart = new Date(today);
+  currentWeekStart.setDate(today.getDate() + mondayOffset);
+  const currentWeekEnd = new Date(currentWeekStart);
+  currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
+
+  const lastWeekStart = new Date(today);
+  lastWeekStart.setDate(today.getDate() + mondayOffset - 7);
+  const lastWeekEnd = new Date(lastWeekStart);
+  lastWeekEnd.setDate(lastWeekStart.getDate() + 6);
+
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+  return {
+    "Current Week": { startDate: currentWeekStart, endDate: currentWeekEnd },
+    "Last Week": { startDate: lastWeekStart, endDate: lastWeekEnd },
+    Month: { startDate: monthStart, endDate: monthEnd },
+  };
+};
+
 exports.getDashboardStats = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -264,45 +334,38 @@ exports.getDashboardStats = async (req, res) => {
       });
     }
 
-    const start = new Date(startDate);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(endDate);
-    end.setHours(23, 59, 59, 999);
+    const data = await computeStatsForRange(userId, startDate, endDate);
+    res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error("Dashboard stats error:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
 
-    const dateFilter = { createdAt: { $gte: start, $lte: end } };
+exports.getDashboardStatsAll = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const ranges = getTabDateRanges();
 
-    const [
-      referralGivenCount,
-      referralReceivedCount,
-      thankyouslipGivenCount,
-      thankyouslipReceivedCount,
-      visitorCount,
-      b2bCount,
-    ] = await Promise.all([
-      Referral.countDocuments({ givenBy: userId, ...dateFilter }),
-      Referral.countDocuments({ receivedBy: userId, ...dateFilter }),
-      ThankyouSlip.countDocuments({ givenBy: userId, ...dateFilter }),
-      ThankyouSlip.countDocuments({ receivedBy: userId, ...dateFilter }),
-      Visitor.countDocuments({ addedBy: userId, ...dateFilter }),
-      B2b.countDocuments({
-        $or: [{ addedBy: userId }, { memberId: userId }],
-        ...dateFilter,
-      }),
+    const [currentWeek, lastWeek, month] = await Promise.all([
+      computeStatsForRange(userId, ranges["Current Week"].startDate, ranges["Current Week"].endDate),
+      computeStatsForRange(userId, ranges["Last Week"].startDate, ranges["Last Week"].endDate),
+      computeStatsForRange(userId, ranges.Month.startDate, ranges.Month.endDate),
     ]);
 
     res.status(200).json({
       success: true,
       data: {
-        referralGivenCount,
-        referralReceivedCount,
-        thankyouslipGivenCount,
-        thankyouslipReceivedCount,
-        visitorCount,
-        b2bCount,
+        "Current Week": currentWeek,
+        "Last Week": lastWeek,
+        Month: month,
       },
     });
   } catch (err) {
-    console.error("Dashboard stats error:", err);
+    console.error("Unable to fetch dashboard stats:", err);
     res.status(500).json({
       success: false,
       message: "Server error. Please try again later.",

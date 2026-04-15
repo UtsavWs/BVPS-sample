@@ -1,6 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { protect, adminOnly } = require("../middlewares/authMiddleware");
+const {
+  protect,
+  adminOnly,
+  adminOrSubadmin,
+} = require("../middlewares/authMiddleware");
 const {
   getStats,
   getUsers,
@@ -8,16 +12,24 @@ const {
   approveUser,
   rejectUser,
   deleteUser,
+  promoteToSubadmin,
+  demoteToMember,
+  getSubadmins,
 } = require("../controllers/adminController");
 
-// All admin routes require authentication + admin role
-router.use(protect, adminOnly);
+router.use(protect);
 
-router.get("/stats", getStats);
-router.get("/users", getUsers);
-router.patch("/users/:id", updateUser);
-router.post("/users/:id/approve", approveUser);
-router.post("/users/:id/reject", rejectUser);
-router.delete("/users/:id", deleteUser);
+// Shared: admin + subadmin can view and manage members
+router.get("/stats", adminOrSubadmin, getStats);
+router.get("/users", adminOrSubadmin, getUsers);
+router.patch("/users/:id", adminOrSubadmin, updateUser);
+router.post("/users/:id/approve", adminOrSubadmin, approveUser);
+router.post("/users/:id/reject", adminOrSubadmin, rejectUser);
+
+// Admin-only: role management + deletion
+router.get("/subadmins", adminOnly, getSubadmins);
+router.post("/users/:id/promote", adminOnly, promoteToSubadmin);
+router.post("/users/:id/demote", adminOnly, demoteToMember);
+router.delete("/users/:id", adminOrSubadmin, deleteUser);
 
 module.exports = router;

@@ -8,7 +8,7 @@ router.get("/", protect, async (req, res) => {
   try {
     const { page, limit, search, tab, days, status, role } = req.query;
 
-    const filter = { role: "member", _id: { $ne: req.user.id } };
+    const filter = { role: { $in: ["member", "subadmin"] } };
 
     // Status: honor explicit filter if provided, otherwise default to active
     if (status) {
@@ -51,7 +51,7 @@ router.get("/", protect, async (req, res) => {
         .limit(200)
         .lean()
         .select(
-          "fullName email mobile profileImage status businessInformation contactInformation otherInformation createdAt",
+          "fullName email mobile profileImage status role businessInformation contactInformation otherInformation createdAt",
         );
       return res.status(200).json({ success: true, data: { members } });
     }
@@ -66,7 +66,7 @@ router.get("/", protect, async (req, res) => {
       .limit(limitNum)
       .lean()
       .select(
-        "fullName email mobile profileImage status businessInformation contactInformation otherInformation createdAt",
+        "fullName email mobile profileImage status role businessInformation contactInformation otherInformation createdAt",
       );
 
     res.status(200).json({

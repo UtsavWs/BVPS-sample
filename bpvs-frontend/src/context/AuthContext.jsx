@@ -89,7 +89,7 @@ export function AuthProvider({ children }) {
         return {
           success: false,
           message: res.message,
-          status: res.inactive ? "inactive" : res.data?.user?.status,
+          status: res.data?.user?.status,
         };
       }
     } catch (err) {
@@ -206,6 +206,8 @@ export function AuthProvider({ children }) {
     error,
     isAuthenticated: !!token && !!user,
     isAdmin: user?.role === 'admin',
+    isSubadmin: user?.role === 'subadmin',
+    isStaff: user?.role === 'admin' || user?.role === 'subadmin',
     isApproved: user?.status === 'active',
     login,
     register,

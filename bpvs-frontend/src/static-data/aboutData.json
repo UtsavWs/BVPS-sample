@@ -1,0 +1,52 @@
+{
+  "termLabel": "JAN - JUNE 2026 LT2 TEAM",
+  "about": [
+    "Bhalala Parivar Vepar Setu (BPVS) is a business networking platform created to connect members of the Bhalala community and help them grow personally and professionally. BPVS provides a supportive environment where family members can collaborate, share opportunities, and expand their businesses together.",
+    "With a strong focus on unity, growth, and inspiration, BPVS encourages meaningful business connections and mutual support among members. Through regular meetings, networking opportunities, and business collaborations, BPVS aims to strengthen the economic progress of the entire community.",
+    "Our mission is to empower every member of the Bhalala family by providing opportunities for business development, knowledge sharing, and partnership building. By working together, we strive to take our community's businesses to a global level and create long-term prosperity for future generations.\nBPVS believes that when the community grows together, success becomes stronger and more sustainable."
+  ],
+  "team": [
+    {
+      "role": "PRESIDENT",
+      "name": "DR. SHAILESH (AGNIVESH AYURVED HOSPITAL)",
+      "location": "DADHIYA"
+    },
+    {
+      "role": "VICE PRESIDENT",
+      "name": "DRASHTANT (BHAKTINANDAN WEALTH CREATION)",
+      "location": "KAKIDI MOLI"
+    },
+    {
+      "role": "SECRETARY & TREASURER",
+      "name": "SUHANI (FRANKLIN HOLIDAYS)",
+      "location": "CHITAL"
+    },
+    {
+      "role": "LEAD VISITOR HOST",
+      "name": "PARTH (J K FOOD PVT LTD)",
+      "location": "ITALI"
+    }
+  ],
+  "pillars": [
+    {
+      "title": "OUR VISION:",
+      "text": "પરિવારના  દરેક સભ્યના વ્યક્તિગત અને ધંધાકીય વિકાસ કરવો."
+    },
+    {
+      "title": "OUR MISSION :",
+      "text": "પરિવારના બિઝનેસ ને વૈશ્વિક લેવલ પર લઈ જઈ પરિવારને સમૃધ્ધિ તરફ લઈ જવા."
+    },
+    {
+      "title": "BPVS GOAL :",
+      "text": "ભાલાળા પરિવારના સભ્યો વચ્ચે આવતી 6 મિટિંગ સુધી માં 5CR + નો બિઝનેસ કરવાનો."
+    },
+    {
+      "title": "OUR TAGLINE :",
+      "text": "આપણી ટૅગલાઇન છે \"!! એકતા, વિકાસ , પ્રેરણા!!\" જે આપણે હંમેશા સાર્થક કરતા આવીએ છીએ."
+    }
+  ],
+  "mentor": {
+    "name": "શ્રીમાન કાનજીભાઈ ભાલાળા",
+    "image": "/assets/images/Kanjibhai Bhalala 1.svg"
+  }
+}

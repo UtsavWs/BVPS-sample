@@ -1,4 +1,6 @@
 const User = require("../models/User");
+const sendEmail = require("../utils/sendEmail");
+const { approvalEmailHtml } = require("../utils/emailTemplates");
 
 /**
  * GET /api/admin/stats
@@ -30,7 +32,9 @@ exports.getStats = async (req, res) => {
 exports.getUsers = async (req, res) => {
   try {
     const { tab = "all", page = 1, limit = 10 } = req.query;
-    const filter = { role: "member" };
+    const roleFilter =
+      req.user.role === "admin" ? { $in: ["member", "subadmin"] } : "member";
+    const filter = { role: roleFilter };
 
     if (tab === "pending") {
       filter.isApproved = null;
@@ -47,8 +51,9 @@ exports.getUsers = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .select(
-        "fullName email mobile profileImage status isApproved createdAt businessInformation",
-      );
+        "fullName email mobile profileImage status isApproved role createdAt businessInformation",
+      )
+      .lean();
 
     res.status(200).json({
       success: true,
@@ -75,18 +80,6 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { email, mobile, status } = req.body;
 
-    const user = await User.findById(id);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-    if (user.role === "admin") {
-      return res
-        .status(403)
-        .json({ success: false, message: "Cannot modify admin account." });
-    }
-
     const updates = {};
     if (email) updates.email = email.toLowerCase();
     if (mobile) updates.mobile = mobile;
@@ -94,10 +87,26 @@ exports.updateUser = async (req, res) => {
       updates.status = status;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, updates, {
+    const allowedRoles =
+      req.user.role === "admin" ? ["member", "subadmin"] : ["member"];
+    const filter = { _id: id, role: { $in: allowedRoles } };
+
+    const updatedUser = await User.findOneAndUpdate(filter, updates, {
       new: true,
       runValidators: true,
-    });
+    }).select("fullName email mobile status role");
+
+    if (!updatedUser) {
+      const exists = await User.exists({ _id: id });
+      if (!exists) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
+      }
+      return res
+        .status(403)
+        .json({ success: false, message: "Not authorized to modify this user." });
+    }
 
     res.status(200).json({
       success: true,
@@ -131,16 +140,23 @@ exports.updateUser = async (req, res) => {
 exports.approveUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { isApproved: true, status: "active" },
+      { new: true },
+    ).select("fullName email isApproved status");
+
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found." });
     }
 
-    user.isApproved = true;
-    user.status = "active";
-    await user.save();
+    sendEmail({
+      to: user.email,
+      subject: "Your BPVS account has been approved",
+      html: approvalEmailHtml(user.fullName),
+    }).catch((e) => console.error("Approval email failed:", e.message));
 
     res.status(200).json({
       success: true,
@@ -159,15 +175,17 @@ exports.approveUser = async (req, res) => {
 exports.rejectUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      { isApproved: false },
+      { new: true },
+    ).select("isApproved");
+
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not found." });
     }
-
-    user.isApproved = false;
-    await user.save();
 
     res.status(200).json({
       success: true,
@@ -180,25 +198,120 @@ exports.rejectUser = async (req, res) => {
 };
 
 /**
+ * POST /api/admin/users/:id/promote
+ * Admin-only: promote a member to subadmin
+ */
+exports.promoteToSubadmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOneAndUpdate(
+      { _id: id, role: "member" },
+      { role: "subadmin" },
+      { new: true },
+    ).select("role");
+
+    if (!user) {
+      const exists = await User.exists({ _id: id });
+      if (!exists) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
+      }
+      return res.status(400).json({
+        success: false,
+        message: "Only members can be promoted to subadmin.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User promoted to subadmin.",
+      data: { id: user._id, role: user.role },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+/**
+ * POST /api/admin/users/:id/demote
+ * Admin-only: demote a subadmin back to member
+ */
+exports.demoteToMember = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findOneAndUpdate(
+      { _id: id, role: "subadmin" },
+      { role: "member" },
+      { new: true },
+    ).select("role");
+
+    if (!user) {
+      const exists = await User.exists({ _id: id });
+      if (!exists) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
+      }
+      return res.status(400).json({
+        success: false,
+        message: "Only subadmins can be demoted.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Subadmin demoted to member.",
+      data: { id: user._id, role: user.role },
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+/**
+ * GET /api/admin/subadmins
+ * Admin-only: list all subadmins
+ */
+exports.getSubadmins = async (req, res) => {
+  try {
+    const subadmins = await User.find({ role: "subadmin" })
+      .sort({ createdAt: -1 })
+      .select("fullName email mobile profileImage status createdAt")
+      .lean();
+
+    res.status(200).json({ success: true, data: { subadmins } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+/**
  * DELETE /api/admin/users/:id
  * Delete a non-admin user
  */
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    const user = await User.findById(id);
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-    if (user.role === "admin") {
+    const allowedRoles =
+      req.user.role === "admin" ? ["member", "subadmin"] : ["member"];
+
+    const deleted = await User.findOneAndDelete({
+      _id: id,
+      role: { $in: allowedRoles },
+    });
+
+    if (!deleted) {
+      const exists = await User.exists({ _id: id });
+      if (!exists) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found." });
+      }
       return res
         .status(403)
-        .json({ success: false, message: "Cannot delete admin account." });
+        .json({ success: false, message: "Not authorized to delete this user." });
     }
-
-    await User.findByIdAndDelete(id);
 
     res
       .status(200)

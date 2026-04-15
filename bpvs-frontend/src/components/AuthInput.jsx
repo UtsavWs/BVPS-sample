@@ -26,7 +26,6 @@ export default function AuthInput({
   onChange,
   placeholder,
   required,
-  showRequired,
   maxLength,
   autoComplete,
   onKeyDown,
@@ -41,10 +40,7 @@ export default function AuthInput({
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">
-        {label}
-        {showRequired && <span className="text-[#C1512D] ml-0.5">*</span>}
-      </label>
+      <label className="text-sm font-medium text-gray-700">{label}</label>
       <div className={hasRightIcon ? "relative" : undefined}>
         <input
           type={inputType}
@@ -55,8 +51,9 @@ export default function AuthInput({
           maxLength={maxLength}
           autoComplete={autoComplete}
           onKeyDown={onKeyDown}
-          className={`w-full h-12 bg-white border border-gray-200 rounded-xl px-4 text-sm text-gray-800 outline-none focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D] transition-all ${isEmail ? "pr-11" : isPassword ? "pr-12" : ""
-            }`}
+          className={`w-full h-12 bg-white border border-gray-300 rounded-lg px-4 text-sm text-gray-800 outline-none focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D] transition-all ${
+            isEmail ? "pr-11" : isPassword ? "pr-12" : ""
+          }`}
         />
         {isEmail && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">

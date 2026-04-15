@@ -64,7 +64,7 @@ const mapReferral = (referral, tab) => {
   };
 };
 
-// Map a raw B2B entry from the API into the row shape used by the UI.
+// Map a raw b2b entry from the API into the row shape used by the UI.
 const mapB2b = (b2b, tab) => {
   const counterparty = tab === "Given" ? b2b.memberId : b2b.addedBy;
   return {
@@ -95,6 +95,8 @@ const ActivityIcon = ({ type }) => (
     <img
       src={ACTIVITY_ICONS[type]}
       alt={type}
+      loading="lazy"
+      decoding="async"
       className="w-full h-full object-contain"
     />
   </div>
@@ -160,6 +162,13 @@ export default function ActivityLog() {
   const { isAuthenticated, loading: authLoading } = useContext(AuthContext);
   const mobileSentinelRef = useRef(null);
 
+  // Redirect unauthenticated users to login once auth has finished initializing.
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      navigate("/login", { replace: true });
+    }
+  }, [authLoading, isAuthenticated, navigate]);
+
   useEffect(() => {
     if (authLoading || !isAuthenticated) return;
     let cancelled = false;
@@ -167,48 +176,43 @@ export default function ActivityLog() {
       setLoading(true);
       setError("");
       try {
-        const [slipRes, referralRes, b2bRes] = await Promise.all([
-          apiGet("/thankyouslip"),
-          apiGet("/referrals"),
-          apiGet("/b2b"),
-        ]);
+        const res = await apiGet("/activity-log");
         if (cancelled) return;
 
-        const slipGiven =
-          slipRes.success && slipRes.data
-            ? (slipRes.data.given || []).map((s) => mapSlip(s, "Given"))
-            : [];
-        const slipReceived =
-          slipRes.success && slipRes.data
-            ? (slipRes.data.received || []).map((s) => mapSlip(s, "Received"))
-            : [];
-        const refGiven =
-          referralRes.success && referralRes.data
-            ? (referralRes.data.given || []).map((r) => mapReferral(r, "Given"))
-            : [];
-        const refReceived =
-          referralRes.success && referralRes.data
-            ? (referralRes.data.received || []).map((r) =>
-              mapReferral(r, "Received"),
-            )
-            : [];
-        const b2bGiven =
-          b2bRes.success && b2bRes.data
-            ? (b2bRes.data.given || []).map((b) => mapB2b(b, "Given"))
-            : [];
-        const b2bReceived =
-          b2bRes.success && b2bRes.data
-            ? (b2bRes.data.received || []).map((b) => mapB2b(b, "Received"))
-            : [];
+        if (!res.success || !res.data) {
+          setError("Failed to load activity");
+          setGivenLogs([]);
+          setReceivedLogs([]);
+          return;
+        }
+
+        const { thankyouslip = {}, referrals = {}, b2b = {} } = res.data;
+
+        const slipGiven = (thankyouslip.given || []).map((s) =>
+          mapSlip(s, "Given"),
+        );
+        const slipReceived = (thankyouslip.received || []).map((s) =>
+          mapSlip(s, "Received"),
+        );
+        const refGiven = (referrals.given || []).map((r) =>
+          mapReferral(r, "Given"),
+        );
+        const refReceived = (referrals.received || []).map((r) =>
+          mapReferral(r, "Received"),
+        );
+        const b2bGiven = (b2b.given || []).map((b) => mapB2b(b, "Given"));
+        const b2bReceived = (b2b.received || []).map((b) =>
+          mapB2b(b, "Received"),
+        );
 
         // Merge and sort by date descending
         const sortByDate = (a, b) => new Date(b.rawDate) - new Date(a.rawDate);
-        setGivenLogs([...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate));
-        setReceivedLogs([...slipReceived, ...refReceived, ...b2bReceived].sort(sortByDate));
-
-        if (!slipRes.success && !referralRes.success && !b2bRes.success) {
-          setError("Failed to load activity");
-        }
+        setGivenLogs(
+          [...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate),
+        );
+        setReceivedLogs(
+          [...slipReceived, ...refReceived, ...b2bReceived].sort(sortByDate),
+        );
       } catch (err) {
         if (!cancelled) {
           console.error("Failed to fetch activity:", err);
@@ -358,10 +362,11 @@ export default function ActivityLog() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
+                    activeTab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                    }`}
+                  }`}
                 >
                   {tab}
                 </button>

@@ -44,13 +44,14 @@ exports.addThankyouSlip = async (req, res) => {
     });
 
     // Push slip reference into both users
-    await User.findByIdAndUpdate(givenBy, {
-      $push: { thankyouslipGiven: slip._id },
-    });
-
-    await User.findByIdAndUpdate(receivedBy, {
-      $push: { thankyouslipReceived: slip._id },
-    });
+    await Promise.all([
+      User.findByIdAndUpdate(givenBy, {
+        $push: { thankyouslipGiven: slip._id },
+      }),
+      User.findByIdAndUpdate(receivedBy, {
+        $push: { thankyouslipReceived: slip._id },
+      }),
+    ]);
 
     res.status(201).json({
       success: true,
@@ -68,40 +69,41 @@ exports.addThankyouSlip = async (req, res) => {
   }
 };
 
-/**
- * GET /api/thankyouslip
- * Fetch the logged-in user's thank-you slips, split into `given` and `received`.
- * Each slip is populated with the counterparty's name and company.
- */
-exports.getMyThankyouSlips = async (req, res) => {
-  try {
-    const userId = req.user._id;
-
-    const populateFields =
-      "fullName businessInformation.companyName businessInformation.brandName";
-
-    const [given, received] = await Promise.all([
-      ThankyouSlip.find({ givenBy: userId })
-        .populate("receivedBy", populateFields)
-        .sort({ createdAt: -1 })
-        .lean(),
-      ThankyouSlip.find({ receivedBy: userId })
-        .populate("givenBy", populateFields)
-        .sort({ createdAt: -1 })
-        .lean(),
-    ]);
-
-    res.status(200).json({
-      success: true,
-      data: { given, received },
-    });
-  } catch (err) {
-    console.error("Get thank-you slips error:", err);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error. Please try again later.",
-      });
-  }
-};
+// Unused — superseded by GET /api/activity-log (batched feed).
+// /**
+//  * GET /api/thankyouslip
+//  * Fetch the logged-in user's thank-you slips, split into `given` and `received`.
+//  * Each slip is populated with the counterparty's name and company.
+//  */
+// exports.getMyThankyouSlips = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//
+//     const populateFields =
+//       "fullName businessInformation.companyName businessInformation.brandName";
+//
+//     const [given, received] = await Promise.all([
+//       ThankyouSlip.find({ givenBy: userId })
+//         .populate("receivedBy", populateFields)
+//         .sort({ createdAt: -1 })
+//         .lean(),
+//       ThankyouSlip.find({ receivedBy: userId })
+//         .populate("givenBy", populateFields)
+//         .sort({ createdAt: -1 })
+//         .lean(),
+//     ]);
+//
+//     res.status(200).json({
+//       success: true,
+//       data: { given, received },
+//     });
+//   } catch (err) {
+//     console.error("Get thank-you slips error:", err);
+//     res
+//       .status(500)
+//       .json({
+//         success: false,
+//         message: "Server error. Please try again later.",
+//       });
+//   }
+// };

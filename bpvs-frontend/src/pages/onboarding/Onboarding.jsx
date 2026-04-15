@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import onboardingData from '../../static-data/onboardingData.json';
+import { AuthContext } from '../../context/AuthContext';
 
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
+  const { isAuthenticated, loading } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, loading, navigate]);
 
   const handleNext = () => {
     if (currentStep < onboardingData.length - 1) {

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import bpvsLogo from "/assets/logos/BPVS Logo.svg";
@@ -10,8 +10,14 @@ export default function SignUp() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const { register } = auth;
+  const { register, isAuthenticated, loading: authCheckLoading } = auth;
   const authLoading = auth?.loading || false;
+
+  useEffect(() => {
+    if (!authCheckLoading && isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, authCheckLoading, navigate]);
 
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -48,7 +54,7 @@ export default function SignUp() {
 
       if (result.success) {
         sessionStorage.setItem("signup_flow", "true");
-        navigate("/verify-otp", { state: { email }, replace: true });
+        navigate("/verify-otp", { state: { email } });
       } else {
         setError(result.message || "Registration failed. Please try again.");
       }
@@ -98,7 +104,7 @@ export default function SignUp() {
               Sign Up
             </h1>
             <p className="text-gray-500 mt-1 text-sm sm:text-base">
-              Create your account
+              Welcome Back!
             </p>
           </div>
 
@@ -133,7 +139,6 @@ export default function SignUp() {
               value={email}
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
               required
             />
 
@@ -143,17 +148,15 @@ export default function SignUp() {
               value={password}
               placeholder="Enter password"
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
               required
             />
 
             <AuthInput
-              label="Confirm Password"
+              label="Password"
               type="password"
               value={confirmPassword}
-              placeholder="Confirm password"
+              placeholder="Enter password"
               onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
               required
             />
 
@@ -168,8 +171,9 @@ export default function SignUp() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
               {isLoading ? "Processing..." : "Create Account"}
             </button>

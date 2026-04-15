@@ -282,7 +282,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-t-3xl w-full max-w-sm p-5 pb-9"
+          className="bg-white rounded-t-3xl w-full p-5 pb-9"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />

@@ -6,10 +6,16 @@ const STATUS_OPTIONS = [
   { value: "inactive", label: "Inactive" },
 ];
 
-export default function AdminEditModal({ user, onClose, onSave }) {
+const ROLE_OPTIONS = [
+  { value: "member", label: "Member" },
+  { value: "subadmin", label: "Sub-admin" },
+];
+
+export default function AdminEditModal({ user, onClose, onSave, canManageRole = false }) {
   const [email, setEmail] = useState(user.email || "");
   const [mobile, setMobile] = useState(user.mobile || "");
   const [status, setStatus] = useState(user.status || "active");
+  const [role, setRole] = useState(user.role || "member");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -21,7 +27,13 @@ export default function AdminEditModal({ user, onClose, onSave }) {
     setLoading(true);
     setError("");
     try {
-      await onSave(user.id || user._id, { email: email.trim(), mobile: mobile.trim(), status });
+      await onSave(user.id || user._id, {
+        email: email.trim(),
+        mobile: mobile.trim(),
+        status,
+        role,
+        previousRole: user.role || "member",
+      });
       onClose();
     } catch (err) {
       setError(err.message || "Failed to update user.");
@@ -112,6 +124,29 @@ export default function AdminEditModal({ user, onClose, onSave }) {
               ))}
             </div>
           </div>
+
+          {/* Role (admin-only) */}
+          {canManageRole && user.role !== "admin" && (
+            <div>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Role</label>
+              <div className="flex gap-2">
+                {ROLE_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setRole(opt.value)}
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold border transition ${
+                      role === opt.value
+                        ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]"
+                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {error && (
             <p className="text-xs text-red-500 font-medium">{error}</p>

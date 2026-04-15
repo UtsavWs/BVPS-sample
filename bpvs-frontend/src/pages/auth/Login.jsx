@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import bpvsLogo from "/assets/logos/BPVS Logo.svg";
@@ -10,8 +10,14 @@ export default function Login() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const { login } = auth;
+  const { login, isAuthenticated, loading: authCheckLoading } = auth;
   const authLoading = auth?.loading || false;
+
+  useEffect(() => {
+    if (!authCheckLoading && isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, authCheckLoading, navigate]);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -105,7 +111,6 @@ const handleLogin = async (e) => {
               value={email}
               placeholder="Enter email"
               onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
               required
             />
 
@@ -124,10 +129,11 @@ const handleLogin = async (e) => {
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <div
                   onClick={() => setRememberMe(!rememberMe)}
-                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${rememberMe
-                    ? "bg-[#C1512D] border-[#C1512D]"
-                    : "bg-white border-gray-300"
-                    }`}
+                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${
+                    rememberMe
+                      ? "bg-[#C1512D] border-[#C1512D]"
+                      : "bg-white border-gray-300"
+                  }`}
                   style={{ width: "18px", height: "18px", minWidth: "18px" }}
                 >
                   {rememberMe && (
@@ -164,8 +170,9 @@ const handleLogin = async (e) => {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""
-                }`}
+              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
               {isLoading ? "Logging in..." : "Login"}
             </button>
