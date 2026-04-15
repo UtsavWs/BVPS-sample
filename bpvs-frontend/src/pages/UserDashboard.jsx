@@ -137,8 +137,6 @@ const FabMenu = ({
               <img
                 src={item.img}
                 alt={item.label}
-                loading="lazy"
-                decoding="async"
                 className="w-full h-full object-cover"
               />
             </button>
@@ -398,8 +396,6 @@ const UserDashboard = () => {
             <img
               src={getProfileImage(user?.profileImage)}
               alt="Profile"
-              loading="lazy"
-              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>
@@ -462,8 +458,6 @@ const UserDashboard = () => {
             >
               <img
                 src="/assets/logos/filter-horizontal.svg"
-                loading="lazy"
-                decoding="async"
                 className="w-4 h-4"
               />
               <span className="text-[13px] font-normal text-[#111111]">
@@ -518,8 +512,6 @@ const UserDashboard = () => {
                   <img
                     src={stat.img}
                     alt={stat.label}
-                    loading="lazy"
-                    decoding="async"
                     className="w-12 h-12 object-contain"
                   />
                 </div>
@@ -597,8 +589,6 @@ const UserDashboard = () => {
               <img
                 src={getProfileImage(user?.profileImage)}
                 alt="Profile"
-                loading="lazy"
-                decoding="async"
                 className="w-full h-full object-cover"
               />
             </div>
@@ -664,8 +654,6 @@ const UserDashboard = () => {
               >
                 <img
                   src="/assets/logos/filter-horizontal.svg"
-                  loading="lazy"
-                  decoding="async"
                   className="w-4 h-4 lg:w-5 lg:h-5"
                 />
                 <span className="hidden sm:inline">
@@ -725,8 +713,6 @@ const UserDashboard = () => {
                     <img
                       src={stat.img}
                       alt={stat.label}
-                      loading="lazy"
-                      decoding="async"
                       className="object-contain w-full h-full"
                     />
                   </div>

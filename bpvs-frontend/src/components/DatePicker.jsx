@@ -43,9 +43,9 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     });
   };
 
-  const { firstDay, daysInMonth, daysInPrev, remainder } = useMemo(
-    () => getCalendarGrid(year, month),
-    [year, month]
+  const { firstDay, daysInMonth, daysInPrev, remainder } = getCalendarGrid(
+    year,
+    month
   );
 
   const yearOptions = useMemo(() => {
@@ -132,7 +132,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
   const confirmDisabled = isRange ? !startSel || !endSel : false;
 
   // ── Sub-views ──────────────────────────────────────────────
-  const renderHeader = () => (
+  const Header = () => (
     <div className="flex items-center justify-between mb-4">
       <div className="flex items-center gap-3">
         <button
@@ -163,7 +163,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     </div>
   );
 
-  const renderRangeBar = () => (
+  const RangeBar = () => (
     <div className="flex items-center justify-between bg-[#F9EDE8] rounded-xl px-4 py-2.5 mb-4 gap-2">
       <span
         className={`text-[13px] font-semibold flex-1 text-center ${
@@ -183,7 +183,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     </div>
   );
 
-  const renderMonthYearView = () => (
+  const MonthYearView = () => (
     <div className="mb-4">
       <select
         value={year}
@@ -213,7 +213,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     </div>
   );
 
-  const renderCalendarGrid = () => (
+  const CalendarGrid = () => (
     <>
       <div className="grid grid-cols-7 mb-1">
         {WEEKDAYS.map((w) => (
@@ -258,12 +258,12 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     </>
   );
 
-  const renderCalendarInner = () => (
+  const CalendarInner = () => (
     <>
-      {renderHeader()}
-      {isRange && renderRangeBar()}
-      {view === "monthYear" && renderMonthYearView()}
-      {view === "date" && renderCalendarGrid()}
+      <Header />
+      {isRange && <RangeBar />}
+      {view === "monthYear" && <MonthYearView />}
+      {view === "date" && <CalendarGrid />}
       <button
         onClick={confirm}
         disabled={confirmDisabled}
@@ -286,7 +286,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
-          {renderCalendarInner()}
+          <CalendarInner />
         </div>
       </div>
 
@@ -299,7 +299,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
           className="bg-white rounded-2xl shadow-2xl w-90 lg:w-100 p-6"
           onClick={(e) => e.stopPropagation()}
         >
-          {renderCalendarInner()}
+          <CalendarInner />
         </div>
       </div>
     </>

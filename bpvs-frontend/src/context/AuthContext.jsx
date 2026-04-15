@@ -1,7 +1,7 @@
 // AuthContext - Simple authentication context for the app
 // This provides user login, logout, and registration functionality
 
-import { createContext, useState, useEffect, useMemo, useCallback } from 'react';
+import { createContext, useState, useEffect, useMemo } from 'react';
 import { apiPost, apiGet, apiPut } from '../api/api';
 
 // Create the context - this is what components will use to access auth
@@ -67,7 +67,7 @@ export function AuthProvider({ children }) {
   };
 
   // Function to login user
-  const login = useCallback(async (email, password) => {
+  const login = async (email, password) => {
     setError(null);
     setLoading(true);
     try {
@@ -99,10 +99,10 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   // Function to register new user
-  const register = useCallback(async (userData) => {
+  const register = async (userData) => {
     setError(null);
     setLoading(true);
     try {
@@ -121,10 +121,10 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   // Function to verify OTP
-  const verifyOtp = useCallback(async (email, otp) => {
+  const verifyOtp = async (email, otp) => {
     setError(null);
     setLoading(true);
     try {
@@ -143,10 +143,10 @@ export function AuthProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  };
 
   // Function to resend OTP
-  const resendOtp = useCallback(async (email) => {
+  const resendOtp = async (email) => {
     setError(null);
     try {
       const res = await apiPost('/auth/resend-otp', { email });
@@ -162,19 +162,19 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     }
-  }, []);
+  };
 
   // Function to logout user
-  const logout = useCallback(() => {
+  const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setToken(null);
     setUser(null);
     setError(null);
-  }, []);
+  };
 
   // Function to update user profile
-  const updateUser = useCallback(async (updates) => {
+  const updateUser = async (updates) => {
     if (!token) {
       return { success: false, message: 'Not authenticated' };
     }
@@ -196,7 +196,7 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     }
-  }, [token, user]);
+  };
 
   // Provide all these functions and states to child components
   const value = useMemo(() => ({
