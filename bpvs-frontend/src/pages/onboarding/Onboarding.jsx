@@ -31,7 +31,7 @@ export default function Onboarding() {
   const data = onboardingData[currentStep];
 
   return (
-    <div className="flex items-center justify-center h-screen bg-white md:bg-gray-50 font-sans overflow-hidden">
+    <div className="flex items-center justify-center h-[100dvh] md:h-screen bg-white md:bg-gray-50 font-sans overflow-hidden">
       {/* Card wrapper — full screen on mobile, centered card on tablet/desktop */}
       <div className="flex flex-col items-center w-full h-full md:h-[90vh] md:max-w-lg lg:max-w-xl md:bg-white md:rounded-3xl md:shadow-xl px-4 py-3 sm:px-6 sm:py-5 md:px-8 md:py-4 lg:px-14 lg:py-8">
 

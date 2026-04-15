@@ -328,7 +328,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className="bg-[#F9EDE8] h-screen overflow-hidden">
+    <div className="bg-[#F9EDE8] min-h-screen md:h-screen md:overflow-hidden flex flex-col">
       {/* Date Range Picker */}
       {showRangePicker && (
         <DatePicker
@@ -363,7 +363,7 @@ const UserDashboard = () => {
       {/* ══════════════════════════════
           MOBILE  < 768px
       ══════════════════════════════ */}
-      <div className="md:hidden flex flex-col h-full overflow-y-auto">
+      <div className="md:hidden flex flex-col flex-1 pb-16">
         {/* Top Nav */}
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
           <button
@@ -544,7 +544,7 @@ const UserDashboard = () => {
           NO SCROLL — fits viewport height
       ══════════════════════════════ */}
       <div
-        className="hidden md:flex flex-col h-full transition-all duration-300 ease-in-out"
+        className="hidden md:flex flex-col flex-1 h-full transition-all duration-300 ease-in-out"
         style={{
           transform: drawerOpen ? `translateX(${DRAWER_W})` : "translateX(0)",
         }}

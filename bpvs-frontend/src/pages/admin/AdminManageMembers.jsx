@@ -360,7 +360,7 @@ export default function AdminManageMembers() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-[#F9EDE8] overflow-hidden">
+    <div className="min-h-screen md:h-screen flex flex-col bg-[#F9EDE8] md:overflow-hidden">
       {/* ── Header ── */}
       <div className="shrink-0 bg-white border-b border-stone-100 px-4 sm:px-6 py-4 flex items-center gap-4 z-10">
         <button
