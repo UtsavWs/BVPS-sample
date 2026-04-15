@@ -117,7 +117,7 @@ export default function EditProfile() {
       }
     };
     if (user) fetchProfileData();
-  }, [user]);
+  }, [user?._id]); // Only refetch if the logged-in user identity changes, not on data updates
 
   const set = (field) => (value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -135,16 +135,13 @@ export default function EditProfile() {
       setIsSaving(true);
       const dataToSend = formatToBackend(form);
 
-      const res = await apiPut("/users/profile", dataToSend);
+      const res = await updateUser(dataToSend);
 
       if (res.success) {
-        const refreshRes = await apiGet("/users/profile");
-        if (refreshRes.success && refreshRes.data.user) {
-          const formatted = formatFromBackend(refreshRes.data.user);
-          setSaved(formatted);
-          setForm(formatted);
-          updateUser(refreshRes.data.user);
-        }
+        const formatted = formatFromBackend(res.user);
+        setSaved(formatted);
+        setForm(formatted);
+        
         setProfilePreview(null);
         setBannerPreview(null);
         setIsEditing(false);
