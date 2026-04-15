@@ -42,6 +42,7 @@ const AdminManageMembers = lazy(() => import("../pages/admin/AdminManageMembers"
 const openRoutes = [
   { path: PUBLIC_PATHS.SPLASH, element: <SplashScreen /> },
   { path: PUBLIC_PATHS.ONBOARDING, element: <Onboarding /> },
+  { path: PROTECTED_PATHS.PENDING_APPROVAL, element: <PendingApproval /> },
 ];
 
 const authRoutes = [
@@ -61,7 +62,6 @@ const privateRoutes = [
   { path: PROTECTED_PATHS.SETTINGS, element: <Settings /> },
   { path: PROTECTED_PATHS.MEMBERS, element: <BvpsMembers /> },
   { path: PROTECTED_PATHS.ACTIVITY, element: <ActivityLog /> },
-  { path: PROTECTED_PATHS.PENDING_APPROVAL, element: <PendingApproval /> },
   { path: PROTECTED_PATHS.ABOUT_US, element: <AboutUs /> },
   { path: PROTECTED_PATHS.ADD_B2B, element: <AddB2B /> },
   { path: PROTECTED_PATHS.ADD_VISITOR, element: <AddVisitor /> },

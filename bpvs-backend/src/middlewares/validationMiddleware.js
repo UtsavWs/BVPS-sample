@@ -337,7 +337,7 @@ exports.addB2bSchema = Joi.object({
 
 exports.validate = (schema) => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body, { abortEarly: false });
+    const { value, error } = schema.validate(req.body, { abortEarly: false });
     if (error) {
       const messages = error.details.map((detail) => detail.message);
       return res.status(400).json({
@@ -346,6 +346,8 @@ exports.validate = (schema) => {
         errors: messages,
       });
     }
+    // Overwrite req.body with the sanitized/transformed values from Joi
+    req.body = value;
     next();
   };
 };

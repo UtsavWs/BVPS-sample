@@ -23,14 +23,19 @@ const setOtp = async (user, action, email) => {
     expiresAt: Date.now() + 5 * 60 * 1000,
   };
   await user.save();
+
   // Putting the OTP in the subject is what banks/large apps do — Gmail treats
   // these as transactional and is far less likely to spam-filter them.
   const subject = `${otp} is your BPVS verification code`;
-  sendEmail({
-    to: email,
-    subject,
-    html: otpEmailHtml(otp, action, user.fullName),
-  }).catch((e) => console.error("❌ Email failed:", e.message));
+  try {
+    await sendEmail({
+      to: email,
+      subject,
+      html: otpEmailHtml(otp, action, user.fullName),
+    });
+  } catch (e) {
+    throw new Error("Failed to send verification email. Please try again.");
+  }
 };
 
 // ── Clear Expired OTPs every minute ─────────────────────────────────────────
@@ -121,7 +126,7 @@ exports.sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
     const lowerEmail = email.toLowerCase();
-    const user = await User.findOne({ email: lowerEmail });
+    const user = await User.findOne({ email: lowerEmail }).select("+password");
 
     if (!user)
       return res
@@ -204,7 +209,7 @@ exports.forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const lowerEmail = email.toLowerCase();
-    const user = await User.findOne({ email: lowerEmail });
+    const user = await User.findOne({ email: lowerEmail }).select("+password");
 
     if (!user)
       return res.status(404).json({
