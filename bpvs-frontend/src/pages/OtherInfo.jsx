@@ -55,12 +55,7 @@ export default function OtherInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Auth protection - redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+
 
   // Fetch saved otherInformation from database
   useEffect(() => {

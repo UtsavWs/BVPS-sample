@@ -332,9 +332,7 @@ export default function BvpsMembers() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  useEffect(() => {
-    if (!auth.loading && !auth.user) navigate("/login");
-  }, [auth.loading, auth.user, navigate]);
+
 
   // Desktop fetch — paginated, replaces on every page/filter change.
   useEffect(() => {

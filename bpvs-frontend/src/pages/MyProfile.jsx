@@ -35,9 +35,7 @@ export default function MyProfile() {
   const user = auth.user;
   const loading = auth.loading;
 
-  useEffect(() => {
-    if (!loading && !user) navigate("/login");
-  }, [loading, user, navigate]);
+
 
   if (loading) {
     return (

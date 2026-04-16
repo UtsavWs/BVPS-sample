@@ -16,14 +16,7 @@ export default function OtpVerificationPage() {
   useEffect(() => {
     if (authLoading) return;
 
-    // Priority 1: If already logged in, redirect to dashboard
-    if (user) {
-      sessionStorage.removeItem("signup_flow");
-      navigate("/dashboard");
-      return;
-    }
-
-    // Priority 2: Check if came from signup flow
+    // Check if came from signup flow
     const isFromSignup = sessionStorage.getItem("signup_flow") === "true";
     if (!isFromSignup && !email) {
       // Not from signup flow - redirect to signup

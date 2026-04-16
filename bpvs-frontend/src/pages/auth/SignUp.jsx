@@ -13,11 +13,7 @@ export default function SignUp() {
   const { register, isAuthenticated, loading: authCheckLoading } = auth;
   const authLoading = auth?.loading || false;
 
-  useEffect(() => {
-    if (!authCheckLoading && isAuthenticated) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, [isAuthenticated, authCheckLoading, navigate]);
+
 
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");

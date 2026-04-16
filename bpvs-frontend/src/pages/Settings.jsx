@@ -7,12 +7,7 @@ const Settings = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Auth protection - redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+
 
   const settingsItems = [
     {

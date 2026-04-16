@@ -93,11 +93,7 @@ export default function EditProfile() {
 
   const isUploading = profileUploading || bannerUploading;
 
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+
 
   useEffect(() => {
     const fetchProfileData = async () => {

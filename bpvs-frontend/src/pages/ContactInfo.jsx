@@ -51,12 +51,7 @@ export default function ContactInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Auth protection - redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+
 
   // Fetch saved contactInformation from database
   useEffect(() => {

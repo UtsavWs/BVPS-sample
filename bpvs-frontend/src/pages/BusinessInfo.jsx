@@ -1,4 +1,4 @@
-import { ArrowLeft, Calendar, Check } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "../components/DatePicker";
@@ -68,12 +68,7 @@ export default function BusinessInfo() {
   const [saved, setSaved] = useState(INITIAL_DATA);
   const [form, setForm] = useState(INITIAL_DATA);
 
-  // Auth protection - redirect to login if not authenticated
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-    }
-  }, [loading, user, navigate]);
+
 
   // Fetch business info from database
   useEffect(() => {
@@ -212,9 +207,7 @@ export default function BusinessInfo() {
               `}
             >
               <span>{isEditing ? form.dateOfJoin : saved.dateOfJoin}</span>
-              <img src="src/assets/logos/calender.svg"
-                size={17}
-                strokeWidth={1.8}
+              <img src="/assets/logos/calender.svg"
                 className="text-gray-400 shrink-0 w-5"
               />
             </button>

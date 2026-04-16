@@ -205,10 +205,6 @@ const UserDashboard = () => {
   }, [logout, navigate]);
 
   useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login");
-      return;
-    }
     if (!loading && user && !isApproved) {
       navigate("/pending-approval");
     }
