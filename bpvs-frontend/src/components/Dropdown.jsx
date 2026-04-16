@@ -8,32 +8,57 @@ export default function Dropdown({
   error,
   searchable = false,
   maxHeight = "",
+  onLoadMore,
+  loadingMore = false,
+  onSearchChange,
+  searchPlaceholder = "Search...",
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
+  const [localSearch, setLocalSearch] = useState("");
 
   const isPlaceholder = typeof value === "string" && value.startsWith("Select");
 
   const toggle = () => {
     setIsOpen((v) => !v);
-    setSearch("");
+    if (!isOpen) {
+      setLocalSearch("");
+      if (onSearchChange) onSearchChange("");
+    }
   };
   const close = () => {
     setIsOpen(false);
-    setSearch("");
+    setLocalSearch("");
+    if (onSearchChange) onSearchChange("");
   };
   const select = (opt) => {
     onChange(opt);
     close();
   };
 
-  const filtered = useMemo(
-    () =>
-      searchable
-        ? options.filter((opt) => opt.toLowerCase().includes(search.toLowerCase()))
-        : options,
-    [options, search, searchable]
-  );
+  const handleSearchInput = (e) => {
+    const val = e.target.value;
+    setLocalSearch(val);
+    if (onSearchChange) {
+      onSearchChange(val);
+    }
+  };
+
+  const handleScroll = (e) => {
+    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+    // Trigger when within 10px of bottom
+    if (scrollHeight - scrollTop <= clientHeight + 10) {
+      if (onLoadMore) onLoadMore();
+    }
+  };
+
+  const filtered = useMemo(() => {
+    if (onSearchChange) return options; // Server side search handles filtering
+    return searchable
+      ? options.filter((opt) =>
+          opt.toLowerCase().includes(localSearch.toLowerCase())
+        )
+      : options;
+  }, [options, localSearch, searchable, onSearchChange]);
 
   return (
     <div className="relative">
@@ -65,9 +90,9 @@ export default function Dropdown({
                   <Search className="w-4 h-4 text-gray-400 shrink-0" />
                   <input
                     type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search..."
+                    value={localSearch}
+                    onChange={handleSearchInput}
+                    placeholder={searchPlaceholder}
                     className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
                     autoFocus
                   />
@@ -75,23 +100,33 @@ export default function Dropdown({
               </div>
             )}
 
-            <ul className={`${maxHeight || "max-h-42"} overflow-y-auto`}>
+            <ul
+              onScroll={handleScroll}
+              className={`${maxHeight || "max-h-42"} overflow-y-auto pt-1`}
+            >
               {filtered.length > 0 ? (
-                filtered.map((opt) => (
-                  <li key={opt}>
-                    <button
-                      type="button"
-                      onClick={() => select(opt)}
-                      className={`w-full text-left px-4 py-3 text-[14px] transition-colors hover:bg-[#F9EDE8] hover:text-[#D64B2A] cursor-pointer
-                        ${value === opt ? "text-[#D64B2A] font-semibold bg-[#F9EDE8]" : "text-gray-700"}`}
-                    >
-                      {opt}
-                    </button>
-                  </li>
-                ))
+                <>
+                  {filtered.map((opt, idx) => (
+                    <li key={`${opt}-${idx}`}>
+                      <button
+                        type="button"
+                        onClick={() => select(opt)}
+                        className={`w-full text-left px-4 py-3 text-[14px] transition-colors hover:bg-[#F9EDE8] hover:text-[#D64B2A] cursor-pointer
+                          ${value === opt ? "text-[#D64B2A] font-semibold bg-[#F9EDE8]" : "text-gray-700"}`}
+                      >
+                        {opt}
+                      </button>
+                    </li>
+                  ))}
+                  {loadingMore && (
+                    <li className="px-4 py-3 text-sm text-gray-400 text-center animate-pulse">
+                      Loading more...
+                    </li>
+                  )}
+                </>
               ) : (
                 <li className="px-4 py-3 text-sm text-gray-400 text-center">
-                  No results found
+                  {loadingMore ? "Loading..." : "No results found"}
                 </li>
               )}
             </ul>
@@ -101,3 +136,4 @@ export default function Dropdown({
     </div>
   );
 }
+

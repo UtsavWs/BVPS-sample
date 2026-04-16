@@ -1,10 +1,11 @@
 import { ArrowLeft } from "lucide-react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import InputFields from "../../components/InputFields";
 import Dropdown from "../../components/Dropdown";
-import { apiGet, apiPost } from "../../api/api";
+import { apiPost } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
+import { MemberContext } from "../../context/MemberContext";
 
 const REFERENCE_OPTIONS = [
   "Select Reference",
@@ -29,35 +30,35 @@ const INITIAL = {
 const AddThankYouSlip = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { 
+    members: rawMembers, 
+    loadMore, 
+    loadingMore, 
+    hasMore, 
+    setSearchQuery 
+  } = useContext(MemberContext);
 
   const [form, setForm] = useState(INITIAL);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const [members, setMembers] = useState([]);
-  const [memberMap, setMemberMap] = useState({});
+  // Filter and map members
+  const filteredMembers = useMemo(() => {
+    return rawMembers.filter((m) => m._id !== user?.id);
+  }, [rawMembers, user]);
 
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await apiGet("/members");
-        if (res.success && res.data?.members) {
-          const filtered = res.data.members.filter((m) => m._id !== user?.id);
-          const names = filtered.map((m) => m.fullName);
-          const map = {};
-          filtered.forEach((m) => {
-            map[m.fullName] = m._id;
-          });
-          setMembers(["Select Member", ...names]);
-          setMemberMap(map);
-        }
-      } catch (err) {
-        console.error("Failed to fetch members:", err);
-      }
-    };
-    fetchMembers();
-  }, [user]);
+  const memberNames = useMemo(() => {
+    return ["Select Member", ...filteredMembers.map((m) => m.fullName)];
+  }, [filteredMembers]);
+
+  const memberMap = useMemo(() => {
+    const map = {};
+    filteredMembers.forEach((m) => {
+      map[m.fullName] = m._id;
+    });
+    return map;
+  }, [filteredMembers]);
 
   const set = (key, val) => {
     setForm((p) => ({ ...p, [key]: val }));
@@ -173,10 +174,13 @@ const AddThankYouSlip = () => {
             <label className="text-[13px] font-semibold text-gray-700">Member Name</label>
             <Dropdown
               value={form.memberName}
-              options={members.length > 1 ? members : ["Select Member"]}
+              options={memberNames}
               onChange={(v) => set("memberName", v)}
               error={errors.memberName}
               searchable
+              onLoadMore={loadMore}
+              loadingMore={loadingMore}
+              onSearchChange={setSearchQuery}
             />
             {errors.memberName && (
               <p className="text-[12px] text-red-500 mt-0.5">{errors.memberName}</p>

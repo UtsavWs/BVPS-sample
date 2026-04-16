@@ -1,8 +1,9 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
-import { apiGet, apiPost } from "../../api/api";
+import { MemberContext } from "../../context/MemberContext";
+import { apiPost } from "../../api/api";
 import InputFields from "../../components/InputFields";
 import Dropdown from "../../components/Dropdown";
 
@@ -18,32 +19,23 @@ const EVENT_MASTER_OPTIONS = [
 
 const AddB2B = () => {
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
-  const user = auth?.user;
-
-  // ── Active members for the dropdown ──
-  const [members, setMembers] = useState([]);
-  const [membersLoading, setMembersLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const res = await apiGet("/members");
-        if (res.success && res.data?.members) {
-          setMembers(res.data.members);
-        }
-      } catch (err) {
-        console.error("Failed to load members:", err);
-      } finally {
-        setMembersLoading(false);
-      }
-    };
-    fetchMembers();
-  }, []);
+  const { user } = useContext(AuthContext);
+  const { 
+    members: rawMembers, 
+    loadMore, 
+    loadingMore, 
+    hasMore, 
+    setSearchQuery 
+  } = useContext(MemberContext);
 
   // Filter out the current user and build dropdown options
-  const filteredMembers = members.filter((m) => m._id !== user?.id);
-  const memberOptions = ["Select Member", ...filteredMembers.map((m) => m.fullName)];
+  const filteredMembers = useMemo(() => {
+    return rawMembers.filter((m) => m._id !== user?.id);
+  }, [rawMembers, user]);
+
+  const memberOptions = useMemo(() => {
+    return ["Select Member", ...filteredMembers.map((m) => m.fullName)];
+  }, [filteredMembers]);
 
   const [form, setForm] = useState({
     memberName: "Select Member",
@@ -149,20 +141,17 @@ const AddB2B = () => {
             <label className="text-[13px] font-semibold text-gray-700">
               Member Name
             </label>
-            {membersLoading ? (
-              <div className="w-full h-13 px-4 flex items-center rounded-xl border border-gray-200 bg-gray-50 text-[15px] text-gray-400">
-                Loading members…
-              </div>
-            ) : (
-              <Dropdown
-                value={form.memberName}
-                options={memberOptions}
-                onChange={handleMemberSelect}
-                error={errors.memberName}
-                searchable
-                maxHeight="max-h-60"
-              />
-            )}
+            <Dropdown
+              value={form.memberName}
+              options={memberOptions}
+              onChange={handleMemberSelect}
+              error={errors.memberName}
+              searchable
+              maxHeight="max-h-60"
+              onLoadMore={loadMore}
+              loadingMore={loadingMore}
+              onSearchChange={setSearchQuery}
+            />
             {errors.memberName && (
               <p className="text-[12px] text-red-500 mt-0.5">
                 {errors.memberName}

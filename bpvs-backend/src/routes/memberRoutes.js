@@ -44,21 +44,13 @@ router.get("/", protect, async (req, res) => {
       ];
     }
 
-    // No page param = return up to 200 (used by dropdowns)
-    if (!page) {
-      const members = await User.find(filter)
-        .sort({ createdAt: -1 })
-        .limit(200)
-        .lean()
-        .select(
-          "fullName email mobile profileImage status role businessInformation contactInformation otherInformation createdAt",
-        );
-      return res.status(200).json({ success: true, data: { members } });
-    }
-
     const pageNum = parseInt(page) || 1;
     const limitNum = parseInt(limit) || 20;
 
+    // Fetch up to 200 by default only if explicitly NOT a paginated request
+    // However, to support unified infinite scroll, we enforce pagination.
+    // If client doesn't pass 'page', we still return paginated results starting at page 1.
+    
     const total = await User.countDocuments(filter);
     const members = await User.find(filter)
       .sort({ createdAt: -1 })

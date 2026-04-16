@@ -12,6 +12,7 @@ import MemberDetailModal from "../components/modals/MemberDetailModal";
 import DesktopPagination from "../components/DesktopPagination";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
+import { MemberContext } from "../context/MemberContext";
 import { apiGet } from "../api/api";
 import { StatusPill } from "../components/RoleBadge";
 
@@ -85,18 +86,16 @@ const FilterDropdown = ({
   const CheckRow = ({ checked, label, onClick }) => (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${
-        checked
+      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${checked
           ? "bg-[#FEF3EF] text-[#C94621] font-medium"
           : "bg-transparent text-gray-700 hover:bg-stone-50"
-      }`}
+        }`}
     >
       <span
-        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-          checked
+        className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${checked
             ? "bg-[#C94621] border-[#C94621]"
             : "border-stone-300 bg-white"
-        }`}
+          }`}
       >
         {checked && (
           <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
@@ -263,11 +262,10 @@ const TableRow = ({ member, onClick }) => (
     </td>
     <td className="py-2.5 px-3">
       <span
-        className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border whitespace-nowrap ${
-          member.role === "subadmin"
+        className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border whitespace-nowrap ${member.role === "subadmin"
             ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]/30"
             : "bg-stone-100 text-stone-500 border-stone-200"
-        }`}
+          }`}
       >
         {member.role === "subadmin" ? "Admin" : "Member"}
       </span>
@@ -275,10 +273,10 @@ const TableRow = ({ member, onClick }) => (
     <td className="py-2.5 px-3 text-[12px] text-gray-500 whitespace-nowrap">
       {member.createdAt
         ? new Date(member.createdAt).toLocaleDateString("en-IN", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -292,31 +290,29 @@ const TableRow = ({ member, onClick }) => (
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function BvpsMembers() {
-  const [activeTab, setActiveTab] = useState("All");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [selectedMember, setSelectedMember] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [totalItems, setTotalItems] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const {
+    directoryMembers,
+    dirTotal,
+    dirLoading,
+    dirPage,
+    dirHasMore,
+    fetchPage,
+    loadMore,
+    loadingMore,
+    searchQuery,
+    setSearchQuery,
+    filters,
+    setFilters
+  } = useContext(MemberContext);
 
-  // Filter state
-  const [dateFilter, setDateFilter] = useState({
-    label: "All time",
-    days: null,
-  });
-  const [statusFilters, setStatusFilters] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const filterBtnRef = useRef(null);
-
-  // Mobile infinite-scroll state (separate from desktop pagination)
-  const [mobileMembers, setMobileMembers] = useState([]);
-  const [mobilePage, setMobilePage] = useState(1);
-  const [mobileHasMore, setMobileHasMore] = useState(true);
-  const [mobileLoadingMore, setMobileLoadingMore] = useState(false);
   const mobileSentinelRef = useRef(null);
 
-  // Track viewport so only the active layout fetches.
+  // Sync mobile viewport
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(max-width: 1023px)").matches
@@ -329,166 +325,68 @@ export default function BvpsMembers() {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
-  const navigate = useNavigate();
-  const auth = useContext(AuthContext);
-
-
-
-  // Desktop fetch — paginated, replaces on every page/filter change.
+  // Infinite scroll sentinel for mobile
   useEffect(() => {
-    if (!auth.user || isMobile) return;
-    let cancelled = false;
-    const fetchMembers = async () => {
-      setLoading(true);
-      const params = new URLSearchParams({
-        page: currentPage,
-        limit: ITEMS_PER_PAGE,
-        ...(searchQuery.trim() && { search: searchQuery.trim() }),
-        ...(activeTab && { tab: activeTab }),
-        ...(dateFilter.days != null && { days: String(dateFilter.days) }),
-        ...(statusFilters.length && { status: statusFilters.join(",") }),
-      });
-      const res = await apiGet(`/members?${params}`);
-      if (cancelled) return;
-      if (res.success) {
-        setMembers(res.data.members);
-        setTotalItems(res.data.pagination.total);
-      }
-      setLoading(false);
-    };
-    fetchMembers();
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    auth.user,
-    isMobile,
-    currentPage,
-    searchQuery,
-    activeTab,
-    dateFilter,
-    statusFilters,
-  ]);
-
-  // Mobile fetch — appends pages, resets to page 1 when filters change.
-  useEffect(() => {
-    if (!auth.user || !isMobile) return;
-    let cancelled = false;
-    const fetchMobileMembers = async () => {
-      setMobileLoadingMore(true);
-      const params = new URLSearchParams({
-        page: mobilePage,
-        limit: ITEMS_PER_PAGE,
-        ...(searchQuery.trim() && { search: searchQuery.trim() }),
-        ...(activeTab && { tab: activeTab }),
-        ...(dateFilter.days != null && { days: String(dateFilter.days) }),
-        ...(statusFilters.length && { status: statusFilters.join(",") }),
-      });
-      const res = await apiGet(`/members?${params}`);
-      if (cancelled) return;
-      if (res.success) {
-        const fetched = res.data.members || [];
-        const total = res.data.pagination?.total ?? 0;
-        setMobileMembers((prev) =>
-          mobilePage === 1 ? fetched : [...prev, ...fetched],
-        );
-        setTotalItems(total);
-        setMobileHasMore(mobilePage * ITEMS_PER_PAGE < total);
-      }
-      setMobileLoadingMore(false);
-    };
-    fetchMobileMembers();
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    auth.user,
-    isMobile,
-    mobilePage,
-    searchQuery,
-    activeTab,
-    dateFilter,
-    statusFilters,
-  ]);
-
-  // Infinite scroll sentinel — request next page when it enters the viewport.
-  useEffect(() => {
-    if (!isMobile || !mobileHasMore || mobileLoadingMore) return;
+    if (!isMobile || !dirHasMore || loadingMore) return;
     const node = mobileSentinelRef.current;
     if (!node) return;
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting) {
-          setMobilePage((p) => p + 1);
+          loadMore();
         }
       },
       { rootMargin: "200px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [isMobile, mobileHasMore, mobileLoadingMore]);
+  }, [isMobile, dirHasMore, loadingMore, loadMore]);
 
-  // Reset mobile pagination when filters/search/tab change.
-  const resetMobile = () => {
-    setMobileMembers([]);
-    setMobilePage(1);
-    setMobileHasMore(true);
-  };
-
-  const activeFilterCount =
-    (dateFilter.days !== null ? 1 : 0) + statusFilters.length;
-
-  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
-  const paginatedMembers = members; // already paginated by backend
-
-  const handlePageChange = (page) => setCurrentPage(page);
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
-    setCurrentPage(1);
-    setSearchQuery("");
-    resetMobile();
+    const newFilters = { ...filters, tab };
     if (tab === "New") {
-      setDateFilter({ label: "Last 7 days", days: 7 });
+      newFilters.days = 30;
     } else {
-      setDateFilter({ label: "All time", days: null });
+      newFilters.days = null;
     }
+    setFilters(newFilters);
+    setSearchQuery("");
   };
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
-    setCurrentPage(1);
-    resetMobile();
   };
-  const handleMemberClick = useCallback(
-    (member) => setSelectedMember(member),
-    [],
-  );
-  const handleCloseModal = useCallback(() => setSelectedMember(null), []);
 
   const handleSetDateFilter = (opt) => {
-    setDateFilter(opt);
-    setCurrentPage(1);
-    resetMobile();
+    setFilters({ ...filters, days: opt.days });
   };
-  const handleSetStatusFilters = (s) => {
-    setStatusFilters(s);
-    setCurrentPage(1);
-    resetMobile();
+
+  const handleSetStatusFilters = (sOrFn) => {
+    const newStatus = typeof sOrFn === 'function' ? sOrFn(filters.status.split(',').filter(Boolean)).join(',') : sOrFn.join(',');
+    setFilters({ ...filters, status: newStatus });
   };
 
   const removeChip = (type, value) => {
-    if (type === "date") setDateFilter({ label: "All time", days: null });
-    if (type === "status")
-      setStatusFilters((p) => p.filter((x) => x !== value));
-    setCurrentPage(1);
-    resetMobile();
+    if (type === "date") setFilters({ ...filters, days: null });
+    if (type === "status") {
+      const current = filters.status.split(',').filter(x => x !== value);
+      setFilters({ ...filters, status: current.join(',') });
+    }
   };
 
   const clearAllFilters = () => {
-    setDateFilter({ label: "All time", days: null });
-    setStatusFilters([]);
-    setCurrentPage(1);
-    resetMobile();
+    setFilters({ tab: "All", days: null, status: "" });
+    setSearchQuery("");
   };
+
+  const handlePageChange = (page) => fetchPage(page);
+  const handleMemberClick = useCallback((member) => setSelectedMember(member), []);
+  const handleCloseModal = useCallback(() => setSelectedMember(null), []);
+
+  const totalPages = Math.max(1, Math.ceil(dirTotal / ITEMS_PER_PAGE));
+  const statusFilters = filters.status.split(',').filter(Boolean);
+  const dateFilter = DATE_OPTIONS.find(o => o.days === filters.days) || DATE_OPTIONS[0];
+  const activeFilterCount = (filters.days !== null ? 1 : 0) + statusFilters.length;
 
   // Build active chips
   const chips = [
@@ -504,16 +402,16 @@ export default function BvpsMembers() {
 
   const modalMember = selectedMember
     ? {
-        name: selectedMember.fullName,
-        company: selectedMember.businessInformation?.companyName || "—",
-        profession: selectedMember.businessInformation?.profession || "—",
-        mobile: selectedMember.mobile,
-        email: selectedMember.email,
-        badge: null,
-        status: selectedMember.status || "active",
-        profileImage: selectedMember.profileImage,
-        contactInformation: selectedMember.contactInformation,
-      }
+      name: selectedMember.fullName,
+      company: selectedMember.businessInformation?.companyName || "—",
+      profession: selectedMember.businessInformation?.profession || "—",
+      mobile: selectedMember.mobile,
+      email: selectedMember.email,
+      badge: null,
+      status: selectedMember.status || "active",
+      profileImage: selectedMember.profileImage,
+      contactInformation: selectedMember.contactInformation,
+    }
     : null;
 
   return (
@@ -553,25 +451,25 @@ export default function BvpsMembers() {
 
         <TabBar
           tabs={["All", "New"]}
-          active={activeTab}
+          active={filters.tab}
           onChange={handleTabChange}
           className="mx-4 my-3 sm:mx-6"
         />
 
-        {mobileLoadingMore && mobilePage === 1 ? (
+        {dirLoading && dirPage === 1 ? (
           <div className="flex items-center justify-center py-20 text-stone-400 text-sm">
             Loading members...
           </div>
-        ) : mobileMembers.length === 0 ? (
+        ) : directoryMembers.length === 0 ? (
           <div className="flex items-center justify-center py-20 text-stone-400 text-sm">
             No members found
           </div>
         ) : (
           <>
-            {mobileMembers.map((m) => (
+            {directoryMembers.map((m) => (
               <MemberCard key={m._id} member={m} onClick={handleMemberClick} />
             ))}
-            {mobileHasMore && (
+            {dirHasMore && (
               <div
                 ref={mobileSentinelRef}
                 className="flex items-center justify-center px-4 py-6"
@@ -582,7 +480,7 @@ export default function BvpsMembers() {
                 </div>
               </div>
             )}
-            {!mobileHasMore && mobileMembers.length > ITEMS_PER_PAGE && (
+            {!dirHasMore && directoryMembers.length > ITEMS_PER_PAGE && (
               <div className="flex justify-center px-4 py-5 text-[12px] text-stone-400">
                 You're all caught up
               </div>
@@ -613,11 +511,10 @@ export default function BvpsMembers() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${filters.tab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>
@@ -645,11 +542,10 @@ export default function BvpsMembers() {
                 <button
                   ref={filterBtnRef}
                   onClick={() => setFilterOpen((v) => !v)}
-                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${
-                    activeFilterCount > 0 || filterOpen
+                  className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${activeFilterCount > 0 || filterOpen
                       ? "bg-[#C94621] text-white border-[#C94621]"
                       : "bg-white text-stone-600 border-stone-200 hover:border-[#C94621] hover:text-[#C94621]"
-                  }`}
+                    }`}
                 >
                   <Filter size={13} />
                   <span>Filters</span>
@@ -668,7 +564,7 @@ export default function BvpsMembers() {
                     setStatusFilters={handleSetStatusFilters}
                     onClose={() => setFilterOpen(false)}
                     anchorRef={filterBtnRef}
-                    showJoinedFilter={activeTab === "New"}
+                    showJoinedFilter={filters.tab === "New"}
                   />
                 )}
               </div>
@@ -740,11 +636,11 @@ export default function BvpsMembers() {
 
             {/* Body — only rows scroll vertically */}
             <div className="flex-1 overflow-y-auto min-h-0">
-              {loading ? (
+              {dirLoading ? (
                 <div className="flex items-center justify-center h-full py-16">
                   <div className="w-7 h-7 rounded-full border-[3px] border-[#C94621]/20 border-t-[#C94621] animate-spin" />
                 </div>
-              ) : paginatedMembers.length === 0 ? (
+              ) : directoryMembers.length === 0 ? (
                 <div className="flex items-center justify-center h-full py-16 text-stone-400 text-sm">
                   No members found
                 </div>
@@ -755,7 +651,7 @@ export default function BvpsMembers() {
                 >
                   <TableColgroup />
                   <tbody>
-                    {paginatedMembers.map((member) => (
+                    {directoryMembers.map((member) => (
                       <TableRow
                         key={member._id}
                         member={member}
@@ -769,11 +665,11 @@ export default function BvpsMembers() {
           </div>
 
           <DesktopPagination
-            currentPage={currentPage}
+            currentPage={dirPage}
             totalPages={totalPages}
             onPageChange={handlePageChange}
-            totalItems={totalItems}
-            startIndex={(currentPage - 1) * ITEMS_PER_PAGE}
+            totalItems={dirTotal}
+            startIndex={(dirPage - 1) * ITEMS_PER_PAGE}
             itemsPerPage={ITEMS_PER_PAGE}
             label="members"
           />
