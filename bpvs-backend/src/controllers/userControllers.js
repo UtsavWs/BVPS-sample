@@ -69,7 +69,6 @@ exports.updateProfile = async (req, res) => {
   try {
     const user = req.user;
     const updates = req.body;
-    //console.log("[updateProfile] req.body:", JSON.stringify(updates));
 
     const allowedUpdates = [
       "fullName",
@@ -86,12 +85,16 @@ exports.updateProfile = async (req, res) => {
     const updateData = {};
     allowedUpdates.forEach((field) => {
       if (updates[field] !== undefined) {
+        // Handle nested objects by merging with existing data
         if (
           typeof updates[field] === "object" &&
-          !Array.isArray(updates[field])
+          updates[field] !== null &&
+          !Array.isArray(updates[field]) &&
+          !(updates[field] instanceof Date)
         ) {
+          const existingData = user[field] || {};
           updateData[field] = {
-            ...(user[field]?.toObject ? user[field].toObject() : user[field]),
+            ...(existingData.toObject ? existingData.toObject() : existingData),
             ...updates[field],
           };
         } else {
@@ -106,17 +109,26 @@ exports.updateProfile = async (req, res) => {
       if (
         updateData[field] === "" &&
         user[field] &&
+        typeof user[field] === "string" &&
         user[field].includes("cloudinary.com")
       ) {
         await deleteCloudinaryImage(user[field]);
       }
     }
 
+    // Use findByIdAndUpdate but catch specific validation errors
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       { $set: updateData },
       { new: true, runValidators: true },
     );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
+    }
 
     res.status(200).json({
       success: true,
@@ -142,9 +154,36 @@ exports.updateProfile = async (req, res) => {
     });
   } catch (err) {
     console.error("Profile update error:", err);
+
+    // Handle Mongoose validation errors explicitly
+    if (err.name === "ValidationError") {
+      const messages = Object.values(err.errors).map((e) => e.message);
+      return res.status(400).json({
+        success: false,
+        message: messages.join(", "),
+      });
+    }
+
+    // Handle unique constraint errors (e.g. mobile number already exists)
+    if (err.code === 11000) {
+      const field = Object.keys(err.keyPattern)[0];
+      return res.status(400).json({
+        success: false,
+        message: `This ${field} is already in use by another account.`,
+      });
+    }
+
+    // Handle invalid data types (e.g. invalid date format)
+    if (err.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid format for field: ${err.path}`,
+      });
+    }
+
     res.status(500).json({
       success: false,
-      message: "Server error. Please try again later.",
+      message: "Server error. " + (err.message || "Please try again later."),
     });
   }
 };
