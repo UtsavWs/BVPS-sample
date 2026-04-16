@@ -97,7 +97,8 @@ export default function EditProfile() {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!user) return;
+      // Defensive check: Don't fetch if still loading auth or if user is missing
+      if (loading || !user) return;
       try {
         setIsLoading(true);
         const res = await apiGet("/users/profile");
@@ -112,8 +113,8 @@ export default function EditProfile() {
         setIsLoading(false);
       }
     };
-    if (user) fetchProfileData();
-  }, [user?._id]); // Only refetch if the logged-in user identity changes, not on data updates
+    if (!loading && user) fetchProfileData();
+  }, [user?._id, loading]); // Added loading to dependencies
 
   const set = (field) => (value) => {
     setForm((prev) => ({ ...prev, [field]: value }));

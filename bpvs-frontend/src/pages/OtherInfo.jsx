@@ -60,7 +60,8 @@ export default function OtherInfo() {
   // Fetch saved otherInformation from database
   useEffect(() => {
     const fetchOtherInfo = async () => {
-      if (!user) return;
+      // Defensive check: Don't fetch if still loading auth or if user is missing
+      if (loading || !user) return;
 
       try {
         setIsLoading(true);
@@ -77,10 +78,10 @@ export default function OtherInfo() {
       }
     };
 
-    if (user) {
+    if (!loading && user) {
       fetchOtherInfo();
     }
-  }, [user]);
+  }, [user, loading]); // Added loading to dependencies
 
   const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 

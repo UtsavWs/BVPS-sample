@@ -1,14 +1,19 @@
-import { useContext } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { PROTECTED_PATHS } from "../paths";
 
 export default function AdminRoutes() {
   const { isStaff, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  if (loading) return null;
+  useEffect(() => {
+    if (!loading && !isStaff) {
+      navigate(PROTECTED_PATHS.DASHBOARD, { replace: true });
+    }
+  }, [isStaff, loading, navigate]);
 
-  return isStaff
-    ? <Outlet />
-    : <Navigate to={PROTECTED_PATHS.DASHBOARD} replace />;
+  if (loading || !isStaff) return null;
+
+  return <Outlet />;
 }
