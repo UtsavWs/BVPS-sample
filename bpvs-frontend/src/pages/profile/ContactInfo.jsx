@@ -1,49 +1,45 @@
 import { ArrowLeft } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FabButton from "../components/FabButton";
-import { AuthContext } from "../context/AuthContext";
-import InputFields from "../components/InputFields";
-import { apiGet, apiPut } from "../api/api";
-import LoadingScreen from "../components/LoadingScreen";
+import FabButton from "../../components/FabButton";
+import { AuthContext } from "../../context/AuthContext";
+import InputFields from "../../components/InputFields";
+import { apiGet, apiPut } from "../../api/api";
+import LoadingScreen from "../../components/LoadingScreen";
 
 const INITIAL_DATA = {
-  skill: "",
-  accomplishments: "",
-  interest: "",
-  networkCircle: "",
-  goals: "",
-  keywords: "",
+  email: "",
+  mobileNo: "",
+  website: "",
+  location: "",
+  nativePlace: "",
 };
 
 // Helper to convert backend format to frontend format
-const formatFromBackend = (otherInfo) => {
-  if (!otherInfo) return INITIAL_DATA;
+const formatFromBackend = (user) => {
+  if (!user) return INITIAL_DATA;
   return {
-    skill: otherInfo.skill || "",
-    accomplishments: otherInfo.accomplishments || "",
-    interest: otherInfo.interest || "",
-    networkCircle: otherInfo.networkCircle || "",
-    goals: otherInfo.goals || "",
-    keywords: otherInfo.keywords || "",
+    email: user.email || "",
+    mobileNo: user.mobile || "",
+    website: user.contactInformation?.website || "",
+    location: user.contactInformation?.location || "",
+    nativePlace: user.contactInformation?.nativePlace || "",
   };
 };
 
 // Helper to convert frontend format to backend format
 const formatToBackend = (formData) => {
   return {
-    otherInformation: {
-      skill: formData.skill,
-      accomplishments: formData.accomplishments,
-      interest: formData.interest,
-      networkCircle: formData.networkCircle,
-      goals: formData.goals,
-      keywords: formData.keywords,
+    mobile: formData.mobileNo,
+    contactInformation: {
+      website: formData.website,
+      location: formData.location,
+      nativePlace: formData.nativePlace,
     },
   };
 };
 
-export default function OtherInfo() {
+export default function ContactInfo() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
   const user = auth?.user;
@@ -57,31 +53,30 @@ export default function OtherInfo() {
 
 
 
-  // Fetch saved otherInformation from database
+  // Fetch saved contactInformation from database
   useEffect(() => {
-    const fetchOtherInfo = async () => {
-      // Defensive check: Don't fetch if still loading auth or if user is missing
-      if (loading || !user) return;
+    const fetchContactInfo = async () => {
+      if (!user) return;
 
       try {
         setIsLoading(true);
         const res = await apiGet("/users/profile");
-        if (res.success && res.data.user.otherInformation) {
-          const formatted = formatFromBackend(res.data.user.otherInformation);
+        if (res.success && res.data.user) {
+          const formatted = formatFromBackend(res.data.user);
           setSaved(formatted);
           setForm(formatted);
         }
       } catch (err) {
-        console.error("Failed to fetch other information:", err);
+        console.error("Failed to fetch contact information:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (!loading && user) {
-      fetchOtherInfo();
+    if (user) {
+      fetchContactInfo();
     }
-  }, [user, loading]); // Added loading to dependencies
+  }, [user]);
 
   const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 
@@ -95,10 +90,10 @@ export default function OtherInfo() {
         setSaved({ ...form });
         setIsEditing(false);
       } else {
-        console.error("Failed to save:", res.message);
+        alert(res.message || "Failed to save. Please check your inputs.");
       }
     } catch (err) {
-      console.error("Failed to save other information:", err);
+      console.error("Failed to save contact information:", err);
     } finally {
       setIsSaving(false);
     }
@@ -143,7 +138,7 @@ export default function OtherInfo() {
             <ArrowLeft size={22} strokeWidth={2.2} />
           </button>
           <h1 className="text-base font-semibold text-gray-900 sm:text-lg lg:text-xl">
-            Other Information
+            Contact Information
           </h1>
         </div>
 
@@ -157,51 +152,43 @@ export default function OtherInfo() {
         "
         >
           <InputFields
-            label="Skill"
-            placeholder="Enter Skill"
-            value={isEditing ? form.skill : saved.skill}
+            label="Mobile No"
+            placeholder="Enter Mobile No"
+            value={isEditing ? form.mobileNo : saved.mobileNo}
             isEditing={isEditing}
-            onChange={set("skill")}
+            onChange={set("mobileNo")}
           />
 
           <InputFields
-            label="Accomplishments"
-            placeholder="Enter Accomplishments"
-            value={isEditing ? form.accomplishments : saved.accomplishments}
+            label="Email"
+            placeholder="Enter Email"
+            value={isEditing ? form.email : saved.email}
             isEditing={isEditing}
-            onChange={set("accomplishments")}
+            readOnly={isEditing}
           />
 
           <InputFields
-            label="Interest"
-            placeholder="Enter Interest"
-            value={isEditing ? form.interest : saved.interest}
+            label="Website"
+            placeholder="Enter Website"
+            value={isEditing ? form.website : saved.website}
             isEditing={isEditing}
-            onChange={set("interest")}
+            onChange={set("website")}
           />
 
           <InputFields
-            label="Network/Circle"
-            placeholder="Enter Network/Circle"
-            value={isEditing ? form.networkCircle : saved.networkCircle}
+            label="Location"
+            placeholder="Enter Location"
+            value={isEditing ? form.location : saved.location}
             isEditing={isEditing}
-            onChange={set("networkCircle")}
+            onChange={set("location")}
           />
 
           <InputFields
-            label="Goals"
-            placeholder="Enter Goals"
-            value={isEditing ? form.goals : saved.goals}
+            label="Native Place"
+            placeholder="Enter Native Place"
+            value={isEditing ? form.nativePlace : saved.nativePlace}
             isEditing={isEditing}
-            onChange={set("goals")}
-          />
-
-          <InputFields
-            label="Keywords"
-            placeholder="Enter Keywords"
-            value={isEditing ? form.keywords : saved.keywords}
-            isEditing={isEditing}
-            onChange={set("keywords")}
+            onChange={set("nativePlace")}
           />
 
           {/* Submit — only shown in edit mode */}
@@ -225,13 +212,13 @@ export default function OtherInfo() {
           )}
         </div>
 
-        {/* Desktop FAB — absolute inside card, hidden while editing */}
+        {/* Desktop FAB — absolute inside card */}
         <div className="hidden lg:block absolute bottom-6 right-8">
           <FabButton isEditing={isEditing} onClick={() => setIsEditing(true)} />
         </div>
       </div>
 
-      {/* Mobile / Tablet FAB — fixed to viewport, hidden while editing */}
+      {/* Mobile / Tablet FAB — fixed to viewport */}
       <div className="lg:hidden">
         <FabButton
           isEditing={isEditing}
@@ -242,3 +229,4 @@ export default function OtherInfo() {
     </div>
   );
 }
+

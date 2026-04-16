@@ -69,12 +69,12 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
       />
     </td>
     <td className="py-2.5 px-3 max-w-0 w-[22%]">
-      <div className="flex items-center gap-1.5 min-w-0">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-1.5 min-w-0">
         <p className="text-[13px] font-semibold text-gray-900 truncate">
           {u.fullName}
         </p>
         {u.role === "subadmin" && (
-          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#FEF8F6] text-[#C94621] border border-[#C94621]/30">
+          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-[#FEF8F6] text-[#C94621] border border-[#C94621]/30 w-fit">
             Sub-admin
           </span>
         )}

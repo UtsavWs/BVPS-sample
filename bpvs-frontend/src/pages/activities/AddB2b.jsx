@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { AuthContext } from "../context/AuthContext";
-import { apiGet, apiPost } from "../api/api";
-import InputFields from "../components/InputFields";
-import Dropdown from "../components/Dropdown";
+import { AuthContext } from "../../context/AuthContext";
+import { apiGet, apiPost } from "../../api/api";
+import InputFields from "../../components/InputFields";
+import Dropdown from "../../components/Dropdown";
 
 const INITIATED_BY_OPTIONS = ["My self", "Other Member"];
 const EVENT_MASTER_OPTIONS = [

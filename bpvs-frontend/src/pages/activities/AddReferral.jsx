@@ -1,10 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import InputFields from "../components/InputFields";
-import Dropdown from "../components/Dropdown";
-import { apiGet, apiPost } from "../api/api";
-import { AuthContext } from "../context/AuthContext";
+import InputFields from "../../components/InputFields";
+import Dropdown from "../../components/Dropdown";
+import { apiGet, apiPost } from "../../api/api";
+import { AuthContext } from "../../context/AuthContext";
 
 const REFERENCE_TYPES = ["Inside", "Outside"];
 

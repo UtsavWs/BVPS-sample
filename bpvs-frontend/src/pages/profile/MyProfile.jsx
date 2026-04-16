@@ -1,9 +1,9 @@
 import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ChevronLeft, Pencil, ChevronRight } from "lucide-react";
-import { AuthContext } from "../context/AuthContext";
-import { getProfileImage } from "../components/RoleBadge";
-import LoadingScreen from "../components/LoadingScreen";
+import { AuthContext } from "../../context/AuthContext";
+import { getProfileImage } from "../../components/RoleBadge";
+import LoadingScreen from "../../components/LoadingScreen";
 
 // ── Info nav cards ── //
 const INFO_CARDS = [

@@ -19,21 +19,21 @@ const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 
 const UserDashboard = lazy(() => import("../pages/UserDashboard"));
-const MyProfile = lazy(() => import("../pages/MyProfile"));
-const EditProfile = lazy(() => import("../pages/EditProfile"));
-const ContactInfo = lazy(() => import("../pages/ContactInfo"));
-const BusinessInfo = lazy(() => import("../pages/BusinessInfo"));
-const OtherInfo = lazy(() => import("../pages/OtherInfo"));
+const MyProfile = lazy(() => import("../pages/profile/MyProfile"));
+const EditProfile = lazy(() => import("../pages/profile/EditProfile"));
+const ContactInfo = lazy(() => import("../pages/profile/ContactInfo"));
+const BusinessInfo = lazy(() => import("../pages/profile/BusinessInfo"));
+const OtherInfo = lazy(() => import("../pages/profile/OtherInfo"));
 const Settings = lazy(() => import("../pages/Settings"));
 const BvpsMembers = lazy(() => import("../pages/BvpsMembers"));
 const ActivityLog = lazy(() => import("../pages/ActivityLog"));
 const PendingApproval = lazy(() => import("../pages/PendingApproval"));
 const AboutUs = lazy(() => import("../pages/AboutUs"));
-const AddB2B = lazy(() => import("../pages/AddB2b"));
-const AddVisitor = lazy(() => import("../pages/AddVisitor"));
-const AddReferral = lazy(() => import("../pages/AddReferral"));
-const AddThankYouSlip = lazy(() => import("../pages/AddThankyouSlip"));
-const AddTestimonial = lazy(() => import("../pages/AddTestimonial"));
+const AddB2B = lazy(() => import("../pages/activities/AddB2b"));
+const AddVisitor = lazy(() => import("../pages/activities/AddVisitor"));
+const AddReferral = lazy(() => import("../pages/activities/AddReferral"));
+const AddThankYouSlip = lazy(() => import("../pages/activities/AddThankyouSlip"));
+const AddTestimonial = lazy(() => import("../pages/activities/AddTestimonial"));
 
 const AdminManageMembers = lazy(() => import("../pages/admin/AdminManageMembers"));
 

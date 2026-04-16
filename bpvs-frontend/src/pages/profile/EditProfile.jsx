@@ -1,15 +1,15 @@
 import { ArrowLeft, Camera, Upload, Trash2, ImagePlus } from "lucide-react";
-import FabButton from "../components/FabButton";
+import FabButton from "../../components/FabButton";
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import InputFields from "../components/InputFields";
-import DatePicker from "../components/DatePicker";
-import { apiGet, apiPut } from "../api/api";
-import { formatDateDisplay, parseDateDisplay } from "../utils/dateUtils";
-import { uploadToCloudinary } from "../utils/cloudinary";
-import LoadingScreen from "../components/LoadingScreen";
-import { getProfileImageDisplay, getBannerImageDisplay } from "../components/RoleBadge";
+import { AuthContext } from "../../context/AuthContext";
+import InputFields from "../../components/InputFields";
+import DatePicker from "../../components/DatePicker";
+import { apiGet, apiPut } from "../../api/api";
+import { formatDateDisplay, parseDateDisplay } from "../../utils/dateUtils";
+import { uploadToCloudinary } from "../../utils/cloudinary";
+import LoadingScreen from "../../components/LoadingScreen";
+import { getProfileImageDisplay, getBannerImageDisplay } from "../../components/RoleBadge";
 
 const DEFAULT_BANNER_IMAGE = "/assets/logos/BPVS Logo.svg";
 

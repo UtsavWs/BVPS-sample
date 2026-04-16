@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import InputFields from "../components/InputFields";
-import Dropdown from "../components/Dropdown";
-import { apiPost } from "../api/api";
+import InputFields from "../../components/InputFields";
+import Dropdown from "../../components/Dropdown";
+import { apiPost } from "../../api/api";
 
 const PROFESSION_OPTIONS = [
   "Select Profession",
