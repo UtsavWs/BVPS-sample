@@ -377,7 +377,7 @@ const UserDashboard = () => {
             alt="BPVS"
             className="h-11 object-contain"
           />
-          <button className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center cursor-pointer">
+          <button className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center cursor-pointer" onClick={() => navigate("/activity")}>
             <img
               src="/assets/logos/notification-bing.svg"
               className="w-5 h-5"
@@ -563,7 +563,7 @@ const UserDashboard = () => {
             />
           </div>
           <div className="flex items-center gap-2 lg:gap-3">
-            <button className="relative w-9 h-9 md:w-10 md:h-8 lg:w-11 lg:h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-[#F9EDE8] hover:border-[#D64B2A] transition cursor-pointer">
+            <button className="relative w-9 h-9 md:w-10 md:h-8 lg:w-11 lg:h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-[#F9EDE8] hover:border-[#D64B2A] transition cursor-pointer" onClick={() => navigate("/activity")}>
               <img
                 src="/assets/logos/notification-bing.svg"
                 className="w-5 h-5"
