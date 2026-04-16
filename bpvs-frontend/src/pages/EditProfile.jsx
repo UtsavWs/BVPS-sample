@@ -247,7 +247,7 @@ export default function EditProfile() {
         : false;
 
   if (isLoading) {
-    return <LoadingScreen />;
+    return <LoadingScreen bg="bg-stone-50"/>;
   }
 
   return (
