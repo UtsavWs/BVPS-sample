@@ -19,8 +19,11 @@ export function AuthProvider({ children }) {
   // Token state - holds the authentication token
   const [token, setToken] = useState(null);
 
-  // Loading state - true while checking if user is already logged in
-  const [loading, setLoading] = useState(true);
+  // isInitializing state - true while checking if user is already logged in (app startup)
+  const [isInitializing, setIsInitializing] = useState(true);
+
+  // isProcessing state - true during login, register, etc.
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Error state - holds any error messages
   const [error, setError] = useState(null);
@@ -63,13 +66,13 @@ export function AuthProvider({ children }) {
         localStorage.removeItem(USER_KEY);
       }
     }
-    setLoading(false);
+    setIsInitializing(false);
   };
 
   // Function to login user
   const login = async (email, password) => {
     setError(null);
-    setLoading(true);
+    setIsProcessing(true);
     try {
       const res = await apiPost('/auth/login', { email, password });
 
@@ -97,14 +100,14 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
   // Function to register new user
   const register = async (userData) => {
     setError(null);
-    setLoading(true);
+    setIsProcessing(true);
     try {
       const res = await apiPost('/auth/register', userData);
 
@@ -119,14 +122,14 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
   // Function to verify OTP
   const verifyOtp = async (email, otp) => {
     setError(null);
-    setLoading(true);
+    setIsProcessing(true);
     try {
       const res = await apiPost('/auth/verify-otp', { email, otp });
 
@@ -141,7 +144,7 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
     }
   };
 
@@ -202,7 +205,9 @@ export function AuthProvider({ children }) {
   const value = useMemo(() => ({
     user,
     token,
-    loading,
+    isInitializing,
+    isProcessing,
+    loading: isInitializing, // Keep alias for backward compatibility
     error,
     isAuthenticated: !!token && !!user,
     isAdmin: user?.role === 'admin',
@@ -216,7 +221,7 @@ export function AuthProvider({ children }) {
     logout,
     updateUser,
     clearError: () => setError(null),
-  }), [user, token, loading, error]);
+  }), [user, token, isInitializing, isProcessing, error]);
 
   return (
     <AuthContext.Provider value={value}>

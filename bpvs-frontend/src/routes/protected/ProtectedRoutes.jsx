@@ -4,17 +4,17 @@ import { AuthContext } from "../../context/AuthContext";
 import { PUBLIC_PATHS } from "../paths";
 
 export default function ProtectedRoutes() {
-  const { isAuthenticated, loading } = useContext(AuthContext);
+  const { isAuthenticated, isInitializing } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (!isInitializing && !isAuthenticated) {
       navigate(PUBLIC_PATHS.LOGIN, { state: { from: location }, replace: true });
     }
-  }, [isAuthenticated, loading, location, navigate]);
+  }, [isAuthenticated, isInitializing, location, navigate]);
 
-  if (loading || !isAuthenticated) return null;
+  if (isInitializing || !isAuthenticated) return null;
 
   return <Outlet />;
 }

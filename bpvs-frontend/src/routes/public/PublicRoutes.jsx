@@ -4,16 +4,16 @@ import { AuthContext } from "../../context/AuthContext";
 import { PROTECTED_PATHS } from "../paths";
 
 export default function PublicRoutes() {
-  const { isAuthenticated, loading } = useContext(AuthContext);
+  const { isAuthenticated, isInitializing } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && isAuthenticated) {
+    if (!isInitializing && isAuthenticated) {
       navigate(PROTECTED_PATHS.DASHBOARD, { replace: true });
     }
-  }, [isAuthenticated, loading, navigate]);
+  }, [isAuthenticated, isInitializing, navigate]);
 
-  if (loading || isAuthenticated) return null;
+  if (isInitializing || isAuthenticated) return null;
 
   return <Outlet />;
 }

@@ -8,7 +8,8 @@ export default function OtpVerificationPage() {
   const location = useLocation();
   const auth = useContext(AuthContext);
 
-  const { verifyOtp, resendOtp, user, loading: authLoading } = auth;
+  const { verifyOtp, resendOtp, user, isProcessing } = auth;
+  const authLoading = isProcessing;
 
   const email = location.state?.email || "";
 

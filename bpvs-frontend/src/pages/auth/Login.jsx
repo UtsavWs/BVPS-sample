@@ -10,10 +10,8 @@ export default function Login() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const { login, isAuthenticated, loading: authCheckLoading } = auth;
-  const authLoading = auth?.loading || false;
-
-
+  const { login, isAuthenticated, isInitializing, isProcessing } = auth;
+  const authLoading = isProcessing;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +19,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-const handleLogin = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
@@ -29,27 +27,26 @@ const handleLogin = async (e) => {
       const result = await login(email, password);
       if (result.success) {
         navigate("/dashboard");
-        return;                    // ← exit, don't touch state
+        return;                    
       }
       if (result.status === "inactive") {
         navigate("/pending-approval");
-        return;                    // ← exit, don't touch state
+        return;                    
       }
       if (
         result.message?.includes("verify") ||
         result.message?.includes("Verify")
       ) {
         navigate("/verify-otp", { state: { email } });
-        return;                    // ← exit, don't touch state
+        return;                    
       }
       setError(result.message || "Login failed.");
-      setLoading(false);           // ← only when staying on this page
+      setLoading(false);           
     } catch {
       setError("Network error. Please try again.");
-      setLoading(false);           // ← only when staying on this page
+      setLoading(false);           
     }
-    // NO finally block
-};
+  };
 
 
   const isLoading = loading || authLoading;
@@ -170,7 +167,7 @@ const handleLogin = async (e) => {
                 isLoading ? "opacity-70 cursor-not-allowed" : ""
               }`}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              {isLoading ? "Verifying..." : "Login"}
             </button>
 
             {/* Sign Up Link */}

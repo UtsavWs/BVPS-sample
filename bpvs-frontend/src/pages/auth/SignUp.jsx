@@ -10,8 +10,8 @@ export default function SignUp() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const { register, isAuthenticated, loading: authCheckLoading } = auth;
-  const authLoading = auth?.loading || false;
+  const { register, isAuthenticated, isProcessing } = auth;
+  const authLoading = isProcessing;
 
 
 
