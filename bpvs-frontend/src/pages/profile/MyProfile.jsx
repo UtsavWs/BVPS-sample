@@ -1,6 +1,6 @@
 import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft, Pencil, ChevronRight } from "lucide-react";
+import { ArrowLeft, ChevronRight } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { getProfileImage } from "../../components/RoleBadge";
 import LoadingScreen from "../../components/LoadingScreen";
@@ -59,7 +59,7 @@ export default function MyProfile() {
             onClick={() => navigate(-1)}
             className="p-1.5 rounded-full hover:bg-stone-100 text-[#1B3A5C] text-xl"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
           <h1 className="flex-1 text-center text-lg font-bold text-slate-800 pr-9">
             My Profile
@@ -146,29 +146,12 @@ export default function MyProfile() {
               onClick={() => navigate(-1)}
               className="p-2 rounded-xl hover:bg-[#F9EDE8] transition cursor-pointer border-none bg-transparent text-gray-700"
             >
-              <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
+              <ArrowLeft className="w-5 h-5 lg:w-6 lg:h-6" />
             </button>
             <span className="text-base lg:text-lg font-bold text-gray-900">
               My Profile
             </span>
           </div>
-
-          {/* Right: edit profile button
-          <button
-            onClick={() => navigate("/edit-profile")}
-            className="
-              flex items-center gap-2
-              px-4 py-2 lg:px-5 lg:py-2.5
-              rounded-xl bg-[#F9EDE8] text-[#D64B2A]
-              border border-[#D64B2A]/20
-              text-sm lg:text-base font-semibold
-              hover:bg-[#D64B2A] hover:text-white
-              transition-all cursor-pointer
-            "
-          >
-            <Pencil className="w-4 h-4 lg:w-5 lg:h-5" />
-            Edit Profile
-          </button> */}
         </header>
 
         {/* ── Scrollable main — same padding rhythm as UserDashboard ── */}

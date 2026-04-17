@@ -1,10 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
 import bpvsLogo from "/assets/logos/BPVS Logo.svg";
 import loginIllustration from "/assets/images/Powerful-pana 1.svg";
 import { AuthContext } from "../../context/AuthContext";
 import AuthInput from "../../components/AuthInput";
+import { ArrowLeft } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ export default function Login() {
               onClick={() => navigate(-1)}
               className="flex items-center gap-1 text-gray-500 hover:text-[#C1512D] text-sm font-medium w-fit transition-colors"
             >
-              <ChevronLeft size={20} strokeWidth={2} />
+              <ArrowLeft size={20} strokeWidth={2} />
             </button>
           </div>
 

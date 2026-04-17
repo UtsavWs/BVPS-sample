@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import bpvsLogo from "/assets/logos/BPVS Logo.svg";
 import teamIllustration from "/assets/images/unity.jpg";
 import { AuthContext } from "../../context/AuthContext";
@@ -81,7 +81,7 @@ export default function SignUp() {
               onClick={() => navigate(-1)}
               className="flex items-center gap-1 text-gray-500 hover:text-[#C1512D] text-sm font-medium w-fit transition-colors"
             >
-              <ChevronLeft size={20} strokeWidth={2} />
+               <ArrowLeft size={20} strokeWidth={2} />
             </button>
           </div>
 

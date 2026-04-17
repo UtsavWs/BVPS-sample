@@ -1,10 +1,4 @@
 // Email templates matching the BPVS web app design system:
-//   Primary rust/orange: #C94621   Navy heading: #1B3A5C
-//   Cream surface: #FEF8F6          Warm bg: #F9EDE8
-//   Soft rounded (rounded-xl), generous padding, friendly tone.
-//
-// Deliverability notes: table-based layout, inline CSS, modest styling.
-// System-font stack used (Montserrat isn't available in most mail clients).
 const BRAND = {
   primary: "#C94621",
   primaryDark: "#A8432A",
@@ -127,21 +121,7 @@ const approvalEmailHtml = (fullName = "User") => {
         <p style="margin:0 0 20px 0;font-size:15px;line-height:1.7;color:${BRAND.text};font-family:${BRAND.font};text-align:left;">
           Great news — an admin has reviewed and <strong style="color:${BRAND.primary};">approved</strong> your BPVS account. You can now log in and start connecting with the community.
         </p>
-
-        <!-- FIX 1: Button centered via align="center" on the outer td -->
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px auto 28px auto;" align="center">
-          <tr>
-            <td align="center" style="background-color:${BRAND.primary};border-radius:12px;">
-              <a href="${loginUrl}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;font-family:${BRAND.font};letter-spacing:0.3px;">
-                Log in to BPVS
-              </a>
-            </td>
-          </tr>
-        </table>
-
-        <!-- FIX 2: "Having trouble with the button?" section removed -->
-
-        <!-- FIX 3: Closing text centered -->
+        
         <p style="margin:0 0 6px 0;font-size:14px;line-height:1.6;color:${BRAND.text};font-family:${BRAND.font};text-align:center;">
           We're glad to have you on board.
         </p>

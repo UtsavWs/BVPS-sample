@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import bpvsLogo from "/assets/logos/BPVS Logo.svg";
@@ -206,7 +206,7 @@ export default function ForgotPassword() {
               }
               className="flex items-center gap-1 text-gray-500 hover:text-[#C1512D] text-sm font-medium w-fit transition-colors"
             >
-              <ChevronLeft size={20} strokeWidth={2} />
+               <ArrowLeft size={20} strokeWidth={2} />
             </button>
           </div>
 
