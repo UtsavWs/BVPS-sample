@@ -24,9 +24,8 @@ const setOtp = async (user, action, email) => {
   };
   await user.save();
 
-  // Putting the OTP in the subject is what banks/large apps do — Gmail treats
-  // these as transactional and is far less likely to spam-filter them.
-  const subject = `${otp} is your BPVS verification code`;
+  // Transactional email subject line.
+  const subject = `BPVS Account Verification Code`;
   try {
     await sendEmail({
       to: email,
