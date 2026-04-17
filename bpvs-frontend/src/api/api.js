@@ -1,9 +1,9 @@
 /**
  * Centralized API helper.
- * All requests go to API_URL (set in .env).
+ * All requests go to VITE_API_URL (set in .env).
  */
 
-const BASE_URL = import.meta.env.API_URL || 'http://localhost:5000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * Get stored token
