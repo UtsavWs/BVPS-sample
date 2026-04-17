@@ -1,8 +1,9 @@
-import { User, Users, Settings, LogOut, Shield } from "lucide-react";
+import { memo } from "react";
+import { User, Users, Settings, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getProfileImage } from "./RoleBadge";
 
-const MenuItem = ({ icon, label, active = false }) => (
+const MenuItem = memo(({ icon, label, active = false }) => (
   <button
     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${
       active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
@@ -11,12 +12,11 @@ const MenuItem = ({ icon, label, active = false }) => (
     <span className={active ? "text-[#D64B2A]" : "text-gray-500"}>{icon}</span>
     <span className="text-sm font-medium">{label}</span>
   </button>
-);
+));
 
-// Alias for backward compatibility
-const Menu = MenuItem;
+MenuItem.displayName = "MenuItem";
 
-const ProfileDrawer = ({ onClose, onLogout, user, isApproved = true, isAdmin = false }) => {
+const ProfileDrawer = memo(({ onClose, onLogout, user, isApproved = true, isAdmin = false }) => {
   return (
     <>
       <div className="flex flex-col w-75 md:w-80 h-full bg-white">
@@ -60,7 +60,7 @@ const ProfileDrawer = ({ onClose, onLogout, user, isApproved = true, isAdmin = f
         {/* Menu Items */}
         <nav className="px-3 flex flex-col gap-0.5">
           <Link to="/my-profile">
-            <Menu icon={<User size={18} />} label="My Profile" active />
+            <MenuItem icon={<User size={18} />} label="My Profile" active />
           </Link>
           {isApproved && (
             <Link to="/members">
@@ -103,6 +103,9 @@ const ProfileDrawer = ({ onClose, onLogout, user, isApproved = true, isAdmin = f
       </div>
     </>
   );
-};
+});
+
+ProfileDrawer.displayName = "ProfileDrawer";
 
 export default ProfileDrawer;
+

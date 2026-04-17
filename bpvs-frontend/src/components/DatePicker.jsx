@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   MONTHS_FULL as MONTHS,
@@ -14,7 +14,7 @@ import {
  *  mode="single" → onConfirm(formattedString)
  *  mode="range"  → onConfirm({ start, end })
  */
-function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
+const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 }) => {
   const today = new Date();
   const isRange = mode === "range";
 
@@ -304,6 +304,8 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
       </div>
     </>
   );
-}
+});
+
+DatePicker.displayName = "DatePicker";
 
 export default DatePicker;
