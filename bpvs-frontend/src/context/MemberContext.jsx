@@ -1,6 +1,8 @@
 import { createContext, useState, useEffect, useContext, useCallback } from "react";
 import { apiGet } from "../api/api";
 import { AuthContext } from "./AuthContext";
+import { useDebounce } from "../hooks/useDebounce";
+
 
 export const MemberContext = createContext();
 
@@ -28,6 +30,9 @@ export const MemberProvider = ({ children }) => {
     days: null,
     status: "",
   });
+
+  const debouncedSearch = useDebounce(searchQuery, 400);
+  const debouncedFilters = useDebounce(filters, 300);
 
   /**
    * Fetch members from API with optional filters
@@ -70,7 +75,7 @@ export const MemberProvider = ({ children }) => {
       setLoading(true);
 
       // 1. Handle Dropdown Cache (always active members, no search)
-      if (!searchQuery && filters.tab === "All" && !filters.days && !filters.status) {
+      if (!debouncedSearch && debouncedFilters.tab === "All" && !debouncedFilters.days && !debouncedFilters.status) {
         if (cachedMembers.length === 0) {
           const data = await fetchFromApi(1);
           if (data) {
@@ -83,7 +88,7 @@ export const MemberProvider = ({ children }) => {
 
       // 2. Handle Directory (refresh on any filter change)
       setDirLoading(true);
-      const dirData = await fetchFromApi(1, searchQuery, filters);
+      const dirData = await fetchFromApi(1, debouncedSearch, debouncedFilters);
       if (dirData) {
         setDirectoryMembers(dirData.members);
         setDirTotal(dirData.total);
@@ -95,7 +100,7 @@ export const MemberProvider = ({ children }) => {
     };
 
     loadInitial();
-  }, [user, searchQuery, filters, fetchFromApi]);
+  }, [user, debouncedSearch, debouncedFilters, fetchFromApi]);
 
   /**
    * Load More (Incremental) - Primarily for Dropdowns and Mobile Directory
@@ -104,7 +109,7 @@ export const MemberProvider = ({ children }) => {
     if (loadingMore || loading) return;
     setLoadingMore(true);
 
-    const isDropdownOnly = !searchQuery && filters.tab === "All" && !filters.days && !filters.status;
+    const isDropdownOnly = !debouncedSearch && debouncedFilters.tab === "All" && !debouncedFilters.days && !debouncedFilters.status;
 
     if (isDropdownOnly) {
       if (!cachedHasMore) {
@@ -125,7 +130,7 @@ export const MemberProvider = ({ children }) => {
         return;
       }
       const next = dirPage + 1;
-      const data = await fetchFromApi(next, searchQuery, filters);
+      const data = await fetchFromApi(next, debouncedSearch, debouncedFilters);
       if (data) {
         setDirectoryMembers(prev => [...prev, ...data.members]);
         setDirPage(next);
@@ -140,7 +145,7 @@ export const MemberProvider = ({ children }) => {
    */
   const fetchPage = async (pageNum) => {
     setDirLoading(true);
-    const data = await fetchFromApi(pageNum, searchQuery, filters);
+    const data = await fetchFromApi(pageNum, debouncedSearch, debouncedFilters);
     if (data) {
       setDirectoryMembers(data.members);
       setDirPage(pageNum);
@@ -154,11 +159,11 @@ export const MemberProvider = ({ children }) => {
     <MemberContext.Provider
       value={{
         // For Dropdowns
-        members: searchQuery ? directoryMembers : cachedMembers,
+        members: debouncedSearch ? directoryMembers : cachedMembers,
         loading,
         loadingMore,
         loadMore,
-        hasMore: searchQuery ? dirHasMore : cachedHasMore,
+        hasMore: debouncedSearch ? dirHasMore : cachedHasMore,
         setSearchQuery,
         searchQuery,
 
