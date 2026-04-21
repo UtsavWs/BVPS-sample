@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import onboardingData from '../../static-data/onboardingData.json';
-import { AuthContext } from '../../context/AuthContext';
-
+import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import onboardingData from "../../static-data/onboardingData.json";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function Onboarding() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -11,7 +10,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
-      navigate('/dashboard', { replace: true });
+      navigate("/dashboard", { replace: true });
     }
   }, [isAuthenticated, loading, navigate]);
 
@@ -19,7 +18,7 @@ export default function Onboarding() {
     if (currentStep < onboardingData.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -34,7 +33,6 @@ export default function Onboarding() {
     <div className="flex items-center justify-center h-screen bg-white md:bg-gray-50 font-sans overflow-hidden">
       {/* Card wrapper — full screen on mobile, centered card on tablet/desktop */}
       <div className="flex flex-col items-center w-full h-full md:h-[90vh] md:max-w-lg lg:max-w-xl md:bg-white md:rounded-3xl md:shadow-xl px-4 py-3 sm:px-6 sm:py-5 md:px-8 md:py-4 lg:px-14 lg:py-8">
-
         {/* Top Header / Back Button */}
         <div className="w-full flex justify-start shrink-0 h-7 md:h-9">
           {currentStep > 0 && (
@@ -53,11 +51,11 @@ export default function Onboarding() {
             src={data.image}
             alt="Onboarding"
             className="w-44 h-44 sm:w-52 sm:h-52 md:max-h-[25vh] md:w-auto md:h-auto mb-4 sm:mb-5 md:mb-3 object-contain shrink-0"
-            style={{ maxHeight: 'min(25vh, 220px)' }}
+            style={{ maxHeight: "min(25vh, 220px)" }}
           />
 
           <h1 className="text-xl sm:text-2xl md:text-2xl lg:text-4xl font-bold text-[#1B3A5C] leading-tight shrink-0">
-            {data.title}{' '}
+            {data.title}{" "}
             <span className="text-[#C1512D]">{data.highlight}</span>
           </h1>
 
@@ -70,7 +68,7 @@ export default function Onboarding() {
             {onboardingData.map((_, index) => (
               <div
                 key={index}
-                className={`h-2 rounded-full transition-all duration-300 ${index === currentStep ? 'w-8 bg-[#C1512D]' : 'w-2 bg-gray-300'}`}
+                className={`h-2 rounded-full transition-all duration-300 ${index === currentStep ? "w-8 bg-[#C1512D]" : "w-2 bg-gray-300"}`}
               />
             ))}
           </div>

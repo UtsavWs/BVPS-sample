@@ -1,11 +1,12 @@
 import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import InputFields from "../../components/InputFields";
-import Dropdown from "../../components/Dropdown";
+
 import { apiPost } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
 import { ArrowLeft } from "lucide-react";
+import Dropdown from "../../components/forms/Dropdown";
+import InputFields from "../../components/forms/InputFields";
 
 const REFERENCE_TYPES = ["Inside", "Outside"];
 
@@ -31,12 +32,12 @@ const INITIAL = {
 const AddReferral = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const { 
-    members: rawMembers, 
-    loadMore, 
-    loadingMore, 
-    hasMore, 
-    setSearchQuery 
+  const {
+    members: rawMembers,
+    loadMore,
+    loadingMore,
+    hasMore,
+    setSearchQuery,
   } = useContext(MemberContext);
 
   const [form, setForm] = useState(INITIAL);
@@ -81,7 +82,7 @@ const AddReferral = () => {
     setSubmitting(true);
     try {
       const selectedMember = filteredMembers.find(
-        (m) => m.fullName === form.memberName
+        (m) => m.fullName === form.memberName,
       );
       const payload = {
         ...form,

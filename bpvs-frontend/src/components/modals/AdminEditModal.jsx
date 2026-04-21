@@ -11,7 +11,12 @@ const ROLE_OPTIONS = [
   { value: "subadmin", label: "Sub-admin" },
 ];
 
-export default function AdminEditModal({ user, onClose, onSave, canManageRole = false }) {
+export default function AdminEditModal({
+  user,
+  onClose,
+  onSave,
+  canManageRole = false,
+}) {
   const [email, setEmail] = useState(user.email || "");
   const [mobile, setMobile] = useState(user.mobile || "");
   const [status, setStatus] = useState(user.status || "active");
@@ -71,7 +76,9 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
         <div className="px-5 py-4 flex flex-col gap-4">
           {/* Name (read-only) */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Name</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Name
+            </label>
             <input
               type="text"
               value={user.fullName || ""}
@@ -82,7 +89,9 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
 
           {/* Email */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Email</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -93,7 +102,9 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
 
           {/* Mobile */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Mobile</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Mobile
+            </label>
             <input
               type="tel"
               value={mobile}
@@ -104,7 +115,9 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
 
           {/* Status */}
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5">Status</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Status
+            </label>
             <div className="flex gap-2">
               {STATUS_OPTIONS.map((opt) => (
                 <button
@@ -128,7 +141,9 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
           {/* Role (admin-only) */}
           {canManageRole && user.role !== "admin" && (
             <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">Role</label>
+              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+                Role
+              </label>
               <div className="flex gap-2">
                 {ROLE_OPTIONS.map((opt) => (
                   <button
@@ -148,9 +163,7 @@ export default function AdminEditModal({ user, onClose, onSave, canManageRole = 
             </div>
           )}
 
-          {error && (
-            <p className="text-xs text-red-500 font-medium">{error}</p>
-          )}
+          {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
         </div>
 
         {/* Actions */}

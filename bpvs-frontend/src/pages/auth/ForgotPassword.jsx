@@ -1,10 +1,10 @@
 import { ArrowLeft } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import bpvsLogo from "/assets/logos/bvps-logo.svg";
 import securityIllustration from "/assets/images/Team spirit-pana 1.svg";
 import { apiPost } from "../../api/api";
-import AuthInput from "../../components/AuthInput";
+import AuthInput from "../../components/forms/AuthInput";
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -206,7 +206,7 @@ export default function ForgotPassword() {
               }
               className="flex items-center gap-1 text-gray-500 hover:text-[#C1512D] text-sm font-medium w-fit transition-colors"
             >
-               <ArrowLeft size={20} strokeWidth={2} />
+              <ArrowLeft size={20} strokeWidth={2} />
             </button>
           </div>
 
@@ -231,7 +231,6 @@ export default function ForgotPassword() {
                   code.
                 </p>
               </div>
-
               <div className="flex flex-col gap-5">
                 <AuthInput
                   label="Email"
@@ -307,7 +306,7 @@ export default function ForgotPassword() {
                                        : "border-gray-300 bg-white text-gray-900"
                                  }
                                  focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D]`}
-                             />
+                    />
                   ))}
                 </div>
                 {error && (
@@ -374,9 +373,7 @@ export default function ForgotPassword() {
                   value={confirmPassword}
                   placeholder="Confirm New Password"
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && handlePasswordSubmit()
-                  }
+                  onKeyDown={(e) => e.key === "Enter" && handlePasswordSubmit()}
                 />
                 {error && (
                   <p className="text-red-500 text-sm font-medium -mt-2">

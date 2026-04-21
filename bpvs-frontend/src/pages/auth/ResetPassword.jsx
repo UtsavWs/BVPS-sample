@@ -1,9 +1,10 @@
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { apiPut } from "../../api/api";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/ui/LoadingScreen";
+import AuthInput from "../../components/forms/AuthInput";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -11,19 +12,19 @@ export default function ResetPassword() {
 
   const [form, setForm] = useState({
     currentPassword: "",
-    newPassword:     "",
+    newPassword: "",
     confirmPassword: "",
   });
 
   const [show, setShow] = useState({
     currentPassword: false,
-    newPassword:     false,
+    newPassword: false,
     confirmPassword: false,
   });
 
-  const [error,   setError]   = useState("");
+  const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [saving,  setSaving]  = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -38,7 +39,7 @@ export default function ResetPassword() {
     setShow((prev) => ({ ...prev, [key]: !prev[key] }));
 
   const handleUpdate = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     setError("");
     setSuccess("");
 
@@ -47,7 +48,7 @@ export default function ResetPassword() {
       return;
     }
     if (form.newPassword.length < 6) {
-      setError("New password must be at least 6 characters.");
+      setError("New password must be at least 8 characters.");
       return;
     }
     if (form.newPassword !== form.confirmPassword) {
@@ -63,7 +64,7 @@ export default function ResetPassword() {
       setSaving(true);
       const res = await apiPut("/users/change-password", {
         currentPassword: form.currentPassword,
-        newPassword:     form.newPassword,
+        newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       });
 
@@ -82,9 +83,7 @@ export default function ResetPassword() {
   };
 
   if (loading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
 
   if (!user) return null;
@@ -100,7 +99,8 @@ export default function ResetPassword() {
         "
       >
         {/* ── Sticky Header ── */}
-        <div className="
+        <div
+          className="
           sticky top-0 z-10 bg-white border-b border-gray-100
           flex items-center justify-center
           px-4 py-4
@@ -108,7 +108,8 @@ export default function ResetPassword() {
           md:px-10 md:py-6
           lg:px-10 lg:py-6
           md:rounded-t-2xl lg:rounded-t-2xl
-        ">
+        "
+        >
           <button
             onClick={() => navigate(-1)}
             className="absolute left-4 sm:left-8 lg:left-10 p-1 text-gray-900 hover:text-[#C94621] transition-colors"
@@ -128,54 +129,28 @@ export default function ResetPassword() {
           sm:px-8 sm:pt-7 sm:gap-5
           md:px-10 md:pt-8 md:gap-6
           lg:px-10 lg:pt-8 lg:gap-6
-        ">
-
+        "
+        >
           {/* ── Current Password + Forgot Password link ── */}
           <div className="flex flex-col gap-1.5">
+            <AuthInput
+              label="Current Password"
+              type="password"
+              required
+              placeholder="Enter Password"
+              value={form.currentPassword}
+              onChange={set("currentPassword")}
+              autoComplete="current-password"
+              show={show.currentPassword}
+              onToggle={() => toggleShow("currentPassword")}
+            />
 
-            {/* Label */}
-            <label className="text-sm font-medium text-gray-800 sm:text-[15px]">
-              Current Password
-              <span className="text-[#C94621] ml-0.5">*</span>
-            </label>
-
-            {/* Input */}
-            <div className="relative">
-              <input
-                type={show.currentPassword ? "text" : "password"}
-                value={form.currentPassword}
-                onChange={set("currentPassword")}
-                autoComplete="current-password"
-                placeholder="Enter Password"
-                className="
-                  w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white
-                  text-sm text-gray-800 placeholder:text-gray-400
-                  focus:outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10
-                  transition-all duration-150
-                  sm:text-[15px] sm:py-4
-                  lg:text-base lg:py-4
-                "
-              />
-              <button
-                type="button"
-                onClick={() => toggleShow("currentPassword")}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                {show.currentPassword
-                  ? <EyeOff size={18} strokeWidth={1.8} />
-                  : <Eye    size={18} strokeWidth={1.8} />
-                }
-              </button>
-            </div>
-
-            {/* Forgot Password — right-aligned below the input, matching Figma */}
             <div className="flex justify-end">
               <button
                 type="button"
                 onClick={() => navigate("/forgot-password")}
                 className="
-                  text-xs font-semibold text-gray-500
-                  hover:text-[#C94621] transition-colors
+                  text-xs font-semibold text-[#C94621] transition-colors hover:underline
                   sm:text-sm
                 "
               >
@@ -185,27 +160,29 @@ export default function ResetPassword() {
           </div>
 
           {/* ── New Password ── */}
-          <PasswordField
+          <AuthInput
             label="New Password"
+            type="password"
             required
             placeholder="Enter Password"
             value={form.newPassword}
             onChange={set("newPassword")}
+            autoComplete="new-password"
             show={show.newPassword}
             onToggle={() => toggleShow("newPassword")}
-            autoComplete="new-password"
           />
 
           {/* ── Confirm Password ── */}
-          <PasswordField
+          <AuthInput
             label="Confirm Password"
+            type="password"
             required
             placeholder="Enter Password"
             value={form.confirmPassword}
             onChange={set("confirmPassword")}
+            autoComplete="new-password"
             show={show.confirmPassword}
             onToggle={() => toggleShow("confirmPassword")}
-            autoComplete="new-password"
           />
 
           {/* Error / Success */}
@@ -213,7 +190,9 @@ export default function ResetPassword() {
             <p className="text-sm text-red-500 font-medium -mt-1">{error}</p>
           )}
           {success && (
-            <p className="text-sm text-green-600 font-medium -mt-1">{success}</p>
+            <p className="text-sm text-green-600 font-medium -mt-1">
+              {success}
+            </p>
           )}
 
           {/* Update Button */}
@@ -232,47 +211,7 @@ export default function ResetPassword() {
           >
             {saving ? "Updating..." : "Update"}
           </button>
-
         </form>
-      </div>
-    </div>
-  );
-}
-
-// ── Reusable Password Field (New Password + Confirm Password) ─────────────────
-function PasswordField({ label, required, placeholder, value, onChange, show, onToggle, autoComplete }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-800 sm:text-[15px]">
-        {label}
-        {required && <span className="text-[#C94621] ml-0.5">*</span>}
-      </label>
-      <div className="relative">
-        <input
-          type={show ? "text" : "password"}
-          value={value}
-          onChange={onChange}
-          autoComplete={autoComplete}
-          placeholder={placeholder}
-          className="
-            w-full px-4 py-3.5 pr-12 rounded-xl border border-gray-200 bg-white
-            text-sm text-gray-800 placeholder:text-gray-400
-            focus:outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10
-            transition-all duration-150
-            sm:text-[15px] sm:py-4
-            lg:text-base lg:py-4
-          "
-        />
-        <button
-          type="button"
-          onClick={onToggle}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          {show
-            ? <EyeOff size={18} strokeWidth={1.8} />
-            : <Eye    size={18} strokeWidth={1.8} />
-          }
-        </button>
       </div>
     </div>
   );

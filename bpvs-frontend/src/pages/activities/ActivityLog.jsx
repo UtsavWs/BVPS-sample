@@ -1,10 +1,10 @@
 import { useState, useEffect, useContext, useRef, memo } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
-import TabBar from "../components/TabBar";
-import DesktopPagination from "../components/DesktopPagination";
+import TabBar from "../../components/ui/TabBar";
+import DesktopPagination from "../../components/ui/DesktopPagination";
 import { useNavigate } from "react-router-dom";
-import { apiGet } from "../api/api";
-import { AuthContext } from "../context/AuthContext";
+import { apiGet } from "../../api/api";
+import { AuthContext } from "../../context/AuthContext";
 
 const ITEMS_PER_PAGE = 20;
 const MOBILE_BATCH_SIZE = 8;
@@ -207,9 +207,7 @@ export default function ActivityLog() {
 
         // Merge and sort by date descending
         const sortByDate = (a, b) => new Date(b.rawDate) - new Date(a.rawDate);
-        setGivenLogs(
-          [...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate),
-        );
+        setGivenLogs([...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate));
         setReceivedLogs(
           [...slipReceived, ...refReceived, ...b2bReceived].sort(sortByDate),
         );

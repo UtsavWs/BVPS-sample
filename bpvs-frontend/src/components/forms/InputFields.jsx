@@ -85,7 +85,11 @@ const InputFields = ({
           ${textarea ? "min-h-27.5 sm:min-h-30 lg:min-h-32.5" : ""}
         `}
       >
-        {value ? <span className="text-gray-800">{value}</span> : <span className="text-gray-300">{placeholder}</span>}
+        {value ? (
+          <span className="text-gray-800">{value}</span>
+        ) : (
+          <span className="text-gray-300">{placeholder}</span>
+        )}
       </div>
     </div>
   );

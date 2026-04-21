@@ -7,8 +7,8 @@ export const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
 export const getBannerImageDisplay = (bannerImage) => {
   if (!bannerImage) return DEFAULT_PROFILE_IMAGE;
   if (
-    bannerImage === "/assets/BPVS Logo.svg" ||
-    bannerImage === "BPVS Logo.svg"
+    bannerImage === "/assets/logos/bvps-logo.svg" ||
+    bannerImage === "bvps-logo.svg"
   )
     return DEFAULT_PROFILE_IMAGE;
   return bannerImage;

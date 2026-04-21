@@ -4,8 +4,8 @@ import { ArrowLeft } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
 import { apiPost } from "../../api/api";
-import InputFields from "../../components/InputFields";
-import Dropdown from "../../components/Dropdown";
+import Dropdown from "../../components/forms/Dropdown";
+import InputFields from "../../components/forms/InputFields";
 
 const INITIATED_BY_OPTIONS = ["My self", "Other Member"];
 const EVENT_MASTER_OPTIONS = [
@@ -20,12 +20,12 @@ const EVENT_MASTER_OPTIONS = [
 const AddB2B = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const { 
-    members: rawMembers, 
-    loadMore, 
-    loadingMore, 
-    hasMore, 
-    setSearchQuery 
+  const {
+    members: rawMembers,
+    loadMore,
+    loadingMore,
+    hasMore,
+    setSearchQuery,
   } = useContext(MemberContext);
 
   // Filter out the current user and build dropdown options

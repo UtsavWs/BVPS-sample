@@ -7,20 +7,29 @@ import {
   formatSel,
   compareSel,
   getCalendarGrid,
-} from "../utils/dateUtils";
+} from "../../utils/dateUtils";
 
 /**
  * Unified date picker.
  *  mode="single" → onConfirm(formattedString)
  *  mode="range"  → onConfirm({ start, end })
  */
-const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 }) => {
+function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
   const today = new Date();
+  const todayY = today.getFullYear();
+  const todayM = today.getMonth();
+  const todayD = today.getDate();
   const isRange = mode === "range";
 
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [view, setView] = useState("date"); // "date" | "monthYear"
+
+  const isFuture = (d) =>
+    year > todayY ||
+    (year === todayY && month > todayM) ||
+    (year === todayY && month === todayM && d > todayD);
+  const atCurrentMonth = year === todayY && month === todayM;
 
   // Single-mode selection
   const [selected, setSelected] = useState(null);
@@ -29,6 +38,7 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
   const [endSel, setEndSel] = useState(null);
 
   const changeMonth = (dir) => {
+    if (dir > 0 && atCurrentMonth) return;
     setMonth((prev) => {
       const next = prev + dir;
       if (next > 11) {
@@ -45,14 +55,13 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
 
   const { firstDay, daysInMonth, daysInPrev, remainder } = getCalendarGrid(
     year,
-    month
+    month,
   );
 
   const yearOptions = useMemo(() => {
     const currentYear = new Date().getFullYear();
-    const half = Math.floor(yearRange * 0.75);
     return Array.from({ length: yearRange }, (_, i) => {
-      const y = currentYear - half + i;
+      const y = currentYear - (yearRange - 1) + i;
       return (
         <option key={y} value={y}>
           {y}
@@ -82,6 +91,7 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
   };
 
   const handleDayClick = (d) => {
+    if (isFuture(d)) return;
     if (!isRange) {
       setSelected({ d, m: month, y: year });
       return;
@@ -100,22 +110,32 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
 
   const getDayClass = (d) => {
     const base =
-      "aspect-square flex items-center justify-center text-[13px] transition cursor-pointer border-none ";
+      "aspect-square flex items-center justify-center text-[13px] transition border-none ";
+    if (isFuture(d)) {
+      return (
+        base + "rounded-full text-gray-300 cursor-not-allowed bg-transparent"
+      );
+    }
+    const b = base + "cursor-pointer ";
     if (isRange) {
       const start = isStart(d);
       const end = isEnd(d);
-      if (start && end) return base + "rounded-full bg-[#D64B2A] text-white font-semibold";
-      if (start) return base + "rounded-l-full bg-[#D64B2A] text-white font-semibold";
-      if (end) return base + "rounded-r-full bg-[#D64B2A] text-white font-semibold";
-      if (inRange(d)) return base + "bg-[#F9EDE8] text-[#D64B2A] rounded-none";
+      if (start && end)
+        return b + "rounded-full bg-[#D64B2A] text-white font-semibold";
+      if (start)
+        return b + "rounded-l-full bg-[#D64B2A] text-white font-semibold";
+      if (end)
+        return b + "rounded-r-full bg-[#D64B2A] text-white font-semibold";
+      if (inRange(d)) return b + "bg-[#F9EDE8] text-[#D64B2A] rounded-none";
       if (isToday(d))
-        return base + "rounded-full text-[#D64B2A] font-semibold bg-transparent";
-      return base + "rounded-full text-gray-700 hover:bg-gray-100 bg-transparent";
+        return b + "rounded-full text-[#D64B2A] font-semibold bg-transparent";
+      return b + "rounded-full text-gray-700 hover:bg-gray-100 bg-transparent";
     }
     // single
-    if (isSel(d)) return base + "rounded-full bg-[#D64B2A] text-white font-semibold";
-    if (isToday(d)) return base + "rounded-full text-[#D64B2A] font-semibold";
-    return base + "rounded-full text-gray-700 hover:bg-gray-100";
+    if (isSel(d))
+      return b + "rounded-full bg-[#D64B2A] text-white font-semibold";
+    if (isToday(d)) return b + "rounded-full text-[#D64B2A] font-semibold";
+    return b + "rounded-full text-gray-700 hover:bg-gray-100";
   };
 
   const confirm = () => {
@@ -149,7 +169,8 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
         </button>
         <button
           onClick={() => changeMonth(1)}
-          className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition cursor-pointer border-none"
+          disabled={atCurrentMonth}
+          className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition cursor-pointer border-none disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gray-100"
         >
           <ArrowLeft size={14} strokeWidth={2.5} className="rotate-180" />
         </button>
@@ -187,28 +208,38 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
     <div className="mb-4">
       <select
         value={year}
-        onChange={(e) => setYear(Number(e.target.value))}
+        onChange={(e) => {
+          const y = Number(e.target.value);
+          setYear(y);
+          if (y === todayY && month > todayM) setMonth(todayM);
+        }}
         className="w-full mb-3 border rounded-lg px-3 py-2 text-sm"
       >
         {yearOptions}
       </select>
       <div className="grid grid-cols-3 gap-2">
-        {MONTHS.map((m, i) => (
-          <button
-            key={m}
-            onClick={() => {
-              setMonth(i);
-              setView("date");
-            }}
-            className={`py-2 rounded-lg text-sm cursor-pointer border-none ${
-              month === i
-                ? "bg-[#D64B2A] text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {SHORT_MONTHS[i]}
-          </button>
-        ))}
+        {MONTHS.map((m, i) => {
+          const disabled = year === todayY && i > todayM;
+          return (
+            <button
+              key={m}
+              disabled={disabled}
+              onClick={() => {
+                setMonth(i);
+                setView("date");
+              }}
+              className={`py-2 rounded-lg text-sm border-none ${
+                disabled
+                  ? "bg-gray-50 text-gray-300 cursor-not-allowed"
+                  : month === i
+                    ? "bg-[#D64B2A] text-white cursor-pointer"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
+              }`}
+            >
+              {SHORT_MONTHS[i]}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -282,7 +313,7 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
         onClick={onClose}
       >
         <div
-          className="bg-white rounded-t-3xl w-full p-5 pb-9"
+          className="bg-white rounded-t-3xl w-full p-5"
           onClick={(e) => e.stopPropagation()}
         >
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
@@ -304,8 +335,6 @@ const DatePicker = memo(({ mode = "single", onConfirm, onClose, yearRange = 100 
       </div>
     </>
   );
-});
+}
 
-DatePicker.displayName = "DatePicker";
-
-export default DatePicker;
+export default memo(DatePicker);

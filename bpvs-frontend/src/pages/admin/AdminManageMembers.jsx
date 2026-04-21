@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/ui/LoadingScreen";
 import {
   ArrowLeft,
   Pencil,
@@ -15,8 +15,8 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
 import AdminEditModal from "../../components/modals/AdminEditModal";
-import DesktopPagination from "../../components/DesktopPagination";
-import { StatusPill } from "../../components/RoleBadge";
+import DesktopPagination from "../../components/ui/DesktopPagination";
+import { StatusPill } from "../../components/ui/RoleBadge";
 
 const ITEMS_PER_PAGE = 10;
 const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
@@ -96,10 +96,10 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
       {u.createdAt
         ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          })
         : "—"}
     </td>
     <td className="py-2.5 px-3">
@@ -174,10 +174,11 @@ const PendingRow = ({ u, onApprove, onReject, actionLoading }) => (
 const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${active
+    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${
+      active
         ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
         : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
-      }`}
+    }`}
   >
     <div
       className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
@@ -399,10 +400,11 @@ export default function AdminManageMembers() {
                 <button
                   key={key}
                   onClick={() => handleTabChange(key)}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${activeTab === key
+                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${
+                    activeTab === key
                       ? "bg-white text-gray-900 shadow-sm"
                       : "text-stone-500 hover:text-gray-700 bg-transparent"
-                    }`}
+                  }`}
                 >
                   {label}
                   <span

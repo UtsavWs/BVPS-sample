@@ -1,9 +1,9 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import bpvsLogo from "/assets/logos/bvps-logo.svg";
 import loginIllustration from "/assets/images/Powerful-pana 1.svg";
 import { AuthContext } from "../../context/AuthContext";
-import AuthInput from "../../components/AuthInput";
+import AuthInput from "../../components/forms/AuthInput";
 import { ArrowLeft } from "lucide-react";
 
 export default function Login() {
@@ -24,30 +24,29 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const result = await login(email, password);
+      const result = await login(email, password, rememberMe);
       if (result.success) {
         navigate("/dashboard");
-        return;                    
+        return;
       }
       if (result.status === "inactive") {
         navigate("/pending-approval");
-        return;                    
+        return;
       }
       if (
         result.message?.includes("verify") ||
         result.message?.includes("Verify")
       ) {
         navigate("/verify-otp", { state: { email } });
-        return;                    
+        return;
       }
       setError(result.message || "Login failed.");
-      setLoading(false);           
+      setLoading(false);
     } catch {
       setError("Network error. Please try again.");
-      setLoading(false);           
+      setLoading(false);
     }
   };
-
 
   const isLoading = loading || authLoading;
 

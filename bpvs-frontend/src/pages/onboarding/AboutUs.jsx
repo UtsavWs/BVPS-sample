@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import aboutData from "../static-data/aboutData.json";
+import aboutData from "../../static-data/aboutData.json";
 
 const {
   termLabel,
@@ -76,7 +76,7 @@ const MentorSection = ({ maxW = "max-w-xs sm:max-w-sm" }) => (
     <h2 className="font-bold text-gray-900 mb-4 text-base">Our Mentor</h2>
     <div className="flex justify-center items-center">
       <div
-        className={`relative w-full overflow-hidden rounded-2xl aspect-3/4 max-w-120`}
+        className={`relative w-full overflow-hidden rounded-2xl aspect-3/4 max-w-150`}
       >
         <img
           src={MENTOR.image}

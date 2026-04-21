@@ -1,11 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FabButton from "../../components/FabButton";
+import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
-import InputFields from "../../components/InputFields";
+import InputFields from "../../components/forms/InputFields";
 import { apiGet, apiPut } from "../../api/api";
-import LoadingScreen from "../../components/LoadingScreen";
+import LoadingScreen from "../../components/ui/LoadingScreen";
 
 const INITIAL_DATA = {
   email: "",
@@ -50,8 +50,6 @@ export default function ContactInfo() {
   const [form, setForm] = useState(INITIAL_DATA);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-
-
 
   // Fetch saved contactInformation from database
   useEffect(() => {
@@ -101,9 +99,7 @@ export default function ContactInfo() {
 
   // Show loading while fetching data from database
   if (loading || isLoading) {
-    return (
-      <LoadingScreen bg="bg-stone-50" />
-    );
+    return <LoadingScreen bg="bg-stone-50" />;
   }
 
   // Don't render if not logged in (will redirect)
@@ -229,4 +225,3 @@ export default function ContactInfo() {
     </div>
   );
 }
-

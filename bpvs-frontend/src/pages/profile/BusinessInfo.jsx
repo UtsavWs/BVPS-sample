@@ -1,14 +1,13 @@
 import { ArrowLeft } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DatePicker from "../../components/DatePicker";
-import FabButton from "../../components/FabButton";
+import DatePicker from "../../components/forms/DatePicker";
+import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
-import InputFields from "../../components/InputFields";
+import InputFields from "../../components/forms/InputFields";
 import { apiGet, apiPut } from "../../api/api";
 import { formatDateDisplay, parseDateDisplay } from "../../utils/dateUtils";
-import LoadingScreen from "../../components/LoadingScreen";
-
+import LoadingScreen from "../../components/ui/LoadingScreen";
 
 const INITIAL_DATA = {
   dateOfJoin: "",
@@ -68,8 +67,6 @@ export default function BusinessInfo() {
   const [saved, setSaved] = useState(INITIAL_DATA);
   const [form, setForm] = useState(INITIAL_DATA);
 
-
-
   // Fetch business info from database
   useEffect(() => {
     const fetchBusinessInfo = async () => {
@@ -113,9 +110,7 @@ export default function BusinessInfo() {
 
   // Show loading while checking auth or fetching data
   if (loading || isLoading) {
-    return (
-      <LoadingScreen bg="bg-stone-50" />
-    );
+    return <LoadingScreen bg="bg-stone-50" />;
   }
 
   // Don't render if not logged in (will redirect)
@@ -207,7 +202,8 @@ export default function BusinessInfo() {
               `}
             >
               <span>{isEditing ? form.dateOfJoin : saved.dateOfJoin}</span>
-              <img src="/assets/logos/calender.svg"
+              <img
+                src="/assets/logos/calender.svg"
                 className="text-gray-400 shrink-0 w-5"
               />
             </button>
@@ -282,4 +278,3 @@ export default function BusinessInfo() {
     </div>
   );
 }
-

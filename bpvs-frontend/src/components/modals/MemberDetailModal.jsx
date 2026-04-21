@@ -1,5 +1,5 @@
 import { X, Phone, Mail, Briefcase, Shield, Locate, Home } from "lucide-react";
-import { DEFAULT_PROFILE_IMAGE, RoleBadge, StatusPill } from "../RoleBadge";
+import { DEFAULT_PROFILE_IMAGE, RoleBadge, StatusPill } from "../ui/RoleBadge";
 
 // ── Member Detail Modal ───────────────────────────────────────────────────────
 export const MemberDetailModal = ({ member, onClose }) => {
@@ -94,7 +94,7 @@ export const MemberDetailModal = ({ member, onClose }) => {
               {member.contactInformation?.location || "—"}
             </span>
           </div>
-                    <div className="flex items-center justify-between py-3.5 border-b border-stone-100">
+          <div className="flex items-center justify-between py-3.5 border-b border-stone-100">
             <div className="flex items-center gap-2 text-stone-400">
               <Home size={14} strokeWidth={1.8} />
               <span className="text-[12.5px]">Native Place</span>

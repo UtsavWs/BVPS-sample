@@ -2,8 +2,8 @@ import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
-import { getProfileImage } from "../../components/RoleBadge";
-import LoadingScreen from "../../components/LoadingScreen";
+import { getProfileImage } from "../../components/ui/RoleBadge";
+import LoadingScreen from "../../components/ui/LoadingScreen";
 
 // ── Info nav cards ── //
 const INFO_CARDS = [
@@ -35,12 +35,8 @@ export default function MyProfile() {
   const user = auth.user;
   const loading = auth.loading;
 
-
-
   if (loading) {
-    return (
-      <LoadingScreen />
-    );
+    return <LoadingScreen />;
   }
   if (!user) return null;
 
@@ -70,7 +66,7 @@ export default function MyProfile() {
         <div className="relative w-full">
           <div className="h-40 sm:h-48 w-full overflow-hidden bg-linear-to-b from-[#F9EDE8] to-white">
             <img
-              src="/assets/logos/BPVS Logo.svg"
+              src="/assets/logos/bvps-logo.svg"
               alt="banner"
               className="w-full h-full object-contain"
               onError={(e) => {

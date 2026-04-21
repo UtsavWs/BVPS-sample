@@ -1,13 +1,11 @@
 import React, { useContext, useEffect } from "react";
 import { ArrowLeft, ChevronRight, Info, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
 
 const Settings = () => {
   const { user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-
-
 
   const settingsItems = [
     {

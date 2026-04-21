@@ -1,17 +1,20 @@
 import { ArrowLeft, Camera, Upload, Trash2, ImagePlus } from "lucide-react";
-import FabButton from "../../components/FabButton";
+import FabButton from "../../components/ui/FabButton";
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import InputFields from "../../components/InputFields";
-import DatePicker from "../../components/DatePicker";
+import InputFields from "../../components/forms/InputFields";
+import DatePicker from "../../components/forms/DatePicker";
 import { apiGet, apiPut } from "../../api/api";
 import { formatDateDisplay, parseDateDisplay } from "../../utils/dateUtils";
 import { uploadToCloudinary } from "../../utils/cloudinary";
-import LoadingScreen from "../../components/LoadingScreen";
-import { getProfileImageDisplay, getBannerImageDisplay } from "../../components/RoleBadge";
+import LoadingScreen from "../../components/ui/LoadingScreen";
+import {
+  getProfileImageDisplay,
+  getBannerImageDisplay,
+} from "../../components/ui/RoleBadge";
 
-const DEFAULT_BANNER_IMAGE = "/assets/logos/BPVS Logo.svg";
+const DEFAULT_BANNER_IMAGE = "/assets/logos/bvps-logo.svg";
 
 const INITIAL_DATA = {
   fullName: "",
@@ -93,8 +96,6 @@ export default function EditProfile() {
 
   const isUploading = profileUploading || bannerUploading;
 
-
-
   useEffect(() => {
     const fetchProfileData = async () => {
       // Defensive check: Don't fetch if still loading auth or if user is missing
@@ -138,7 +139,7 @@ export default function EditProfile() {
         const formatted = formatFromBackend(res.user);
         setSaved(formatted);
         setForm(formatted);
-        
+
         setProfilePreview(null);
         setBannerPreview(null);
         setIsEditing(false);
@@ -247,7 +248,7 @@ export default function EditProfile() {
         : false;
 
   if (isLoading) {
-    return <LoadingScreen bg="bg-stone-50"/>;
+    return <LoadingScreen bg="bg-stone-50" />;
   }
 
   return (
@@ -309,7 +310,9 @@ export default function EditProfile() {
               )}
               {bannerUploading && (
                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-xl">
-                  <span className="text-white text-xs font-medium">Uploading...</span>
+                  <span className="text-white text-xs font-medium">
+                    Uploading...
+                  </span>
                 </div>
               )}
             </div>
@@ -356,7 +359,9 @@ export default function EditProfile() {
                 )}
                 {profileUploading && (
                   <div className="absolute inset-0 bg-black/30 flex items-center justify-center rounded-full">
-                    <span className="text-white text-[10px] font-medium">Uploading...</span>
+                    <span className="text-white text-[10px] font-medium">
+                      Uploading...
+                    </span>
                   </div>
                 )}
               </div>
@@ -386,8 +391,9 @@ export default function EditProfile() {
 
           {/* Full Name */}
           <div
-            className={`transition-all [&_label]:text-sm [&_label]:text-gray-900 ${!isEditing ? "opacity-50 pointer-events-none select-none" : ""
-              }`}
+            className={`transition-all [&_label]:text-sm [&_label]:text-gray-900 ${
+              !isEditing ? "opacity-50 pointer-events-none select-none" : ""
+            }`}
           >
             <InputFields
               label="Full Name"
@@ -404,9 +410,10 @@ export default function EditProfile() {
             className={`
               w-full px-4 py-3.5 lg:py-4 rounded-xl border bg-white transition-all text-sm lg:text-base
               flex items-center justify-between
-              ${isEditing
-                ? "border-gray-200 cursor-pointer hover:border-gray-300"
-                : "border-gray-200 bg-white opacity-50 cursor-not-allowed select-none pointer-events-none"
+              ${
+                isEditing
+                  ? "border-gray-200 cursor-pointer hover:border-gray-300"
+                  : "border-gray-200 bg-white opacity-50 cursor-not-allowed select-none pointer-events-none"
               }
             `}
           >
@@ -426,8 +433,9 @@ export default function EditProfile() {
 
           {/* Gender Selection */}
           <div
-            className={`flex flex-col gap-1.5 transition-all text-sm ${!isEditing ? "opacity-50 pointer-events-none select-none" : ""
-              }`}
+            className={`flex flex-col gap-1.5 transition-all text-sm ${
+              !isEditing ? "opacity-50 pointer-events-none select-none" : ""
+            }`}
           >
             <label className="text-sm font-medium text-gray-900">Gender</label>
             <div className="flex gap-3">
@@ -439,13 +447,15 @@ export default function EditProfile() {
                   onClick={() => isEditing && set("gender")(g)}
                   className={`
                     flex-1 py-3.5 lg:py-4 rounded-xl border text-sm lg:text-base font-medium capitalize transition-all
-                    ${isEditing
-                      ? "cursor-pointer hover:border-gray-300"
-                      : "cursor-not-allowed opacity-50 pointer-events-none"
+                    ${
+                      isEditing
+                        ? "cursor-pointer hover:border-gray-300"
+                        : "cursor-not-allowed opacity-50 pointer-events-none"
                     }
-                    ${(isEditing ? form.gender : saved.gender) === g
-                      ? "bg-[#C94621] text-white border-[#C94621]"
-                      : "bg-white text-gray-600 border-gray-200"
+                    ${
+                      (isEditing ? form.gender : saved.gender) === g
+                        ? "bg-[#C94621] text-white border-[#C94621]"
+                        : "bg-white text-gray-600 border-gray-200"
                     }
                   `}
                 >

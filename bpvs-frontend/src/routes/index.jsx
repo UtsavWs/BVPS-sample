@@ -5,7 +5,7 @@ import PublicRoutes from "./public/PublicRoutes";
 import ProtectedRoutes from "./protected/ProtectedRoutes";
 import AdminRoutes from "./protected/AdminRoutes";
 import { PUBLIC_PATHS, PROTECTED_PATHS, ADMIN_PATHS } from "./paths";
-import LoadingScreen from "../components/LoadingScreen";
+import LoadingScreen from "../components/ui/LoadingScreen";
 
 // ─── Lazy Page Imports ────────────────────────────────────────────────────────
 
@@ -24,11 +24,11 @@ const EditProfile = lazy(() => import("../pages/profile/EditProfile"));
 const ContactInfo = lazy(() => import("../pages/profile/ContactInfo"));
 const BusinessInfo = lazy(() => import("../pages/profile/BusinessInfo"));
 const OtherInfo = lazy(() => import("../pages/profile/OtherInfo"));
-const Settings = lazy(() => import("../pages/Settings"));
-const BvpsMembers = lazy(() => import("../pages/BvpsMembers"));
-const ActivityLog = lazy(() => import("../pages/ActivityLog"));
-const PendingApproval = lazy(() => import("../pages/PendingApproval"));
-const AboutUs = lazy(() => import("../pages/AboutUs"));
+const Settings = lazy(() => import("../pages/profile/Settings"));
+const BvpsMembers = lazy(() => import("../pages/members/BvpsMembers"));
+const ActivityLog = lazy(() => import("../pages/activities/ActivityLog"));
+const PendingApproval = lazy(() => import("../pages/auth/PendingApproval"));
+const AboutUs = lazy(() => import("../pages/onboarding/AboutUs"));
 const AddB2B = lazy(() => import("../pages/activities/AddB2b"));
 const AddVisitor = lazy(() => import("../pages/activities/AddVisitor"));
 const AddReferral = lazy(() => import("../pages/activities/AddReferral"));

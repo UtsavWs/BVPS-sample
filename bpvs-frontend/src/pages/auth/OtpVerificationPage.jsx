@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import bpvsLogo from "/assets/logos/bvps-logo.svg";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function OtpVerificationPage() {
@@ -264,7 +264,7 @@ export default function OtpVerificationPage() {
             Already have an account?
             <button
               type="button"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate("/login")}
               className="text-[#C1512D] font-bold hover:text-[#A8432A] transition-colors"
             >
               Log In

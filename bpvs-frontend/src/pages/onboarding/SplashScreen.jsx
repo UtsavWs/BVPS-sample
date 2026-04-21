@@ -32,7 +32,7 @@ const SplashScreen = () => {
           {/* Logo Badge */}
           <div className="w-48 sm:w-56 md:w-64 lg:w-72 h-auto">
             <img
-              src="/assets/logos/BPVS Logo.svg"
+              src="/assets/logos/bvps-logo.svg"
               alt="BPVS Logo"
               className="w-full h-auto"
             />

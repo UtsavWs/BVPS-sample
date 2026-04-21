@@ -1,11 +1,11 @@
 import { ArrowLeft } from "lucide-react";
 import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import InputFields from "../../components/InputFields";
-import Dropdown from "../../components/Dropdown";
 import { apiPost } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
+import Dropdown from "../../components/forms/Dropdown";
+import InputFields from "../../components/forms/InputFields";
 
 const REFERENCE_OPTIONS = [
   "Select Reference",
@@ -30,12 +30,12 @@ const INITIAL = {
 const AddThankYouSlip = () => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const { 
-    members: rawMembers, 
-    loadMore, 
-    loadingMore, 
-    hasMore, 
-    setSearchQuery 
+  const {
+    members: rawMembers,
+    loadMore,
+    loadingMore,
+    hasMore,
+    setSearchQuery,
   } = useContext(MemberContext);
 
   const [form, setForm] = useState(INITIAL);
@@ -171,7 +171,9 @@ const AddThankYouSlip = () => {
         >
           {/* Member Name — populated from API */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">Member Name</label>
+            <label className="text-[13px] font-semibold text-gray-700">
+              Member Name
+            </label>
             <Dropdown
               value={form.memberName}
               options={memberNames}
@@ -183,7 +185,9 @@ const AddThankYouSlip = () => {
               onSearchChange={setSearchQuery}
             />
             {errors.memberName && (
-              <p className="text-[12px] text-red-500 mt-0.5">{errors.memberName}</p>
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.memberName}
+              </p>
             )}
           </div>
 
@@ -207,7 +211,9 @@ const AddThankYouSlip = () => {
 
           {/* Reference */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">Reference</label>
+            <label className="text-[13px] font-semibold text-gray-700">
+              Reference
+            </label>
             <Dropdown
               value={form.reference}
               options={REFERENCE_OPTIONS}
@@ -215,7 +221,9 @@ const AddThankYouSlip = () => {
               error={errors.reference}
             />
             {errors.reference && (
-              <p className="text-[12px] text-red-500 mt-0.5">{errors.reference}</p>
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.reference}
+              </p>
             )}
           </div>
 
@@ -235,7 +243,9 @@ const AddThankYouSlip = () => {
           {/* Server error message */}
           {errors.submit && (
             <div className="lg:col-span-2">
-              <p className="text-[13px] text-red-500 text-center">{errors.submit}</p>
+              <p className="text-[13px] text-red-500 text-center">
+                {errors.submit}
+              </p>
             </div>
           )}
 
@@ -253,7 +263,11 @@ const AddThankYouSlip = () => {
                 disabled:opacity-70 disabled:cursor-not-allowed
               "
             >
-              {submitted ? "✓ Submitted!" : submitting ? "Submitting…" : "Submit"}
+              {submitted
+                ? "✓ Submitted!"
+                : submitting
+                  ? "Submitting…"
+                  : "Submit"}
             </button>
           </div>
         </div>

@@ -9,16 +9,16 @@ import {
   memo,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import FabMenu from "../components/FabMenu";
-import ProfileDrawer from "../components/ProfileDrawer";
-import StatsCard from "../components/StatsCard";
+import FabMenu from "../components/layout/FabMenu";
+import ProfileDrawer from "../components/layout/ProfileDrawer";
+import StatsCard from "../components/forms/StatsCard";
 import { AuthContext } from "../context/AuthContext";
 import {
   getProfileImage,
   DEFAULT_PROFILE_IMAGE,
-} from "../components/RoleBadge";
-import LoadingScreen from "../components/LoadingScreen";
-import DatePicker from "../components/DatePicker";
+} from "../components/ui/RoleBadge";
+import LoadingScreen from "../components/ui/LoadingScreen";
+import DatePicker from "../components/forms/DatePicker";
 import { apiGet } from "../api/api";
 import { parseDateDisplay } from "../utils/dateUtils";
 
@@ -31,7 +31,11 @@ const getStatsConfig = (counts) => [
     value: counts.b2bCount || 0,
     img: "/assets/logos/b2b.svg",
   },
-  { label: "Total Visitors", value: counts.visitorCount || 0, img: "/assets/logos/visitors.svg" },
+  {
+    label: "Total Visitors",
+    value: counts.visitorCount || 0,
+    img: "/assets/logos/visitors.svg",
+  },
   {
     label: "Referrals Received",
     value: counts.referralReceivedCount || 0,
@@ -62,7 +66,9 @@ const ProfileProgress = memo(({ progress }) => (
   <div className="w-full">
     <div className="flex items-center justify-between mb-1.5">
       <span className="text-[13px] text-gray-500">Profile Complete</span>
-      <span className="text-[13px] font-semibold text-gray-500">{progress}%</span>
+      <span className="text-[13px] font-semibold text-gray-500">
+        {progress}%
+      </span>
     </div>
     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
       <div
@@ -148,7 +154,7 @@ const UserDashboard = () => {
 
         setStatsLoading(true);
         const res = await apiGet(
-          `/users/dashboard-stats?startDate=${encodeURIComponent(start.toISOString())}&endDate=${encodeURIComponent(end.toISOString())}`
+          `/users/dashboard-stats?startDate=${encodeURIComponent(start.toISOString())}&endDate=${encodeURIComponent(end.toISOString())}`,
         );
         if (!cancelled && res.success) {
           setFilteredCounts(res.data);
@@ -176,7 +182,9 @@ const UserDashboard = () => {
     };
 
     loadData();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [user, activeTab, dateRange]);
 
   const handleTabClick = useCallback((tab) => {
@@ -201,7 +209,9 @@ const UserDashboard = () => {
     if (!user) return 0;
     const fields = [
       user.fullName,
-      (user.profileImage && user.profileImage !== "/assets/myProfile.svg" && user.profileImage !== DEFAULT_PROFILE_IMAGE),
+      user.profileImage &&
+        user.profileImage !== "/assets/myProfile.svg" &&
+        user.profileImage !== DEFAULT_PROFILE_IMAGE,
       user.bannerImage,
       user.contactInformation?.website,
       user.contactInformation?.location,
@@ -262,25 +272,60 @@ const UserDashboard = () => {
       ══════════════════════════════ */}
       <div className="md:hidden flex flex-col h-full overflow-y-auto">
         <div className="flex items-center justify-between px-5 pt-4 pb-3">
-          <button onClick={openDrawer} className="p-1 border-none bg-transparent cursor-pointer">
-            <img src="/assets/logos/menu-02.svg" className="w-6 h-6" alt="menu" />
+          <button
+            onClick={openDrawer}
+            className="p-1 border-none bg-transparent cursor-pointer"
+          >
+            <img
+              src="/assets/logos/menu-02.svg"
+              className="w-6 h-6"
+              alt="menu"
+            />
           </button>
-          <img src="/assets/logos/BPVS Logo.svg" alt="BPVS" className="h-11 object-contain" />
-          <button className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center cursor-pointer" onClick={() => navigate("/activity")}>
-            <img src="/assets/logos/notification-bing.svg" className="w-5 h-5" alt="notifications" />
+          <img
+            src="/assets/logos/bvps-logo.svg"
+            alt="BPVS"
+            className="h-11 object-contain"
+          />
+          <button
+            className="w-9 h-9 rounded-full bg-transparent flex items-center justify-center cursor-pointer"
+            onClick={() => navigate("/activity")}
+          >
+            <img
+              src="/assets/logos/notification-bing.svg"
+              className="w-5 h-5"
+              alt="notifications"
+            />
           </button>
         </div>
 
         <div className="mx-4 mt-2 mb-3 flex items-center gap-3">
           <div className="w-16 h-16 rounded-xl overflow-hidden ring-1 ring-[#D64B2A] shadow-sm shrink-0 bg-gray-200">
-            <img src={getProfileImage(user?.profileImage)} alt="Profile" className="w-full h-full object-cover" />
+            <img
+              src={getProfileImage(user?.profileImage)}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[15px] font-semibold text-gray-700 leading-tight truncate">{user?.fullName || "User Name"}</p>
-            <p className="text-[13px] font-medium text-gray-600 mt-0.5 truncate">{user?.businessInformation?.companyName || user?.companyName || "Company Name"}</p>
-            <p className="text-[12px] text-gray-500 mt-0.5 truncate">{user?.businessInformation?.profession || user?.profession || "Profession"}</p>
+            <p className="text-[15px] font-semibold text-gray-700 leading-tight truncate">
+              {user?.fullName || "User Name"}
+            </p>
+            <p className="text-[13px] font-medium text-gray-600 mt-0.5 truncate">
+              {user?.businessInformation?.companyName ||
+                user?.companyName ||
+                "Company Name"}
+            </p>
+            <p className="text-[12px] text-gray-500 mt-0.5 truncate">
+              {user?.businessInformation?.profession ||
+                user?.profession ||
+                "Profession"}
+            </p>
           </div>
-          <button onClick={() => navigate("/edit-profile")} className="w-8 h-8 flex items-center justify-center shrink-0 border-none bg-transparent cursor-pointer">
+          <button
+            onClick={() => navigate("/edit-profile")}
+            className="w-8 h-8 flex items-center justify-center shrink-0 border-none bg-transparent cursor-pointer"
+          >
             <Pencil className="w-4.5 h-4.5" color="#C94621" />
           </button>
         </div>
@@ -291,21 +336,36 @@ const UserDashboard = () => {
 
         <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-4 flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-medium text-[#111111]">My Dashboard</h2>
+            <h2 className="text-[15px] font-medium text-[#111111]">
+              My Dashboard
+            </h2>
             <button
               onClick={handleFilterClick}
-              className={`flex items-center rounded-lg gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
+              className={`flex items-center rounded-lg md:gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
                 ${dateRange ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]" : "border-gray-200 bg-white text-gray-500"}`}
             >
-              <img src="/assets/logos/filter-horizontal.svg" className="w-5 h-5" alt="filter" />
-              <span className="text-[13px] font-normal text-[#111111]">{dateRange ? "Filtered" : ""}</span>
+              <img
+                src="/assets/logos/filter-horizontal.svg"
+                className="w-5 h-5"
+                alt="filter"
+              />
+              <span className="text-[13px] font-normal text-[#111111]">
+                {dateRange ? "Filtered" : ""}
+              </span>
             </button>
           </div>
 
           {dateRange ? (
             <div className="flex items-center gap-2 bg-[#F9EDE8] rounded-xl px-3 py-2">
-              <span className="text-[12px] font-semibold text-[#D64B2A] flex-1">{dateRange.start} → {dateRange.end}</span>
-              <button onClick={handleClearRange} className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold">✕</button>
+              <span className="text-[12px] font-semibold text-[#D64B2A] flex-1">
+                {dateRange.start} → {dateRange.end}
+              </span>
+              <button
+                onClick={handleClearRange}
+                className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold"
+              >
+                ✕
+              </button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
@@ -322,13 +382,12 @@ const UserDashboard = () => {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3 flex-1" style={{ gridAutoRows: "1fr" }}>
+          <div
+            className="grid grid-cols-2 gap-3 flex-1"
+            style={{ gridAutoRows: "1fr" }}
+          >
             {stats.map((stat) => (
-              <StatsCard
-                key={stat.label}
-                {...stat}
-                loading={statsLoading}
-              />
+              <StatsCard key={stat.label} {...stat} loading={statsLoading} />
             ))}
           </div>
           <FabMenu
@@ -347,18 +406,38 @@ const UserDashboard = () => {
       ══════════════════════════════ */}
       <div
         className="hidden md:flex flex-col h-full transition-all duration-300 ease-in-out"
-        style={{ transform: drawerOpen ? `translateX(${DRAWER_W})` : "translateX(0)" }}
+        style={{
+          transform: drawerOpen ? `translateX(${DRAWER_W})` : "translateX(0)",
+        }}
       >
         <header className="shrink-0 z-100 bg-white border-b border-gray-100 shadow-sm px-5 md:px-8 lg:px-12 xl:px-16 h-14 md:h-16 lg:h-18 flex items-center justify-between">
           <div className="flex items-center gap-3 lg:gap-4">
-            <button onClick={openDrawer} className="p-2 rounded-xl hover:bg-[#F9EDE8] transition cursor-pointer border-none bg-transparent">
-              <img src="/assets/logos/menu-02.svg" className="w-5 h-5 lg:w-6 lg:h-6" alt="menu" />
+            <button
+              onClick={openDrawer}
+              className="p-2 rounded-xl hover:bg-[#F9EDE8] transition cursor-pointer border-none bg-transparent"
+            >
+              <img
+                src="/assets/logos/menu-02.svg"
+                className="w-5 h-5 lg:w-6 lg:h-6"
+                alt="menu"
+              />
             </button>
-            <img src="/assets/logos/BPVS Logo.svg" alt="BPVS" className="h-9 md:h-10 lg:h-12 object-contain" />
+            <img
+              src="/assets/logos/bvps-logo.svg"
+              alt="BPVS"
+              className="h-9 md:h-10 lg:h-12 object-contain"
+            />
           </div>
           <div className="flex items-center gap-2 lg:gap-3">
-            <button className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-[#F9EDE8] transition cursor-pointer" onClick={() => navigate("/activity")}>
-              <img src="/assets/logos/notification-bing.svg" className="w-5 h-5" alt="notifications" />
+            <button
+              className="relative w-9 h-9 md:w-11 md:h-11 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:bg-[#F9EDE8] transition cursor-pointer"
+              onClick={() => navigate("/activity")}
+            >
+              <img
+                src="/assets/logos/notification-bing.svg"
+                className="w-5 h-5"
+                alt="notifications"
+              />
               <span className="absolute top-2 right-2 w-2 h-2 bg-[#D64B2A] rounded-full border-2 border-white" />
             </button>
           </div>
@@ -368,17 +447,34 @@ const UserDashboard = () => {
           <div className="shrink-0 bg-white rounded-2xl lg:rounded-3xl shadow-sm border border-gray-100 p-3 md:p-4 lg:p-5 xl:p-6 flex flex-row items-center gap-3 md:gap-4 lg:gap-5 relative overflow-hidden">
             <div className="absolute -top-12 -right-12 rounded-full bg-[#F9EDE8] opacity-70 pointer-events-none w-40 h-40 md:w-64 md:h-64" />
             <div className="shrink-0 relative z-10 w-14 h-14 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-xl overflow-hidden ring-2 ring-[#D64B2A] shadow-md bg-gray-200">
-              <img src={getProfileImage(user?.profileImage)} alt="Profile" className="w-full h-full object-cover" />
+              <img
+                src={getProfileImage(user?.profileImage)}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex-1 min-w-0 relative z-10">
-              <h2 className="font-semibold text-[#111111] leading-tight text-base md:text-lg lg:text-xl xl:text-2xl truncate">{user?.fullName || "User Name"}</h2>
-              <p className="font-medium text-[#111111] mt-0.5 text-xs md:text-sm lg:text-base truncate">{user?.businessInformation?.companyName || user?.companyName || "Company Name"}</p>
-              <p className="text-gray-400 mt-0.5 text-[11px] md:text-xs lg:text-sm truncate">{user?.businessInformation?.profession || user?.profession || "Profession"}</p>
+              <h2 className="font-semibold text-[#111111] leading-tight text-base md:text-lg lg:text-xl xl:text-2xl truncate">
+                {user?.fullName || "User Name"}
+              </h2>
+              <p className="font-medium text-[#111111] mt-0.5 text-xs md:text-sm lg:text-base truncate">
+                {user?.businessInformation?.companyName ||
+                  user?.companyName ||
+                  "Company Name"}
+              </p>
+              <p className="text-gray-400 mt-0.5 text-[11px] md:text-xs lg:text-sm truncate">
+                {user?.businessInformation?.profession ||
+                  user?.profession ||
+                  "Profession"}
+              </p>
               <div className="mt-2 max-w-xl">
                 <ProfileProgress progress={profileComplete} />
               </div>
             </div>
-            <button onClick={() => navigate("/edit-profile")} className="relative z-10 flex items-center gap-2 shrink-0 px-3 py-2 md:px-5 md:py-2.5 rounded-xl bg-[#F9EDE8] text-[#D64B2A] border border-[#D64B2A]/20 text-xs md:text-sm font-semibold hover:bg-[#D64B2A] hover:text-white transition-all cursor-pointer">
+            <button
+              onClick={() => navigate("/edit-profile")}
+              className="relative z-10 flex items-center gap-2 shrink-0 px-3 py-2 md:px-5 md:py-2.5 rounded-xl bg-[#F9EDE8] text-[#D64B2A] border border-[#D64B2A]/20 text-xs md:text-sm font-semibold hover:bg-[#D64B2A] hover:text-white transition-all cursor-pointer"
+            >
               <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
               <span className="hidden md:inline">Edit Profile</span>
             </button>
@@ -386,21 +482,36 @@ const UserDashboard = () => {
 
           <div className="relative flex-1 min-h-0 bg-white rounded-2xl lg:rounded-3xl shadow-sm border border-gray-100 px-4 md:px-6 xl:px-8 pt-3 md:pt-4 pb-3 flex flex-col gap-2 md:gap-3 lg:gap-4">
             <div className="shrink-0 flex items-center justify-between">
-              <h2 className="font-medium text-[#111111] text-base md:text-lg">My Dashboard</h2>
+              <h2 className="font-medium text-[#111111] text-base md:text-lg">
+                My Dashboard
+              </h2>
               <button
                 onClick={handleFilterClick}
                 className={`flex items-center gap-2 px-3 py-2 lg:px-5 lg:py-1.5 rounded-xl border font-medium text-sm lg:text-base transition cursor-pointer
                   ${dateRange ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]" : "border-gray-200 bg-white text-gray-500"}`}
               >
-                <img src="/assets/logos/filter-horizontal.svg" className="w-4 h-4 lg:w-5 lg:h-5" alt="filter" />
-                <span className="hidden sm:inline">{dateRange ? "Filtered" : "Filter"}</span>
+                <img
+                  src="/assets/logos/filter-horizontal.svg"
+                  className="w-4 h-4 lg:w-5 lg:h-5"
+                  alt="filter"
+                />
+                <span className="hidden sm:inline">
+                  {dateRange ? "Filtered" : "Filter"}
+                </span>
               </button>
             </div>
 
             {dateRange ? (
               <div className="shrink-0 flex items-center gap-3 bg-[#F9EDE8] rounded-xl px-4 py-2 w-fit">
-                <span className="text-[13px] md:text-sm font-semibold text-[#D64B2A]">{dateRange.start} → {dateRange.end}</span>
-                <button onClick={handleClearRange} className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold hover:opacity-70 transition">✕</button>
+                <span className="text-[13px] md:text-sm font-semibold text-[#D64B2A]">
+                  {dateRange.start} → {dateRange.end}
+                </span>
+                <button
+                  onClick={handleClearRange}
+                  className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold hover:opacity-70 transition"
+                >
+                  ✕
+                </button>
               </div>
             ) : (
               <div className="shrink-0 flex gap-2 lg:gap-3">
@@ -417,13 +528,12 @@ const UserDashboard = () => {
               </div>
             )}
 
-            <div className="flex-1 min-h-0 grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-4" style={{ gridAutoRows: "1fr" }}>
+            <div
+              className="flex-1 min-h-0 grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-4"
+              style={{ gridAutoRows: "1fr" }}
+            >
               {stats.map((stat) => (
-                <StatsCard
-                  key={stat.label}
-                  {...stat}
-                  loading={statsLoading}
-                />
+                <StatsCard key={stat.label} {...stat} loading={statsLoading} />
               ))}
             </div>
             <FabMenu
@@ -441,4 +551,3 @@ const UserDashboard = () => {
 };
 
 export default UserDashboard;
-

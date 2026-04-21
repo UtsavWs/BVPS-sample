@@ -1,10 +1,10 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import bpvsLogo from "/assets/logos/BPVS Logo.svg";
+import bpvsLogo from "/assets/logos/bvps-logo.svg";
 import teamIllustration from "/assets/images/unity.jpg";
 import { AuthContext } from "../../context/AuthContext";
-import AuthInput from "../../components/AuthInput";
+import AuthInput from "../../components/forms/AuthInput";
 
 export default function SignUp() {
   const navigate = useNavigate();
@@ -12,8 +12,6 @@ export default function SignUp() {
 
   const { register, isAuthenticated, isProcessing } = auth;
   const authLoading = isProcessing;
-
-
 
   const [fullName, setFullName] = useState("");
   const [mobile, setMobile] = useState("");
@@ -67,13 +65,10 @@ export default function SignUp() {
     /* ── MOBILE: full-screen white, flex-col ────────────────────────────────
        ── TABLET/DESKTOP (md+): centered card, unchanged from before ──────── */
     <div className="min-h-screen bg-white md:bg-gray-50 flex items-center justify-center md:p-2">
-
       {/* Main Container */}
       <div className="w-full md:max-w-275 bg-white md:rounded-3xl md:shadow-xl overflow-hidden flex flex-col md:flex-row md:min-h-0 min-h-screen">
-
         {/* Left Column: Form */}
         <div className="w-full md:w-1/2 flex flex-col md:justify-center md:p-8 px-6 pt-4 pb-8">
-
           {/* Back button — mobile only spacing */}
           <div className="mb-2 md:mb-0">
             <button
@@ -81,7 +76,7 @@ export default function SignUp() {
               onClick={() => navigate(-1)}
               className="flex items-center gap-1 text-gray-500 hover:text-[#C1512D] text-sm font-medium w-fit transition-colors"
             >
-               <ArrowLeft size={20} strokeWidth={2} />
+              <ArrowLeft size={20} strokeWidth={2} />
             </button>
           </div>
 
@@ -105,8 +100,10 @@ export default function SignUp() {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSignUp} className="flex flex-col gap-5 flex-1 md:flex-none">
-
+          <form
+            onSubmit={handleSignUp}
+            className="flex flex-col gap-5 flex-1 md:flex-none"
+          >
             <AuthInput
               label="Full Name"
               type="text"
@@ -176,13 +173,13 @@ export default function SignUp() {
 
             {/* Login Link */}
             <p className="text-center text-sm text-gray-700">
-              Already have an account?{" "}
+              Already have an account?
               <button
                 type="button"
                 onClick={() => navigate("/login")}
                 className="text-[#C1512D] font-semibold hover:underline"
               >
-                Sign In
+                Log In
               </button>
             </p>
           </form>

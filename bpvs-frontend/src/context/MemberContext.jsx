@@ -1,8 +1,13 @@
-import { createContext, useState, useEffect, useContext, useCallback } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import { apiGet } from "../api/api";
 import { AuthContext } from "./AuthContext";
 import { useDebounce } from "../hooks/useDebounce";
-
 
 export const MemberContext = createContext();
 
@@ -37,33 +42,36 @@ export const MemberProvider = ({ children }) => {
   /**
    * Fetch members from API with optional filters
    */
-  const fetchFromApi = useCallback(async (pageNum, query = "", filterSet = {}) => {
-    try {
-      const { tab, days, status } = filterSet;
-      const params = new URLSearchParams({
-        page: pageNum,
-        limit: 20,
-        ...(query?.trim() && { search: query.trim() }),
-        ...(tab && tab !== "All" && { tab }),
-        ...(days != null && { days: String(days) }),
-        ...(status && { status }),
-      });
+  const fetchFromApi = useCallback(
+    async (pageNum, query = "", filterSet = {}) => {
+      try {
+        const { tab, days, status } = filterSet;
+        const params = new URLSearchParams({
+          page: pageNum,
+          limit: 20,
+          ...(query?.trim() && { search: query.trim() }),
+          ...(tab && tab !== "All" && { tab }),
+          ...(days != null && { days: String(days) }),
+          ...(status && { status }),
+        });
 
-      const res = await apiGet(`/members?${params.toString()}`);
-      if (res.success && res.data) {
-        return {
-          members: res.data.members || [],
-          total: res.data.pagination?.total || 0,
-          totalPages: res.data.pagination?.pages || 1,
-          currentPage: res.data.pagination?.page || pageNum,
-        };
+        const res = await apiGet(`/members?${params.toString()}`);
+        if (res.success && res.data) {
+          return {
+            members: res.data.members || [],
+            total: res.data.pagination?.total || 0,
+            totalPages: res.data.pagination?.pages || 1,
+            currentPage: res.data.pagination?.page || pageNum,
+          };
+        }
+        return null;
+      } catch (err) {
+        console.error("Error fetching members:", err);
+        return null;
       }
-      return null;
-    } catch (err) {
-      console.error("Error fetching members:", err);
-      return null;
-    }
-  }, []);
+    },
+    [],
+  );
 
   /**
    * Global effect to handle Dropdown cache and Directory initial loads
@@ -75,7 +83,12 @@ export const MemberProvider = ({ children }) => {
       setLoading(true);
 
       // 1. Handle Dropdown Cache (always active members, no search)
-      if (!debouncedSearch && debouncedFilters.tab === "All" && !debouncedFilters.days && !debouncedFilters.status) {
+      if (
+        !debouncedSearch &&
+        debouncedFilters.tab === "All" &&
+        !debouncedFilters.days &&
+        !debouncedFilters.status
+      ) {
         if (cachedMembers.length === 0) {
           const data = await fetchFromApi(1);
           if (data) {
@@ -109,7 +122,11 @@ export const MemberProvider = ({ children }) => {
     if (loadingMore || loading) return;
     setLoadingMore(true);
 
-    const isDropdownOnly = !debouncedSearch && debouncedFilters.tab === "All" && !debouncedFilters.days && !debouncedFilters.status;
+    const isDropdownOnly =
+      !debouncedSearch &&
+      debouncedFilters.tab === "All" &&
+      !debouncedFilters.days &&
+      !debouncedFilters.status;
 
     if (isDropdownOnly) {
       if (!cachedHasMore) {
@@ -119,7 +136,7 @@ export const MemberProvider = ({ children }) => {
       const next = cachedPage + 1;
       const data = await fetchFromApi(next);
       if (data) {
-        setCachedMembers(prev => [...prev, ...data.members]);
+        setCachedMembers((prev) => [...prev, ...data.members]);
         setCachedPage(next);
         setCachedHasMore(data.currentPage < data.totalPages);
       }
@@ -132,7 +149,7 @@ export const MemberProvider = ({ children }) => {
       const next = dirPage + 1;
       const data = await fetchFromApi(next, debouncedSearch, debouncedFilters);
       if (data) {
-        setDirectoryMembers(prev => [...prev, ...data.members]);
+        setDirectoryMembers((prev) => [...prev, ...data.members]);
         setDirPage(next);
         setDirHasMore(data.currentPage < data.totalPages);
       }
@@ -182,4 +199,3 @@ export const MemberProvider = ({ children }) => {
     </MemberContext.Provider>
   );
 };
-

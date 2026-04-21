@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import InputFields from "../../components/InputFields";
-import Dropdown from "../../components/Dropdown";
 import { apiPost } from "../../api/api";
+import InputFields from "../../components/forms/InputFields";
+import Dropdown from "../../components/forms/Dropdown";
 
 const PROFESSION_OPTIONS = [
   "Select Profession",
@@ -235,7 +235,9 @@ const AddVisitor = () => {
           {/* Submit error */}
           {errors.submit && (
             <div className="w-full lg:col-span-2">
-              <p className="text-[13px] text-red-500 text-center">{errors.submit}</p>
+              <p className="text-[13px] text-red-500 text-center">
+                {errors.submit}
+              </p>
             </div>
           )}
 

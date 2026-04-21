@@ -3,12 +3,13 @@
  * All requests go to VITE_API_URL (set in .env).
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 /**
  * Get stored token
  */
-export const getToken = () => localStorage.getItem('bpvs_token');
+export const getToken = () =>
+  localStorage.getItem("bpvs_token") || sessionStorage.getItem("bpvs_token");
 
 /**
  * @param {string} endpoint  - e.g. '/auth/register'
@@ -17,18 +18,18 @@ export const getToken = () => localStorage.getItem('bpvs_token');
  * @returns {Promise<{success, message, data}>}
  */
 export const apiPost = async (endpoint, body, token) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   } else {
     const storedToken = getToken();
     if (storedToken) {
-      headers['Authorization'] = `Bearer ${storedToken}`;
+      headers["Authorization"] = `Bearer ${storedToken}`;
     }
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'POST',
+    method: "POST",
     headers,
     body: JSON.stringify(body),
   });
@@ -42,18 +43,18 @@ export const apiPost = async (endpoint, body, token) => {
  * @returns {Promise<{success, message, data}>}
  */
 export const apiGet = async (endpoint, token) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   } else {
     const storedToken = getToken();
     if (storedToken) {
-      headers['Authorization'] = `Bearer ${storedToken}`;
+      headers["Authorization"] = `Bearer ${storedToken}`;
     }
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'GET',
+    method: "GET",
     headers,
   });
   const json = await res.json();
@@ -67,18 +68,18 @@ export const apiGet = async (endpoint, token) => {
  * @returns {Promise<{success, message, data}>}
  */
 export const apiPut = async (endpoint, body, token) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   } else {
     const storedToken = getToken();
     if (storedToken) {
-      headers['Authorization'] = `Bearer ${storedToken}`;
+      headers["Authorization"] = `Bearer ${storedToken}`;
     }
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'PUT',
+    method: "PUT",
     headers,
     body: JSON.stringify(body),
   });
@@ -93,14 +94,14 @@ export const apiPut = async (endpoint, body, token) => {
  * @returns {Promise<{success, message, data}>}
  */
 export const apiPatch = async (endpoint, body, token) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   const storedToken = token || getToken();
   if (storedToken) {
-    headers['Authorization'] = `Bearer ${storedToken}`;
+    headers["Authorization"] = `Bearer ${storedToken}`;
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'PATCH',
+    method: "PATCH",
     headers,
     body: JSON.stringify(body),
   });
@@ -114,14 +115,14 @@ export const apiPatch = async (endpoint, body, token) => {
  * @returns {Promise<{success, message, data}>}
  */
 export const apiDelete = async (endpoint, token) => {
-  const headers = { 'Content-Type': 'application/json' };
+  const headers = { "Content-Type": "application/json" };
   const storedToken = token || getToken();
   if (storedToken) {
-    headers['Authorization'] = `Bearer ${storedToken}`;
+    headers["Authorization"] = `Bearer ${storedToken}`;
   }
 
   const res = await fetch(`${BASE_URL}${endpoint}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers,
   });
   const json = await res.json();
