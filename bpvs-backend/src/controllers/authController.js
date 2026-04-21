@@ -6,9 +6,11 @@ const sendEmail = require("../utils/sendEmail");
 const { otpEmailHtml } = require("../utils/emailTemplates");
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-const signToken = (user) =>
+const signToken = (user, rememberMe = false) =>
   jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || "7d",
+    expiresIn: rememberMe
+      ? process.env.JWT_EXPIRE_LONG || "7d"
+      : process.env.JWT_EXPIRE_SHORT || "1h",
   });
 
 const serverError = (res) =>
@@ -96,7 +98,7 @@ exports.verifyOtp = async (req, res) => {
     const user = await User.findOne({ email: lowerEmail });
 
     if (!user?.otp?.code || user.otp.expiresAt < Date.now())
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "OTP expired or not found. Please request a new one.",
       });
@@ -150,7 +152,7 @@ exports.sendOtp = async (req, res) => {
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 exports.login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, rememberMe } = req.body;
     const lowerEmail = email.toLowerCase();
 
     const user = await User.findOne({ email: lowerEmail }).select("+password");
@@ -173,8 +175,8 @@ exports.login = async (req, res) => {
 
     if (user.status === "inactive")
       return res.status(403).json({
-        success: false,
         inactive: true,
+        success: false,
         message: "Your account is inactive. Please contact admin.",
       });
 
@@ -182,7 +184,7 @@ exports.login = async (req, res) => {
       success: true,
       message: "Login successful!",
       data: {
-        token: signToken(user),
+        token: signToken(user, !!rememberMe),
         user: {
           id: user._id,
           fullName: user.fullName,
@@ -283,7 +285,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({
         success: false,
         message:
-          "New password cannot be the same as any of your recent passwords. Please choose a different password.",
+          "New password cannot be the same as your recent passwords. Please choose a different password.",
       });
 
     await user.addToPasswordHistory();
