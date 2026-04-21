@@ -43,13 +43,13 @@ const openRoutes = [
   { path: PUBLIC_PATHS.SPLASH, element: <SplashScreen /> },
   { path: PUBLIC_PATHS.ONBOARDING, element: <Onboarding /> },
   { path: PROTECTED_PATHS.PENDING_APPROVAL, element: <PendingApproval /> },
+  { path: PUBLIC_PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
 ];
 
 const authRoutes = [
   { path: PUBLIC_PATHS.LOGIN, element: <Login /> },
   { path: PUBLIC_PATHS.SIGNUP, element: <SignUp /> },
   { path: PUBLIC_PATHS.VERIFY_OTP, element: <OtpVerificationPage /> },
-  { path: PUBLIC_PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
 ];
 
 const privateRoutes = [

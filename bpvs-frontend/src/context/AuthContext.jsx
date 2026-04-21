@@ -1,6 +1,6 @@
 // AuthContext - Simple authentication context for the app
 
-import { createContext, useState, useEffect, useMemo } from "react";
+import { createContext, useState, useEffect, useMemo, useCallback } from "react";
 import { apiPost, apiGet, apiPut } from "../api/api";
 
 // Create the context - this is what components will use to access auth
@@ -26,6 +26,35 @@ const isTokenExpired = (token) => {
   }
 };
 
+// ── Storage helpers (pure functions — no deps, defined once) ──────────────
+
+const readAuthStorage = () => {
+  const localToken = localStorage.getItem(TOKEN_KEY);
+  if (localToken) {
+    return {
+      token: localToken,
+      user: localStorage.getItem(USER_KEY),
+      storage: localStorage,
+    };
+  }
+  const sessionToken = sessionStorage.getItem(TOKEN_KEY);
+  if (sessionToken) {
+    return {
+      token: sessionToken,
+      user: sessionStorage.getItem(USER_KEY),
+      storage: sessionStorage,
+    };
+  }
+  return { token: null, user: null, storage: null };
+};
+
+const clearAuthStorage = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(USER_KEY);
+  sessionStorage.removeItem(TOKEN_KEY);
+  sessionStorage.removeItem(USER_KEY);
+};
+
 // The AuthProvider component wraps your app and provides auth functionality
 export function AuthProvider({ children }) {
   // User state - holds the logged in user's information
@@ -45,80 +74,48 @@ export function AuthProvider({ children }) {
 
   // Run this once when the app starts - check if user is already logged in
   useEffect(() => {
+    const checkLoggedIn = async () => {
+      const { token: storedToken, user: storedUser, storage } = readAuthStorage();
+
+      if (storedToken && storedUser) {
+        if (isTokenExpired(storedToken)) {
+          clearAuthStorage();
+          setIsInitializing(false);
+          return;
+        }
+        setToken(storedToken);
+        try {
+          const parsedUser = JSON.parse(storedUser);
+          setUser(parsedUser);
+
+          // Verify token with server
+          try {
+            const res = await apiGet("/users/profile", storedToken);
+            if (res.success) {
+              setUser(res.data.user);
+              storage.setItem(USER_KEY, JSON.stringify(res.data.user));
+            } else {
+              // Token invalid, clear storage
+              clearAuthStorage();
+              setToken(null);
+              setUser(null);
+            }
+          } catch (err) {
+            console.warn("Could not verify token:", err);
+          }
+        } catch (err) {
+          console.error("Failed to parse stored user:", err);
+          clearAuthStorage();
+        }
+      }
+      setIsInitializing(false);
+    };
+
     checkLoggedIn();
   }, []);
 
-  // Read from localStorage first (persistent) then sessionStorage (tab-only).
-  // Returns the storage object that actually held the value, so writes go
-  // back to the same place and we don't accidentally promote a session-only
-  // login into a persistent one.
-  const readAuthStorage = () => {
-    const localToken = localStorage.getItem(TOKEN_KEY);
-    if (localToken) {
-      return {
-        token: localToken,
-        user: localStorage.getItem(USER_KEY),
-        storage: localStorage,
-      };
-    }
-    const sessionToken = sessionStorage.getItem(TOKEN_KEY);
-    if (sessionToken) {
-      return {
-        token: sessionToken,
-        user: sessionStorage.getItem(USER_KEY),
-        storage: sessionStorage,
-      };
-    }
-    return { token: null, user: null, storage: null };
-  };
-
-  const clearAuthStorage = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(USER_KEY);
-  };
-
-  // Function to check if user is already logged in
-  const checkLoggedIn = async () => {
-    const { token: storedToken, user: storedUser, storage } = readAuthStorage();
-
-    if (storedToken && storedUser) {
-      if (isTokenExpired(storedToken)) {
-        clearAuthStorage();
-        setIsInitializing(false);
-        return;
-      }
-      setToken(storedToken);
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
-
-        // Verify token with server
-        try {
-          const res = await apiGet("/users/profile", storedToken);
-          if (res.success) {
-            setUser(res.data.user);
-            storage.setItem(USER_KEY, JSON.stringify(res.data.user));
-          } else {
-            // Token invalid, clear storage
-            clearAuthStorage();
-            setToken(null);
-            setUser(null);
-          }
-        } catch (err) {
-          console.warn("Could not verify token:", err);
-        }
-      } catch (err) {
-        console.error("Failed to parse stored user:", err);
-        clearAuthStorage();
-      }
-    }
-    setIsInitializing(false);
-  };
-
   // Function to login user
-  const login = async (email, password, rememberMe = false) => {
+  const login = useCallback(async (email, password, rememberMe = false) => {
     setError(null);
     setIsProcessing(true);
     try {
@@ -153,10 +150,10 @@ export function AuthProvider({ children }) {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, []);
 
   // Function to register new user
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     setError(null);
     setIsProcessing(true);
     try {
@@ -175,10 +172,10 @@ export function AuthProvider({ children }) {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, []);
 
   // Function to verify OTP
-  const verifyOtp = async (email, otp) => {
+  const verifyOtp = useCallback(async (email, otp) => {
     setError(null);
     setIsProcessing(true);
     try {
@@ -197,10 +194,10 @@ export function AuthProvider({ children }) {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, []);
 
   // Function to resend OTP
-  const resendOtp = async (email) => {
+  const resendOtp = useCallback(async (email) => {
     setError(null);
     try {
       const res = await apiPost("/auth/resend-otp", { email });
@@ -216,34 +213,38 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     }
-  };
+  }, []);
 
   // Function to logout user
-  const logout = () => {
+  const logout = useCallback(() => {
     clearAuthStorage();
     setToken(null);
     setUser(null);
     setError(null);
-  };
+  }, []);
 
   // Function to update user profile
-  const updateUser = async (updates) => {
-    if (!token) {
+  const updateUser = useCallback(async (updates) => {
+    // Read current token and user from state via functional updates isn't
+    // possible here since we need the values synchronously. Instead we read
+    // the token from storage (source of truth) and get fresh user from the
+    // API response, avoiding stale closures.
+    const { token: currentToken, storage } = readAuthStorage();
+    if (!currentToken) {
       return { success: false, message: "Not authenticated" };
     }
 
     try {
-      const res = await apiPut("/users/profile", updates, token);
+      const res = await apiPut("/users/profile", updates, currentToken);
 
       if (res.success) {
-        const updatedUser = { ...user, ...res.data.user };
-        setUser(updatedUser);
-        const { storage } = readAuthStorage();
+        const freshUser = res.data.user;
+        setUser(freshUser);
         (storage || localStorage).setItem(
           USER_KEY,
-          JSON.stringify(updatedUser),
+          JSON.stringify(freshUser),
         );
-        return { success: true, user: updatedUser };
+        return { success: true, user: freshUser };
       } else {
         setError(res.message);
         return { success: false, message: res.message };
@@ -253,7 +254,10 @@ export function AuthProvider({ children }) {
       setError(errorMsg);
       return { success: false, message: errorMsg };
     }
-  };
+  }, []);
+
+  // clearError is stable — setError is already a stable setState reference
+  const clearError = useCallback(() => setError(null), []);
 
   // Provide all these functions and states to child components
   const value = useMemo(
@@ -275,9 +279,10 @@ export function AuthProvider({ children }) {
       resendOtp,
       logout,
       updateUser,
-      clearError: () => setError(null),
+      clearError,
     }),
-    [user, token, isInitializing, isProcessing, error],
+    [user, token, isInitializing, isProcessing, error,
+     login, register, verifyOtp, resendOtp, logout, updateUser, clearError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
