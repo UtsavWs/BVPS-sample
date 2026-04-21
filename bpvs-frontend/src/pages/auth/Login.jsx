@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bpvsLogo from "../../assets/logos/bvps-logo.svg";
-import loginIllustration from "../../assets/images/Powerful-pana 1.svg";
+import loginIllustration from "../../assets/images/Powerful-pana-1.svg";
 import { AuthContext } from "../../context/AuthContext";
 import AuthInput from "../../components/forms/AuthInput";
 import { ArrowLeft } from "lucide-react";
