@@ -1,8 +1,8 @@
 import { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import bpvsLogo from "/assets/logos/bvps-logo.svg";
-import teamIllustration from "/assets/images/unity.jpg";
+import bpvsLogo from "../../assets/logos/bvps-logo.svg";
+import teamIllustration from "../../assets/images/unity.jpg";
 import { AuthContext } from "../../context/AuthContext";
 import AuthInput from "../../components/forms/AuthInput";
 

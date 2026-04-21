@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import bpvsLogo from "/assets/logos/bvps-logo.svg";
+import bpvsLogo from "../../assets/logos/bvps-logo.svg";
 import { AuthContext } from "../../context/AuthContext";
 
 export default function OtpVerificationPage() {
