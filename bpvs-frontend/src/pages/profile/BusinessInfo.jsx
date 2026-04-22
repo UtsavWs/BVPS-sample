@@ -194,10 +194,9 @@ export default function BusinessInfo() {
                 w-full flex items-center justify-between
                 px-4 py-3.5 lg:py-4 rounded-xl border
                 text-sm lg:text-base transition-all
-                ${
-                  isEditing
-                    ? "border-gray-200 bg-white text-gray-800 cursor-pointer hover:border-gray-300 focus:outline-none focus:border-[#D64B2A] focus:ring-2 focus:ring-[#D64B2A]/10"
-                    : "border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed opacity-60"
+                ${isEditing
+                  ? "border-gray-200 bg-white text-gray-800 cursor-pointer hover:border-gray-300 focus:outline-none focus:border-[#D64B2A] focus:ring-2 focus:ring-[#D64B2A]/10"
+                  : "border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed opacity-60"
                 }
               `}
             >

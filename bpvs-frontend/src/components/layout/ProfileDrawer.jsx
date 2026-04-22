@@ -1,13 +1,11 @@
 import { memo } from "react";
-import { User, Users, Settings, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getProfileImage } from "../ui/RoleBadge";
 
 const MenuItem = memo(({ icon, label, active = false }) => (
   <button
-    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${
-      active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
-    }`}
+    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
+      }`}
   >
     <span className={active ? "text-[#D64B2A]" : "text-gray-500"}>{icon}</span>
     <span className="text-sm font-medium">{label}</span>
