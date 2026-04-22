@@ -70,7 +70,7 @@ const ProfileDrawer = memo(
             )}
             {isAdmin && (
               <Link to="/admin">
-                <MenuItem icon={<Shield size={18} />} label="Admin Panel" />
+                <MenuItem icon={<img src="/assets/logos/shieldIcon.svg" size={18} />} label="Admin Panel" />
               </Link>
             )}
             <Link to="/settings">
