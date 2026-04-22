@@ -20,11 +20,13 @@ const serverError = (res) =>
 
 const setOtp = async (user, action, email) => {
   const otp = generateOtp();
-  user.otp = {
-    code: await bcrypt.hash(otp, 10),
-    expiresAt: Date.now() + 5 * 60 * 1000,
-  };
-  await user.save();
+  const hashedOtp = await bcrypt.hash(otp, 10);
+  await User.findByIdAndUpdate(user._id, {
+    $set: {
+      "otp.code": hashedOtp,
+      "otp.expiresAt": Date.now() + 5 * 60 * 1000,
+    },
+  });
 
   // Transactional email subject line.
   const subject = `BPVS Account Verification Code`;
@@ -34,7 +36,7 @@ const setOtp = async (user, action, email) => {
       subject,
       html: otpEmailHtml(otp, action, user.fullName),
     });
-  } catch (e) {
+  } catch (error) {
     throw new Error("Failed to send verification email. Please try again.");
   }
 };
@@ -58,11 +60,16 @@ exports.register = async (req, res) => {
           success: false,
           message: `${user.email === lowerEmail ? "Email" : "Mobile"} is already registered.`,
         });
-      user.fullName = fullName;
-      user.mobile = mobile;
-      user.email = lowerEmail;
-      user.password = password;
-      await user.save();
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      await User.findByIdAndUpdate(user._id, {
+        $set: {
+          fullName,
+          mobile,
+          email: lowerEmail,
+          password: hashedPassword,
+        },
+      });
     } else {
       const isFirstUser = (await User.countDocuments()) === 0;
       user = await User.create({
@@ -108,9 +115,13 @@ exports.verifyOtp = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid OTP. Please try again." });
 
-    user.isVerified = true;
-    user.otp = { code: null, expiresAt: null };
-    await user.save();
+    await User.findByIdAndUpdate(user._id, {
+      $set: {
+        isVerified: true,
+        "otp.code": null,
+        "otp.expiresAt": null,
+      },
+    });
 
     res.status(200).json({
       success: true,
