@@ -300,101 +300,101 @@ const UserDashboard = () => {
 
         <div className="flex-1 overflow-y-auto flex flex-col">
 
-        <div className="mx-4 mt-2 mb-3 flex items-center gap-3">
-          <div className="w-16 h-16 rounded-xl overflow-hidden ring-1 ring-[#D64B2A] shadow-sm shrink-0 bg-gray-200">
-            <img
-              src={getProfileImage(user?.profileImage)}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[15px] font-semibold text-gray-700 leading-tight truncate">
-              {user?.fullName || "User Name"}
-            </p>
-            <p className="text-[13px] font-medium text-gray-600 mt-0.5 truncate">
-              {user?.businessInformation?.companyName ||
-                user?.companyName ||
-                "Company Name"}
-            </p>
-            <p className="text-[12px] text-gray-500 mt-0.5 truncate">
-              {user?.businessInformation?.profession ||
-                user?.profession ||
-                "Profession"}
-            </p>
-          </div>
-          <button
-            onClick={() => navigate("/edit-profile")}
-            className="w-8 h-8 flex items-center justify-center shrink-0 border-none bg-transparent cursor-pointer"
-          >
-            <img src="/assets/logos/edit.svg" alt="pencil" />
-          </button>
-        </div>
-
-        <div className="mx-4 mb-2">
-          <ProfileProgress progress={profileComplete} />
-        </div>
-
-        <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-6 flex flex-col gap-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-medium text-[#111111]">
-              My Dashboard
-            </h2>
-            <button
-              onClick={handleFilterClick}
-              className={`flex items-center rounded-lg md:gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
-                ${dateRange ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]" : "border-gray-200 bg-white text-gray-500"}`}
-            >
+          <div className="mx-4 mt-2 mb-3 flex items-center gap-3">
+            <div className="w-16 h-16 rounded-xl overflow-hidden ring-1 ring-[#D64B2A] shadow-sm shrink-0 bg-gray-200">
               <img
-                src="/assets/logos/filter-horizontal.svg"
-                className="w-5 h-5"
-                alt="filter"
+                src={getProfileImage(user?.profileImage)}
+                alt="Profile"
+                className="w-full h-full object-cover"
               />
-              <span className="text-[13px] font-normal text-[#111111]">
-                {dateRange ? "Filtered" : ""}
-              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[15px] font-semibold text-gray-700 leading-tight truncate">
+                {user?.fullName || "User Name"}
+              </p>
+              <p className="text-[13px] font-medium text-gray-600 mt-0.5 truncate">
+                {user?.businessInformation?.companyName ||
+                  user?.companyName ||
+                  "Company Name"}
+              </p>
+              <p className="text-[12px] text-gray-500 mt-0.5 truncate">
+                {user?.businessInformation?.profession ||
+                  user?.profession ||
+                  "Profession"}
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/edit-profile")}
+              className="w-8 h-8 flex items-center justify-center shrink-0 border-none bg-transparent cursor-pointer"
+            >
+              <img src="/assets/logos/edit.svg" alt="pencil" />
             </button>
           </div>
 
-          {dateRange ? (
-            <div className="flex items-center gap-2 bg-[#F9EDE8] rounded-xl px-3 py-2">
-              <span className="text-[12px] font-semibold text-[#D64B2A] flex-1">
-                {dateRange.start} → {dateRange.end}
-              </span>
+          <div className="mx-4 mb-2">
+            <ProfileProgress progress={profileComplete} />
+          </div>
+
+          <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-6 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-[15px] font-medium text-[#111111]">
+                My Dashboard
+              </h2>
               <button
-                onClick={handleClearRange}
-                className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold"
+                onClick={handleFilterClick}
+                className={`flex items-center rounded-lg md:gap-1.5 px-3 py-1.5 text-[18px] text-[#111111] font-bold transition cursor-pointer
+                ${dateRange ? "bg-[#F9EDE8] border-[#D64B2A] text-[#D64B2A]" : "border-gray-200 bg-white text-gray-500"}`}
               >
-                ✕
+                <img
+                  src="/assets/logos/filter-horizontal.svg"
+                  className="w-5 h-5"
+                  alt="filter"
+                />
+                <span className="text-[13px] font-normal text-[#111111]">
+                  {dateRange ? "Filtered" : ""}
+                </span>
               </button>
             </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              {TABS.map((tab) => (
+
+            {dateRange ? (
+              <div className="flex items-center gap-2 bg-[#F9EDE8] rounded-xl px-3 py-2">
+                <span className="text-[12px] font-semibold text-[#D64B2A] flex-1">
+                  {dateRange.start} → {dateRange.end}
+                </span>
                 <button
-                  key={tab}
-                  onClick={() => handleTabClick(tab)}
-                  className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-                    ${activeTab === tab ? "bg-[#C94621] text-white" : "bg-[#C946211F] text-[#D64B2A]"}`}
+                  onClick={handleClearRange}
+                  className="text-[#D64B2A] text-xs border-none bg-transparent cursor-pointer font-bold"
                 >
-                  {tab}
+                  ✕
                 </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                {TABS.map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => handleTabClick(tab)}
+                    className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
+                    ${activeTab === tab ? "bg-[#C94621] text-white" : "bg-[#C946211F] text-[#D64B2A]"}`}
+                  >
+                    {tab}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <div
+              className="grid grid-cols-2 gap-3 flex-1"
+              style={{ gridAutoRows: "1fr" }}
+            >
+              {stats.map((stat) => (
+                <StatsCard key={stat.label} {...stat} loading={statsLoading} />
               ))}
             </div>
-          )}
-
-          <div
-            className="grid grid-cols-2 gap-3 flex-1"
-            style={{ gridAutoRows: "1fr" }}
-          >
-            {stats.map((stat) => (
-              <StatsCard key={stat.label} {...stat} loading={statsLoading} />
-            ))}
+            {/* FabMenu moved out of this scrollable container */}
           </div>
-          {/* FabMenu moved out of this scrollable container */}
         </div>
       </div>
-    </div>
 
       {/* ══════════════════════════════
           DESKTOP VIEW
