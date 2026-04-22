@@ -61,11 +61,11 @@ const ProfileDrawer = memo(
           {/* Menu Items */}
           <nav className="px-3 flex flex-col gap-0.5">
             <Link to="/my-profile">
-              <MenuItem icon={<User size={18} />} label="My Profile" active />
+              <MenuItem icon={<img src="/assets/logos/ProfileIcon.svg" size={18} />} label="My Profile" active />
             </Link>
             {isApproved && (
               <Link to="/members">
-                <MenuItem icon={<Users size={18} />} label="BPVS Members" />
+                <MenuItem icon={<img src="/assets/logos/bvpsMembers.svg" size={18} />} label="BPVS Members" />
               </Link>
             )}
             {isAdmin && (
@@ -74,7 +74,7 @@ const ProfileDrawer = memo(
               </Link>
             )}
             <Link to="/settings">
-              <MenuItem icon={<Settings size={18} />} label="Settings" />
+              <MenuItem icon={<img src="/assets/logos/settingIcon.svg" size={18} />} label="Settings" />
             </Link>
           </nav>
 

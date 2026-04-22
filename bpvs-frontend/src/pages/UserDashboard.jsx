@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import FabMenu from "../components/layout/FabMenu";
+import TabBar from "../components/ui/TabBar";
 import ProfileDrawer from "../components/layout/ProfileDrawer";
 import StatsCard from "../components/forms/StatsCard";
 import { AuthContext } from "../context/AuthContext";
@@ -370,18 +371,7 @@ const UserDashboard = () => {
                 </button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
-                {TABS.map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => handleTabClick(tab)}
-                    className={`flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-                    ${activeTab === tab ? "bg-[#C94621] text-white" : "bg-[#C946211F] text-[#D64B2A]"}`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+              <TabBar tabs={TABS} active={activeTab} onChange={handleTabClick} />
             )}
 
             <div

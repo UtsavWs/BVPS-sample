@@ -323,7 +323,7 @@ export default function EditProfile() {
                   className="bg-white p-1 rounded-full shadow-md md:p-2 hover:bg-gray-50"
                 >
                   <img
-                    src="/assets/logos/pencil.svg"
+                    src="/assets/logos/edit.svg"
                     alt="Edit"
                     className="text-[#C94621]"
                   />
@@ -372,7 +372,7 @@ export default function EditProfile() {
                     className="bg-white p-0.5 md:p-2 rounded-full shadow-md hover:bg-gray-50"
                   >
                     <img
-                      src="/assets/logos/pencil.svg"
+                      src="/assets/logos/edit.svg"
                       alt="Edit"
                       className="text-[#C94621]"
                     />
