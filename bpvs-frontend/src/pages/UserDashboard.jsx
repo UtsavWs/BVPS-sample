@@ -1,4 +1,3 @@
-import { Pencil } from "lucide-react";
 import {
   useState,
   useCallback,
@@ -210,8 +209,8 @@ const UserDashboard = () => {
     const fields = [
       user.fullName,
       user.profileImage &&
-        user.profileImage !== "/assets/myProfile.svg" &&
-        user.profileImage !== DEFAULT_PROFILE_IMAGE,
+      user.profileImage !== "/assets/myProfile.svg" &&
+      user.profileImage !== DEFAULT_PROFILE_IMAGE,
       user.bannerImage,
       user.contactInformation?.website,
       user.contactInformation?.location,
@@ -270,8 +269,8 @@ const UserDashboard = () => {
       {/* ══════════════════════════════
           MOBILE VIEW
       ══════════════════════════════ */}
-      <div className="md:hidden flex flex-col h-full overflow-y-auto">
-        <div className="flex items-center justify-between px-5 pt-4 pb-3">
+      <div className="md:hidden flex flex-col h-full overflow-hidden">
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 bg-[#F9EDE8] z-20 shrink-0">
           <button
             onClick={openDrawer}
             className="p-1 border-none bg-transparent cursor-pointer"
@@ -298,6 +297,8 @@ const UserDashboard = () => {
             />
           </button>
         </div>
+
+        <div className="flex-1 overflow-y-auto flex flex-col">
 
         <div className="mx-4 mt-2 mb-3 flex items-center gap-3">
           <div className="w-16 h-16 rounded-xl overflow-hidden ring-1 ring-[#D64B2A] shadow-sm shrink-0 bg-gray-200">
@@ -326,7 +327,7 @@ const UserDashboard = () => {
             onClick={() => navigate("/edit-profile")}
             className="w-8 h-8 flex items-center justify-center shrink-0 border-none bg-transparent cursor-pointer"
           >
-            <Pencil className="w-4.5 h-4.5" color="#C94621" />
+            <img src="/assets/logos/edit.svg" alt="pencil" />
           </button>
         </div>
 
@@ -334,7 +335,7 @@ const UserDashboard = () => {
           <ProfileProgress progress={profileComplete} />
         </div>
 
-        <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-4 flex flex-col gap-4">
+        <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-6 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-[15px] font-medium text-[#111111]">
               My Dashboard
@@ -390,16 +391,10 @@ const UserDashboard = () => {
               <StatsCard key={stat.label} {...stat} loading={statsLoading} />
             ))}
           </div>
-          <FabMenu
-            mobile
-            wrapRef={fabWrapRefMobile}
-            menuOpen={menuOpen}
-            setMenuOpen={setMenuOpen}
-            isApproved={isApproved}
-            navigate={navigate}
-          />
+          {/* FabMenu moved out of this scrollable container */}
         </div>
       </div>
+    </div>
 
       {/* ══════════════════════════════
           DESKTOP VIEW
@@ -475,7 +470,7 @@ const UserDashboard = () => {
               onClick={() => navigate("/edit-profile")}
               className="relative z-10 flex items-center gap-2 shrink-0 px-3 py-2 md:px-5 md:py-2.5 rounded-xl bg-[#F9EDE8] text-[#D64B2A] border border-[#D64B2A]/20 text-xs md:text-sm font-semibold hover:bg-[#D64B2A] hover:text-white transition-all cursor-pointer"
             >
-              <Pencil className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <img src="/assets/logos/pencil.svg" alt="pencil" />
               <span className="hidden md:inline">Edit Profile</span>
             </button>
           </div>
@@ -545,6 +540,18 @@ const UserDashboard = () => {
             />
           </div>
         </main>
+      </div>
+
+      {/* Mobile FabMenu (Root level for fixed positioning) */}
+      <div className="md:hidden">
+        <FabMenu
+          mobile
+          wrapRef={fabWrapRefMobile}
+          menuOpen={menuOpen}
+          setMenuOpen={setMenuOpen}
+          isApproved={isApproved}
+          navigate={navigate}
+        />
       </div>
     </div>
   );

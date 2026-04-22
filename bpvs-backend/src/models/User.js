@@ -27,7 +27,7 @@ const UserSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minlength: 6,
+      minlength: 8,
       select: false,
     },
 
@@ -278,7 +278,7 @@ UserSchema.statics.clearExpiredOtps = async function () {
     { $set: { "otp.code": null, "otp.expiresAt": null } },
   );
   if (result.modifiedCount > 0) {
-    console.log(`🧹 Cleared ${result.modifiedCount} expired OTP(s)`);
+    console.log(`Cleared expired OTP(s)`);
   }
   return result.modifiedCount;
 };

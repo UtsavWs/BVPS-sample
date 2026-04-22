@@ -1,4 +1,4 @@
-import { Pencil } from "lucide-react";
+
 
 export default function FabButton({ isEditing, onClick, className = "" }) {
   if (isEditing) return null;
@@ -7,7 +7,7 @@ export default function FabButton({ isEditing, onClick, className = "" }) {
     <button
       onClick={onClick}
       className={`
-        w-11 h-11 bg-[#D64B2A] rounded-[13px]
+        w-13 h-13 bg-[#D64B2A] rounded-[13px]
         flex items-center justify-center
         shadow-lg shadow-orange-200
         hover:scale-105 active:scale-95
@@ -15,7 +15,7 @@ export default function FabButton({ isEditing, onClick, className = "" }) {
         ${className}
       `}
     >
-      <Pencil size={17} color="white" strokeWidth={2.2} />
+      <img src="/assets/logos/pencil.svg" alt="pencil" />
     </button>
   );
 }

@@ -97,7 +97,7 @@ function FabMenu({
         type="button"
         className={[
           mobile
-            ? "w-14 h-14 rounded-2xl sticky bottom-4 right-4"
+            ? "w-14 h-14 rounded-2xl"
             : "w-12 h-12 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl",
           "bg-[#D64B2A] text-white flex items-center justify-center",
           "shadow-[0_6px_20px_rgba(214,75,42,0.45)]",

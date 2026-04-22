@@ -323,7 +323,7 @@ export default function EditProfile() {
                   className="bg-white p-1 rounded-full shadow-md md:p-2 hover:bg-gray-50"
                 >
                   <img
-                    src="/assets/logos/edit.svg"
+                    src="/assets/logos/pencil.svg"
                     alt="Edit"
                     className="text-[#C94621]"
                   />
@@ -372,7 +372,7 @@ export default function EditProfile() {
                     className="bg-white p-0.5 md:p-2 rounded-full shadow-md hover:bg-gray-50"
                   >
                     <img
-                      src="/assets/logos/edit.svg"
+                      src="/assets/logos/pencil.svg"
                       alt="Edit"
                       className="text-[#C94621]"
                     />
@@ -391,9 +391,8 @@ export default function EditProfile() {
 
           {/* Full Name */}
           <div
-            className={`transition-all [&_label]:text-sm [&_label]:text-gray-900 ${
-              !isEditing ? "opacity-50 pointer-events-none select-none" : ""
-            }`}
+            className={`transition-all [&_label]:text-sm [&_label]:text-gray-900 ${!isEditing ? "opacity-50 pointer-events-none select-none" : ""
+              }`}
           >
             <InputFields
               label="Full Name"
@@ -410,10 +409,9 @@ export default function EditProfile() {
             className={`
               w-full px-4 py-3.5 lg:py-4 rounded-xl border bg-white transition-all text-sm lg:text-base
               flex items-center justify-between
-              ${
-                isEditing
-                  ? "border-gray-200 cursor-pointer hover:border-gray-300"
-                  : "border-gray-200 bg-white opacity-50 cursor-not-allowed select-none pointer-events-none"
+              ${isEditing
+                ? "border-gray-200 cursor-pointer hover:border-gray-300"
+                : "border-gray-200 bg-white opacity-50 cursor-not-allowed select-none pointer-events-none"
               }
             `}
           >
@@ -433,9 +431,8 @@ export default function EditProfile() {
 
           {/* Gender Selection */}
           <div
-            className={`flex flex-col gap-1.5 transition-all text-sm ${
-              !isEditing ? "opacity-50 pointer-events-none select-none" : ""
-            }`}
+            className={`flex flex-col gap-1.5 transition-all text-sm ${!isEditing ? "opacity-50 pointer-events-none select-none" : ""
+              }`}
           >
             <label className="text-sm font-medium text-gray-900">Gender</label>
             <div className="flex gap-3">
@@ -447,15 +444,13 @@ export default function EditProfile() {
                   onClick={() => isEditing && set("gender")(g)}
                   className={`
                     flex-1 py-3.5 lg:py-4 rounded-xl border text-sm lg:text-base font-medium capitalize transition-all
-                    ${
-                      isEditing
-                        ? "cursor-pointer hover:border-gray-300"
-                        : "cursor-not-allowed opacity-50 pointer-events-none"
+                    ${isEditing
+                      ? "cursor-pointer hover:border-gray-300"
+                      : "cursor-not-allowed opacity-50 pointer-events-none"
                     }
-                    ${
-                      (isEditing ? form.gender : saved.gender) === g
-                        ? "bg-[#C94621] text-white border-[#C94621]"
-                        : "bg-white text-gray-600 border-gray-200"
+                    ${(isEditing ? form.gender : saved.gender) === g
+                      ? "bg-[#C94621] text-white border-[#C94621]"
+                      : "bg-white text-gray-600 border-gray-200"
                     }
                   `}
                 >
@@ -572,11 +567,10 @@ export default function EditProfile() {
                 <button
                   onClick={drawerHasPhoto ? handleRemoveClick : undefined}
                   disabled={!drawerHasPhoto}
-                  className={`flex items-center gap-3 py-4 px-2 rounded-xl transition-colors text-left ${
-                    drawerHasPhoto
+                  className={`flex items-center gap-3 py-4 px-2 rounded-xl transition-colors text-left ${drawerHasPhoto
                       ? "hover:bg-red-50 cursor-pointer"
                       : "opacity-40 cursor-not-allowed"
-                  }`}
+                    }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">
                     <Trash2 size={20} className="text-red-500" />

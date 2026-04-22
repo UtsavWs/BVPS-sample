@@ -83,7 +83,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
   };
 
   const info = await getTransporter().sendMail(mailOptions);
-  console.log(`📧 Email sent: ${info.messageId}`);
+  //console.log(`📧 Email sent: ${info.messageId}`);
   return info;
 };
 
