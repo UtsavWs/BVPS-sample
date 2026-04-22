@@ -20,6 +20,7 @@ import LoadingScreen from "../components/ui/LoadingScreen";
 import DatePicker from "../components/forms/DatePicker";
 import { apiGet } from "../api/api";
 import { parseDateDisplay } from "../utils/dateUtils";
+import { Pencil } from "lucide-react";
 
 const DRAWER_W = "clamp(260px, 22vw, 320px)";
 const TABS = ["Current Week", "Last Week", "Month"];
@@ -470,7 +471,7 @@ const UserDashboard = () => {
               onClick={() => navigate("/edit-profile")}
               className="relative z-10 flex items-center gap-2 shrink-0 px-3 py-2 md:px-5 md:py-2.5 rounded-xl bg-[#F9EDE8] text-[#D64B2A] border border-[#D64B2A]/20 text-xs md:text-sm font-semibold hover:bg-[#D64B2A] hover:text-white transition-all cursor-pointer"
             >
-              <img src="/assets/logos/pencil.svg" alt="pencil" />
+              <Pencil className="w-4.5 h-4.5" color="#C94621" />
               <span className="hidden md:inline">Edit Profile</span>
             </button>
           </div>

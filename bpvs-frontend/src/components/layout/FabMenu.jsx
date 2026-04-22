@@ -34,6 +34,7 @@ function FabMenu({
       style={{ backdropFilter: menuOpen ? "blur(2px)" : "" }}
       className={[
         "flex flex-col items-end gap-2.5",
+        menuOpen ? "pointer-events-auto" : "pointer-events-none",
         mobile
           ? "fixed bottom-5 right-5 z-200"
           : "absolute bottom-8 right-8 z-60",
@@ -102,6 +103,7 @@ function FabMenu({
           "bg-[#D64B2A] text-white flex items-center justify-center",
           "shadow-[0_6px_20px_rgba(214,75,42,0.45)]",
           "hover:bg-[#c0392b] active:scale-95 border-none cursor-pointer",
+          "pointer-events-auto",
         ].join(" ")}
         style={{
           transform: menuOpen ? "rotate(45deg)" : "rotate(0deg)",
