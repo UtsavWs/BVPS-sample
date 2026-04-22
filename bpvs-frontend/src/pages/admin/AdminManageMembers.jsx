@@ -10,6 +10,7 @@ import {
   UserCheck,
   Clock,
   UserX,
+  Pencil,
 } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
@@ -108,7 +109,7 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
           title="Edit"
           className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-stone-100 transition text-gray-400 hover:text-gray-700"
         >
-          <img src="/assets/logos/pencil.svg" alt="pencil" />
+          <Pencil className="text-gray-700" size={14} strokeWidth={2} />
         </button>
         <button
           onClick={() => onDelete(u._id)}
