@@ -272,7 +272,7 @@ export function AuthProvider({ children }) {
       isAdmin: user?.role === "admin",
       isSubadmin: user?.role === "subadmin",
       isStaff: user?.role === "admin" || user?.role === "subadmin",
-      isApproved: user?.status === "active",
+      isApproved: user?.isApproved === true,
       login,
       register,
       verifyOtp,

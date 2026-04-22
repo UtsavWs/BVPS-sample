@@ -192,6 +192,7 @@ exports.login = async (req, res) => {
           mobile: user.mobile,
           role: user.role,
           status: user.status,
+          isApproved: user.isApproved,
           profileImage: user.profileImage,
           bannerImage: user.bannerImage,
           contactInformation: user.contactInformation,
