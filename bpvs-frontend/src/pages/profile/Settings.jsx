@@ -62,7 +62,7 @@ const Settings = () => {
               onClick={() => navigate(route)}
               className="
                 w-full flex items-center justify-between
-                px-4 py-4
+                px-4 py-2.5
                 bg-[#FDF8F5]
                 rounded-2xl
                 border border-transparent

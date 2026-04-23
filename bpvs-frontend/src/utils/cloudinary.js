@@ -20,6 +20,7 @@ export const uploadToCloudinary = async (file, options = {}) => {
   const res = await fetch(CLOUDINARY_URL, {
     method: 'POST',
     body: formData,
+    signal: options.signal,
   });
 
   if (!res.ok) {

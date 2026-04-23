@@ -314,6 +314,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
       >
         <div
           className="bg-white rounded-t-3xl w-full p-5"
+          style={{ animation: "dp-slide-up 0.2s ease-out both" }}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
@@ -328,6 +329,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
       >
         <div
           className="bg-white rounded-2xl shadow-2xl w-90 lg:w-100 p-6"
+          style={{ animation: "dp-fade-scale 0.28s ease-out both" }}
           onClick={(e) => e.stopPropagation()}
         >
           <CalendarInner />

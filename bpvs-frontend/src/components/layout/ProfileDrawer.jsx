@@ -4,7 +4,7 @@ import { getProfileImage } from "../ui/RoleBadge";
 
 const MenuItem = memo(({ icon, label, active = false }) => (
   <button
-    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition ${active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-gray-50"
+    className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition ${active ? "bg-[#FBEBE7] text-[#D64B2A]" : "text-gray-700 hover:bg-[#FBEBE7]"
       }`}
   >
     <span className={active ? "text-[#D64B2A]" : "text-gray-500"}>{icon}</span>
@@ -39,7 +39,7 @@ const ProfileDrawer = memo(
             <img
               src={getProfileImage(user?.profileImage)}
               alt="Profile"
-              className="w-14 h-14 rounded-xl ring-1 ring-[#D64B2A] object-cover flexshrink-0 border border-gray-200"
+              className="w-14 h-14 rounded-xl ring-1 ring-[#D64B2A] object-cover shrink-0 border border-gray-200"
             />
             <div>
               <p className="text-sm font-medium text-[#111111] leading-snug">
@@ -59,20 +59,20 @@ const ProfileDrawer = memo(
           {/* Menu Items */}
           <nav className="px-3 flex flex-col gap-0.5">
             <Link to="/my-profile">
-              <MenuItem icon={<img src="/assets/logos/ProfileIcon.svg" size={18} />} label="My Profile" active />
+              <MenuItem icon={<img src="/assets/logos/ProfileIcon.svg" />} label="My Profile" />
             </Link>
             {isApproved && (
               <Link to="/members">
-                <MenuItem icon={<img src="/assets/logos/bvpsMembers.svg" size={18} />} label="BPVS Members" />
+                <MenuItem icon={<img src="/assets/logos/bvpsMembers.svg" />} label="BPVS Members" />
               </Link>
             )}
             {isAdmin && (
               <Link to="/admin">
-                <MenuItem icon={<img src="/assets/logos/shieldIcon.svg" size={18} />} label="Admin Panel" />
+                <MenuItem icon={<img src="/assets/logos/shieldIcon.svg" />} label="Admin Panel" />
               </Link>
             )}
             <Link to="/settings">
-              <MenuItem icon={<img src="/assets/logos/settingIcon.svg" size={18} />} label="Settings" />
+              <MenuItem icon={<img src="/assets/logos/settingIcon.svg" />} label="Settings" />
             </Link>
           </nav>
 

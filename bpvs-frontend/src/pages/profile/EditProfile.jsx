@@ -87,9 +87,13 @@ export default function EditProfile() {
 
   const profileInputRef = useRef(null);
   const bannerInputRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const [profilePreview, setProfilePreview] = useState(null);
   const [bannerPreview, setBannerPreview] = useState(null);
+
+  const [profileFile, setProfileFile] = useState(null);
+  const [bannerFile, setBannerFile] = useState(null);
 
   const [profileUploading, setProfileUploading] = useState(false);
   const [bannerUploading, setBannerUploading] = useState(false);
@@ -121,6 +125,15 @@ export default function EditProfile() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Abort ongoing uploads on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   const handleSubmit = async () => {
     if (!user) return;
 
@@ -131,8 +144,49 @@ export default function EditProfile() {
 
     try {
       setIsSaving(true);
-      const dataToSend = formatToBackend(form);
+      abortControllerRef.current = new AbortController();
+      const signal = abortControllerRef.current.signal;
+      let updatedForm = { ...form };
 
+      // Upload profile image if a new file was selected
+      if (profileFile) {
+        setProfileUploading(true);
+        try {
+          const url = await uploadToCloudinary(profileFile, { folder: "bpvs/profiles", signal });
+          updatedForm.profileImage = url;
+          setProfileFile(null);
+          setProfilePreview(null);
+        } catch (err) {
+          if (err.name === "AbortError") return;
+          console.error("Failed to upload profile image:", err);
+          alert("Failed to upload profile image. Please try again.");
+          setIsSaving(false);
+          setProfileUploading(false);
+          return;
+        }
+        setProfileUploading(false);
+      }
+
+      // Upload banner image if a new file was selected
+      if (bannerFile) {
+        setBannerUploading(true);
+        try {
+          const url = await uploadToCloudinary(bannerFile, { folder: "bpvs/banners", signal });
+          updatedForm.bannerImage = url;
+          setBannerFile(null);
+          setBannerPreview(null);
+        } catch (err) {
+          if (err.name === "AbortError") return;
+          console.error("Failed to upload banner image:", err);
+          alert("Failed to upload banner image. Please try again.");
+          setIsSaving(false);
+          setBannerUploading(false);
+          return;
+        }
+        setBannerUploading(false);
+      }
+
+      const dataToSend = formatToBackend(updatedForm);
       const res = await updateUser(dataToSend);
 
       if (res.success) {
@@ -142,15 +196,19 @@ export default function EditProfile() {
 
         setProfilePreview(null);
         setBannerPreview(null);
+        setProfileFile(null);
+        setBannerFile(null);
         setIsEditing(false);
       } else {
         alert(res.message || "Failed to save profile");
       }
     } catch (err) {
+      if (err.name === "AbortError") return;
       console.error("Failed to save profile:", err);
       alert("Failed to save profile. Please try again.");
     } finally {
       setIsSaving(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -158,58 +216,39 @@ export default function EditProfile() {
     setForm(saved);
     setProfilePreview(null);
     setBannerPreview(null);
+    setProfileFile(null);
+    setBannerFile(null);
     setProfileUploading(false);
     setBannerUploading(false);
     setIsEditing(false);
   };
 
-  const handleProfileImageChange = async (e) => {
+  const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setProfileFile(file);
 
     const reader = new FileReader();
     reader.onloadend = () => setProfilePreview(reader.result);
     reader.readAsDataURL(file);
-
-    setProfileUploading(true);
-    try {
-      const url = await uploadToCloudinary(file, { folder: "bpvs/profiles" });
-      setForm((prev) => ({ ...prev, profileImage: url }));
-      setProfilePreview(null);
-    } catch (err) {
-      console.error("Failed to upload profile image:", err);
-      setProfilePreview(null);
-      alert("Failed to upload profile image. Please try again.");
-    } finally {
-      setProfileUploading(false);
-    }
   };
 
-  const handleBannerImageChange = async (e) => {
+  const handleBannerImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setBannerFile(file);
 
     const reader = new FileReader();
     reader.onloadend = () => setBannerPreview(reader.result);
     reader.readAsDataURL(file);
-
-    setBannerUploading(true);
-    try {
-      const url = await uploadToCloudinary(file, { folder: "bpvs/banners" });
-      setForm((prev) => ({ ...prev, bannerImage: url }));
-      setBannerPreview(null);
-    } catch (err) {
-      console.error("Failed to upload banner image:", err);
-      setBannerPreview(null);
-      alert("Failed to upload banner image. Please try again.");
-    } finally {
-      setBannerUploading(false);
-    }
   };
 
   const handleRemoveProfileImage = () => {
     setForm((prev) => ({ ...prev, profileImage: "" }));
     setProfilePreview(null);
+    setProfileFile(null);
     if (profileInputRef.current) profileInputRef.current.value = "";
     setPhotoDrawer(null);
   };
@@ -217,6 +256,7 @@ export default function EditProfile() {
   const handleRemoveBannerImage = () => {
     setForm((prev) => ({ ...prev, bannerImage: "" }));
     setBannerPreview(null);
+    setBannerFile(null);
     if (bannerInputRef.current) bannerInputRef.current.value = "";
     setPhotoDrawer(null);
   };
@@ -275,7 +315,8 @@ export default function EditProfile() {
         >
           <button
             onClick={() => navigate(-1)}
-            className="absolute left-4 sm:left-8 md:left-10 lg:left-10 p-1 text-gray-900"
+            disabled={isSaving || isUploading}
+            className="absolute left-4 sm:left-8 md:left-10 lg:left-10 p-1 text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowLeft size={22} strokeWidth={2.2} />
           </button>
@@ -473,10 +514,12 @@ export default function EditProfile() {
           >
             <button
               onClick={handleCancel}
+              disabled={isSaving || isUploading}
               className="
                 flex-1 py-4 rounded-2xl
                 bg-gray-100 text-gray-700 font-semibold
                 hover:bg-gray-200 transition-colors
+                disabled:opacity-50 disabled:cursor-not-allowed
               "
             >
               Cancel

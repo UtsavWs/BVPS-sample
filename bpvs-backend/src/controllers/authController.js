@@ -29,7 +29,7 @@ const setOtp = async (user, action, email) => {
   });
 
   // Transactional email subject line.
-  const subject = `BPVS Account Verification Code`;
+  const subject = `Your BPVS Account Verification Code`;
   try {
     await sendEmail({
       to: email,

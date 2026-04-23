@@ -151,12 +151,10 @@ export default function BusinessInfo() {
 
         {/* ── Form body ── */}
         <div
-          className="
-          px-4 pt-5 pb-28 flex flex-col gap-4
+          className="px-4 pt-5 pb-28 flex flex-col gap-4
           sm:px-8 sm:pt-7 sm:pb-28 sm:gap-5
           lg:px-10 lg:pt-8 lg:pb-24
-          lg:grid lg:grid-cols-2 lg:gap-x-7 lg:gap-y-6 lg:items-start
-        "
+          lg:grid lg:grid-cols-2 lg:gap-x-7 lg:gap-y-6 lg:items-start"
         >
           <InputFields
             label="Company Name"
