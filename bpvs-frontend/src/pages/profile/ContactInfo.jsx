@@ -149,6 +149,7 @@ export default function ContactInfo() {
         >
           <InputFields
             label="Mobile No"
+            type="tel"
             placeholder="Enter Mobile No"
             value={isEditing ? form.mobileNo : saved.mobileNo}
             isEditing={isEditing}

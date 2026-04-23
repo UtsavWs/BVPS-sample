@@ -66,6 +66,7 @@ export default function BusinessInfo() {
   const [isLoading, setIsLoading] = useState(false);
   const [saved, setSaved] = useState(INITIAL_DATA);
   const [form, setForm] = useState(INITIAL_DATA);
+  const [errors, setErrors] = useState({});
 
   // Fetch business info from database
   useEffect(() => {
@@ -93,6 +94,18 @@ export default function BusinessInfo() {
   const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 
   const handleSubmit = async () => {
+    setErrors({});
+    if (form.gstNo) {
+      if (form.gstNo.length < 15) {
+        setErrors({ gstNo: "GST number must be at least 15 characters." });
+        return;
+      }
+      if (!/^(?=.*\d)[A-Z0-9]+$/.test(form.gstNo)) {
+        setErrors({ gstNo: "Must contain only uppercase letters and numbers, and include at least one number." });
+        return;
+      }
+    }
+
     try {
       setIsLoading(true);
       const dataToSend = formatToBackend(form);
@@ -174,10 +187,13 @@ export default function BusinessInfo() {
 
           <InputFields
             label="GST No"
+            maxLength={15}
+            minLength={15}
             placeholder="Enter GST No"
             value={isEditing ? form.gstNo : saved.gstNo}
             isEditing={isEditing}
             onChange={set("gstNo")}
+            error={errors.gstNo}
           />
 
           {/* ── Date of Join ── */}

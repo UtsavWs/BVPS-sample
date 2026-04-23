@@ -119,8 +119,13 @@ export default function Login() {
             {/* Remember Me & Forgot Password */}
             <div className="flex items-center justify-between">
               <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
                 <div
-                  onClick={() => setRememberMe(!rememberMe)}
                   className={`rounded border flex items-center justify-center transition-all cursor-pointer ${
                     rememberMe
                       ? "bg-[#C1512D] border-[#C1512D]"

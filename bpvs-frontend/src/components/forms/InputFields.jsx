@@ -4,6 +4,7 @@ const InputFields = ({
   label,
   placeholder,
   value,
+  type = "text",
   textarea = false,
   isEditing,
   onChange,
@@ -11,6 +12,8 @@ const InputFields = ({
   prefix,
   readOnly = false,
   rows = 4,
+  maxLength,
+  minLength
 }) => {
   const borderColor = error
     ? "border-red-400 focus:border-red-400 focus:ring-red-400/10"
@@ -28,6 +31,8 @@ const InputFields = ({
             onChange={onChange}
             placeholder={placeholder}
             rows={rows}
+            maxLength={maxLength}
+            minLength={minLength}
             className={`
               w-full rounded-xl px-4 py-3.5
               text-sm lg:text-base
@@ -52,11 +57,28 @@ const InputFields = ({
               </span>
             )}
             <input
-              type={prefix === "+91" ? "tel" : "text"}
+              type={prefix === "+91" ? "tel" : type}
+              inputMode={type === "tel" ? "numeric" : undefined}
+              pattern={type === "tel" ? "[0-9]*" : undefined}
               value={value || ""}
-              onChange={onChange}
+              onChange={(e) => {
+                if (type === "tel") {
+                  const cleaned = e.target.value.replace(/\D/g, "");
+                  onChange({ ...e, target: { ...e.target, value: cleaned } });
+                } else {
+                  onChange(e);
+                }
+              }}
+              onKeyDown={type === "tel" ? (e) => {
+                const allowed = ["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
+                if (!allowed.includes(e.key) && !/^\d$/.test(e.key)) {
+                  e.preventDefault();
+                }
+              } : undefined}
               placeholder={placeholder}
               readOnly={readOnly}
+              maxLength={maxLength}
+              minLength={minLength}
               className={`
                 flex-1 h-13 px-4 py-3.5 lg:py-4
                 text-sm lg:text-base text-gray-800 placeholder-gray-400 bg-transparent outline-none

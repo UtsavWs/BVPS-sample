@@ -18,8 +18,9 @@ exports.registerSchema = Joi.object({
     "string.email": "Please provide a valid email address.",
     "any.required": "Email is required.",
   }),
-  password: Joi.string().min(8).required().messages({
+  password: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
     "string.min": "Password must be at least 8 characters.",
+    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
     "any.required": "Password is required.",
   }),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
@@ -99,8 +100,9 @@ exports.resetPasswordSchema = Joi.object({
       "string.length": "OTP must be 6 digits.",
       "any.required": "OTP is required.",
     }),
-  newPassword: Joi.string().min(8).required().messages({
+  newPassword: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
     "string.min": "Password must be at least 8 characters.",
+    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
     "any.required": "New password is required.",
   }),
   confirmPassword: Joi.string()
@@ -139,7 +141,10 @@ const contactInfoSchema = Joi.object({
 const businessInfoSchema = Joi.object({
   companyName: Joi.string().trim().allow(""),
   brandName: Joi.string().trim().allow(""),
-  gstNo: Joi.string().trim().allow(""),
+  gstNo: Joi.string().trim().allow("").min(15).pattern(/^(?=.*\d)[A-Z0-9]+$/).messages({
+    "string.min": "GST number must be at least 15 characters.",
+    "string.pattern.base": "GST number must contain only uppercase letters and numbers, and include at least one number.",
+  }),
   dateOfJoin: Joi.date().allow(null),
   profession: Joi.string().trim().allow(""),
   aboutBusiness: Joi.string().trim().allow(""),
@@ -177,8 +182,9 @@ exports.changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required().messages({
     "any.required": "Current password is required.",
   }),
-  newPassword: Joi.string().min(8).required().messages({
+  newPassword: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
     "string.min": "New password must be at least 8 characters.",
+    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
     "any.required": "New password is required.",
   }),
   confirmPassword: Joi.string()

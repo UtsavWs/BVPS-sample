@@ -5,6 +5,7 @@ import DesktopPagination from "../../components/ui/DesktopPagination";
 import { useNavigate } from "react-router-dom";
 import { apiGet } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
+import ActivityDetailModal from "../../components/modals/ActivityDetailModal";
 
 const ITEMS_PER_PAGE = 20;
 const MOBILE_BATCH_SIZE = 8;
@@ -47,6 +48,9 @@ const mapSlip = (slip, tab) => {
     amount: slip.amount,
     type: tab === "Given" ? "thankYouGiven" : "thankYouReceived",
     typeLabel: "Thank You",
+    rawData: slip,
+    logType: "thankyouslip",
+    tab
   };
 };
 
@@ -61,6 +65,9 @@ const mapReferral = (referral, tab) => {
     rawDate: referral.createdAt,
     type: tab === "Given" ? "referralGiven" : "referralReceived",
     typeLabel: "Referral",
+    rawData: referral,
+    logType: "referral",
+    tab
   };
 };
 
@@ -75,6 +82,9 @@ const mapB2b = (b2b, tab) => {
     rawDate: b2b.createdAt,
     type: tab === "Given" ? "b2bGiven" : "b2bReceived",
     typeLabel: "B2B",
+    rawData: b2b,
+    logType: "b2b",
+    tab
   };
 };
 
@@ -103,8 +113,8 @@ const ActivityIcon = ({ type }) => (
 );
 
 // ── Mobile Log Row ─────────────────────────────────────────────────────────────
-const MobileLogRow = memo(({ log }) => (
-  <div className="flex items-center gap-3.5 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-stone-100 hover:bg-stone-50 transition-colors cursor-pointer">
+const MobileLogRow = memo(({ log, onClick }) => (
+  <div onClick={onClick} className="flex items-center gap-3.5 px-4 py-3.5 sm:px-6 sm:py-4 border-b border-stone-100 hover:bg-stone-50 transition-colors cursor-pointer">
     <ActivityIcon type={log.type} />
     <div className="flex-1 min-w-0">
       <p className="text-[14.5px] sm:text-base font-semibold text-gray-900 truncate">
@@ -124,8 +134,8 @@ const MobileLogRow = memo(({ log }) => (
 ));
 
 // ── Desktop Table Row ──────────────────────────────────────────────────────────
-const TableRow = ({ log }) => (
-  <tr className="border-b border-stone-100 hover:bg-[#FEF8F6] transition-colors cursor-pointer">
+const TableRow = ({ log, onClick }) => (
+  <tr onClick={onClick} className="border-b border-stone-100 hover:bg-[#FEF8F6] transition-colors cursor-pointer">
     <td className="py-2.5 pl-5 pr-3">
       <ActivityIcon type={log.type} />
     </td>
@@ -158,8 +168,9 @@ export default function ActivityLog() {
   const [receivedLogs, setReceivedLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedLog, setSelectedLog] = useState(null);
   const navigate = useNavigate();
-  const { isAuthenticated, loading: authLoading } = useContext(AuthContext);
+  const { isAuthenticated, loading: authLoading, user } = useContext(AuthContext);
   const mobileSentinelRef = useRef(null);
 
   // Redirect unauthenticated users to login once auth has finished initializing.
@@ -271,6 +282,11 @@ export default function ActivityLog() {
 
   return (
     <div className="bg-white">
+      {/* ── MODAL ───────────────────────────────────────────────────────────── */}
+      {selectedLog && (
+        <ActivityDetailModal log={selectedLog} currentUser={user} onClose={() => setSelectedLog(null)} />
+      )}
+
       {/* ══ MOBILE / TABLET (< lg) ══════════════════════════════════════════ */}
       <div className="lg:hidden w-full sm:max-w-lg sm:mx-auto md:max-w-full md:mx-auto md:rounded-2xl md:shadow-sm">
         <div className="top-0 sticky z-10 bg-white border-b border-stone-100 flex items-center justify-center relative px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 sm:rounded-t-2xl md:rounded-t-2xl">
@@ -314,7 +330,7 @@ export default function ActivityLog() {
           ) : (
             <>
               {visibleMobileLogs.map((log) => (
-                <MobileLogRow key={log.id} log={log} />
+                <MobileLogRow key={log.id} log={log} onClick={() => setSelectedLog(log)} />
               ))}
               {hasMoreMobile && (
                 <div
@@ -435,7 +451,7 @@ export default function ActivityLog() {
                   <TableColgroup />
                   <tbody>
                     {paginatedLogs.map((log) => (
-                      <TableRow key={log.id} log={log} />
+                      <TableRow key={log.id} log={log} onClick={() => setSelectedLog(log)} />
                     ))}
                   </tbody>
                 </table>
