@@ -145,10 +145,9 @@ const AddReferral = () => {
                   type="button"
                   onClick={() => set("referenceType", type)}
                   className={`h-13 rounded-xl border text-[15px] font-semibold transition-all duration-200 cursor-pointer
-                    ${
-                      form.referenceType === type
-                        ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
-                        : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                    ${form.referenceType === type
+                      ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
                     }`}
                 >
                   {type}

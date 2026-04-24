@@ -12,10 +12,9 @@ const TabBar = ({ tabs, active, onChange, className = "" }) => (
         onClick={() => onChange(tab)}
         className={`
           flex-1 py-2 rounded-lg text-[12px] font-light transition-all cursor-pointer
-          ${
-            active === tab
-              ? "bg-[#C94621] text-white"
-              : "bg-[#C946211F] text-[#D64B2A]"
+          ${active === tab
+            ? "bg-[#C94621] text-white"
+            : "bg-[#C946211F] text-[#D64B2A]"
           }
         `}
       >

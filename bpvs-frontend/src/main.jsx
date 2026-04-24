@@ -6,9 +6,9 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { MemberProvider } from './context/MemberContext.jsx'
 
 createRoot(document.getElementById('root')).render(
-    <AuthProvider>
-      <MemberProvider>
-        <App />
-      </MemberProvider>
-    </AuthProvider>
+  <AuthProvider>
+    <MemberProvider>
+      <App />
+    </MemberProvider>
+  </AuthProvider>
 )

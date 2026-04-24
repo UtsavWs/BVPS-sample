@@ -87,14 +87,14 @@ const FilterDropdown = ({
     <button
       onClick={onClick}
       className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] text-left w-full border-none cursor-pointer transition-colors ${checked
-          ? "bg-[#FEF3EF] text-[#C94621] font-medium"
-          : "bg-transparent text-gray-700 hover:bg-stone-50"
+        ? "bg-[#FEF3EF] text-[#C94621] font-medium"
+        : "bg-transparent text-gray-700 hover:bg-stone-50"
         }`}
     >
       <span
         className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${checked
-            ? "bg-[#C94621] border-[#C94621]"
-            : "border-stone-300 bg-white"
+          ? "bg-[#C94621] border-[#C94621]"
+          : "border-stone-300 bg-white"
           }`}
       >
         {checked && (
@@ -263,8 +263,8 @@ const TableRow = ({ member, onClick }) => (
     <td className="py-2.5 px-3">
       <span
         className={`inline-flex px-2.5 py-0.5 rounded-full text-[11px] font-semibold border whitespace-nowrap ${member.role === "subadmin"
-            ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]/30"
-            : "bg-stone-100 text-stone-500 border-stone-200"
+          ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]/30"
+          : "bg-stone-100 text-stone-500 border-stone-200"
           }`}
       >
         {member.role === "subadmin" ? "Admin" : "Member"}
@@ -525,8 +525,8 @@ export default function BvpsMembers() {
                   key={tab}
                   onClick={() => handleTabChange(tab)}
                   className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${filters.tab === tab
-                      ? "bg-[#C94621] text-white shadow-sm"
-                      : "text-stone-500 hover:text-gray-700"
+                    ? "bg-[#C94621] text-white shadow-sm"
+                    : "text-stone-500 hover:text-gray-700"
                     }`}
                 >
                   {tab}
@@ -556,8 +556,8 @@ export default function BvpsMembers() {
                   ref={filterBtnRef}
                   onClick={() => setFilterOpen((v) => !v)}
                   className={`flex items-center gap-2 px-3.5 py-1.75 rounded-lg border text-[13px] font-medium transition-colors cursor-pointer ${activeFilterCount > 0 || filterOpen
-                      ? "bg-[#C94621] text-white border-[#C94621]"
-                      : "bg-white text-stone-600 border-stone-200 hover:border-[#C94621] hover:text-[#C94621]"
+                    ? "bg-[#C94621] text-white border-[#C94621]"
+                    : "bg-white text-stone-600 border-stone-200 hover:border-[#C94621] hover:text-[#C94621]"
                     }`}
                 >
                   <Filter size={13} />

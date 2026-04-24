@@ -376,11 +376,10 @@ export default function ActivityLog() {
                 <button
                   key={tab}
                   onClick={() => handleTabChange(tab)}
-                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${
-                    activeTab === tab
+                  className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
                       ? "bg-[#C94621] text-white shadow-sm"
                       : "text-stone-500 hover:text-gray-700"
-                  }`}
+                    }`}
                 >
                   {tab}
                 </button>

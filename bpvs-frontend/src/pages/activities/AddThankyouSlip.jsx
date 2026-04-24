@@ -124,10 +124,9 @@ const AddThankYouSlip = () => {
             type="button"
             onClick={() => onChange(opt)}
             className={`h-13 rounded-xl border text-[15px] font-semibold transition-all duration-200 cursor-pointer
-              ${
-                value === opt
-                  ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+              ${value === opt
+                ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
+                : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
               }`}
           >
             {opt}

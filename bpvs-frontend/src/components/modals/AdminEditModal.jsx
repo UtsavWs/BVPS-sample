@@ -124,13 +124,12 @@ export default function AdminEditModal({
                   key={opt.value}
                   type="button"
                   onClick={() => setStatus(opt.value)}
-                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold border transition ${
-                    status === opt.value
+                  className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold border transition ${status === opt.value
                       ? opt.value === "active"
                         ? "bg-green-50 text-green-700 border-green-200"
                         : "bg-red-50 text-red-500 border-red-200"
                       : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-                  }`}
+                    }`}
                 >
                   {opt.label}
                 </button>
@@ -150,11 +149,10 @@ export default function AdminEditModal({
                     key={opt.value}
                     type="button"
                     onClick={() => setRole(opt.value)}
-                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold border transition ${
-                      role === opt.value
+                    className={`flex-1 py-2 px-3 rounded-xl text-xs font-semibold border transition ${role === opt.value
                         ? "bg-[#FEF8F6] text-[#C94621] border-[#C94621]"
                         : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-                    }`}
+                      }`}
                   >
                     {opt.label}
                   </button>
@@ -177,11 +175,10 @@ export default function AdminEditModal({
           <button
             onClick={handleSave}
             disabled={loading}
-            className={`flex-1 py-3 rounded-xl text-sm font-semibold text-white transition ${
-              loading
+            className={`flex-1 py-3 rounded-xl text-sm font-semibold text-white transition ${loading
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-[#C94621] hover:bg-[#B33D1E]"
-            }`}
+              }`}
           >
             {loading ? "Saving..." : "Save Changes"}
           </button>

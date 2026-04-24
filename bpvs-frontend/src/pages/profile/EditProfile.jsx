@@ -611,8 +611,8 @@ export default function EditProfile() {
                   onClick={drawerHasPhoto ? handleRemoveClick : undefined}
                   disabled={!drawerHasPhoto}
                   className={`flex items-center gap-3 py-4 px-2 rounded-xl transition-colors text-left ${drawerHasPhoto
-                      ? "hover:bg-red-50 cursor-pointer"
-                      : "opacity-40 cursor-not-allowed"
+                    ? "hover:bg-red-50 cursor-pointer"
+                    : "opacity-40 cursor-not-allowed"
                     }`}
                 >
                   <div className="w-10 h-10 rounded-full bg-red-50 flex items-center justify-center">

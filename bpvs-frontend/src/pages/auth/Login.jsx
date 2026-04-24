@@ -126,11 +126,10 @@ export default function Login() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
                 <div
-                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${
-                    rememberMe
+                  className={`rounded border flex items-center justify-center transition-all cursor-pointer ${rememberMe
                       ? "bg-[#C1512D] border-[#C1512D]"
                       : "bg-white border-gray-300"
-                  }`}
+                    }`}
                   style={{ width: "18px", height: "18px", minWidth: "18px" }}
                 >
                   {rememberMe && (
@@ -167,9 +166,8 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${
-                isLoading ? "opacity-70 cursor-not-allowed" : ""
-              }`}
+              className={`w-full bg-[#C1512D] text-white py-3 rounded-xl font-semibold text-base active:scale-[0.99] transition-all ${isLoading ? "opacity-70 cursor-not-allowed" : ""
+                }`}
             >
               {isLoading ? "Verifying..." : "Login"}
             </button>

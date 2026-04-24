@@ -282,7 +282,7 @@ export function AuthProvider({ children }) {
       clearError,
     }),
     [user, token, isInitializing, isProcessing, error,
-     login, register, verifyOtp, resendOtp, logout, updateUser, clearError],
+      login, register, verifyOtp, resendOtp, logout, updateUser, clearError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

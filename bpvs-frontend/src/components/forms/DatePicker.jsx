@@ -187,17 +187,15 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
   const RangeBar = () => (
     <div className="flex items-center justify-between bg-[#F9EDE8] rounded-xl px-4 py-2.5 mb-4 gap-2">
       <span
-        className={`text-[13px] font-semibold flex-1 text-center ${
-          startSel ? "text-[#D64B2A]" : "text-gray-400"
-        }`}
+        className={`text-[13px] font-semibold flex-1 text-center ${startSel ? "text-[#D64B2A]" : "text-gray-400"
+          }`}
       >
         {formatSel(startSel) || "Start date"}
       </span>
       <span className="text-gray-300 text-xs shrink-0">→</span>
       <span
-        className={`text-[13px] font-semibold flex-1 text-center ${
-          endSel ? "text-[#D64B2A]" : "text-gray-400"
-        }`}
+        className={`text-[13px] font-semibold flex-1 text-center ${endSel ? "text-[#D64B2A]" : "text-gray-400"
+          }`}
       >
         {formatSel(endSel) || "End date"}
       </span>
@@ -228,13 +226,12 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
                 setMonth(i);
                 setView("date");
               }}
-              className={`py-2 rounded-lg text-sm border-none ${
-                disabled
+              className={`py-2 rounded-lg text-sm border-none ${disabled
                   ? "bg-gray-50 text-gray-300 cursor-not-allowed"
                   : month === i
                     ? "bg-[#D64B2A] text-white cursor-pointer"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer"
-              }`}
+                }`}
             >
               {SHORT_MONTHS[i]}
             </button>
@@ -317,7 +314,6 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
           style={{ animation: "dp-slide-up 0.2s ease-out both" }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-5" />
           <CalendarInner />
         </div>
       </div>

@@ -104,16 +104,33 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
           <div className="py-2.5">
             <h4 className="text-[11px] font-bold text-stone-400 uppercase tracking-wider mb-2">Participants</h4>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className="text-[11px] text-stone-500 mb-0.5">Given By</p>
-                <p className="text-[13px] font-medium text-gray-900">{givenBy?.fullName || "Unknown"}</p>
-                <p className="text-[11.5px] text-gray-500">{getCompany(givenBy)}</p>
-              </div>
-              <div>
-                <p className="text-[11px] text-stone-500 mb-0.5">Received By</p>
-                <p className="text-[13px] font-medium text-gray-900">{receivedBy?.fullName || "Unknown"}</p>
-                <p className="text-[11.5px] text-gray-500">{getCompany(receivedBy)}</p>
-              </div>
+              {isGiven ? (
+                <>
+                  <div>
+                    <p className="text-[11px] text-stone-500 mb-0.5">Given By</p>
+                    <p className="text-[13px] font-medium text-gray-900">{givenBy?.fullName || "Unknown"}</p>
+                    <p className="text-[11.5px] text-gray-500">{getCompany(givenBy)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-stone-500 mb-0.5">Received By</p>
+                    <p className="text-[13px] font-medium text-gray-900">{receivedBy?.fullName || "Unknown"}</p>
+                    <p className="text-[11.5px] text-gray-500">{getCompany(receivedBy)}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <p className="text-[11px] text-stone-500 mb-0.5">Received By</p>
+                    <p className="text-[13px] font-medium text-gray-900">{receivedBy?.fullName || "Unknown"}</p>
+                    <p className="text-[11.5px] text-gray-500">{getCompany(receivedBy)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-stone-500 mb-0.5">Given By</p>
+                    <p className="text-[13px] font-medium text-gray-900">{givenBy?.fullName || "Unknown"}</p>
+                    <p className="text-[11.5px] text-gray-500">{getCompany(givenBy)}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
@@ -166,9 +183,9 @@ const DetailRow = ({ icon, label, value }) => {
         <div className="shrink-0">{icon}</div>
         <span className="text-[12.5px] truncate" title={label}>{label}</span>
       </div>
-      <div 
+      <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`text-[13px] font-medium text-gray-800 text-left max-w-[50%] sm:max-w-[60%] cursor-pointer select-none transition-all ${isExpanded ? "break-words whitespace-normal" : "truncate"}`} 
+        className={`text-[13px] font-medium text-gray-800 text-left max-w-[50%] sm:max-w-[60%] cursor-pointer select-none transition-all ${isExpanded ? "break-words whitespace-normal" : "truncate"}`}
         title={isExpanded ? "" : "Tap to see more"}
       >
         {value}

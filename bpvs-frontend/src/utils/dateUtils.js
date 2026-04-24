@@ -1,14 +1,14 @@
 const MONTHS_SHORT = [
-  "Jan","Feb","Mar","Apr","May","Jun",
-  "Jul","Aug","Sep","Oct","Nov","Dec"
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 ];
 
 const MONTHS_FULL = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December"
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
 ];
 
-const WEEKDAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Backend Date/ISO → "04 Mar, 2026"
 export const formatDateDisplay = (date) => {

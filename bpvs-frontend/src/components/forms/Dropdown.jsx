@@ -55,8 +55,8 @@ export default function Dropdown({
     if (onSearchChange) return options; // Server side search handles filtering
     return searchable
       ? options.filter((opt) =>
-          opt.toLowerCase().includes(localSearch.toLowerCase()),
-        )
+        opt.toLowerCase().includes(localSearch.toLowerCase()),
+      )
       : options;
   }, [options, localSearch, searchable, onSearchChange]);
 
