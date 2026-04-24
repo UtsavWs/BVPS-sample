@@ -17,6 +17,7 @@ import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
 import AdminEditModal from "../../components/modals/AdminEditModal";
 import DesktopPagination from "../../components/ui/DesktopPagination";
 import { StatusPill } from "../../components/ui/RoleBadge";
+import { formatDate } from "../../utils/dateUtils";
 
 const ITEMS_PER_PAGE = 20;
 const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
@@ -94,13 +95,7 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
       />
     </td>
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
-      {u.createdAt
-        ? new Date(u.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
-        : "—"}
+      {formatDate(u.createdAt)}
     </td>
     <td className="py-2.5 px-3">
       <div className="flex items-center gap-1">

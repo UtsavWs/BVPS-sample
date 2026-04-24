@@ -17,7 +17,7 @@ exports.addThankyouSlip = async (req, res) => {
       req.body;
     const givenBy = req.user._id;
 
-    // Business logic: prevent self-slip
+    // prevent self-slip
     if (receivedBy.toString() === givenBy.toString()) {
       return res.status(400).json({
         success: false,
@@ -25,7 +25,7 @@ exports.addThankyouSlip = async (req, res) => {
       });
     }
 
-    // Business logic: verify receiver exists and is active
+    // verify receiver exists and is active
     const receiver = await User.findById(receivedBy);
     if (!receiver || receiver.status !== "active") {
       return res

@@ -267,7 +267,7 @@ UserSchema.methods.addToPasswordHistory = async function () {
   const PASSWORD_HISTORY_LIMIT = 3;
   this.passwordHistory = [this.password, ...(this.passwordHistory || [])].slice(
     0,
-    PASSWORD_HISTORY_LIMIT,
+    PASSWORD_HISTORY_LIMIT
   );
 };
 

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { apiGet } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import ActivityDetailModal from "../../components/modals/ActivityDetailModal";
+import { formatDate } from "../../utils/dateUtils";
 
 const ITEMS_PER_PAGE = 20;
 const MOBILE_BATCH_SIZE = 8;
@@ -17,18 +18,6 @@ const ACTIVITY_ICONS = {
   referralReceived: "/assets/logos/refrralsR.svg",
   b2bGiven: "/assets/logos/b2b.svg",
   b2bReceived: "/assets/logos/b2b.svg",
-};
-
-// ── Format helpers ─────────────────────────────────────────────────────────────
-const formatDate = (iso) => {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "";
-  return d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 };
 
 const getCompany = (u) =>

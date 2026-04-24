@@ -12,6 +12,7 @@ import FabMenu from "../components/layout/FabMenu";
 import TabBar from "../components/ui/TabBar";
 import ProfileDrawer from "../components/layout/ProfileDrawer";
 import StatsCard from "../components/forms/StatsCard";
+import ProfileProgress from "../components/ui/ProfileProgress";
 import { AuthContext } from "../context/AuthContext";
 import {
   getProfileImage,
@@ -59,30 +60,7 @@ const getStatsConfig = (counts) => [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────
-//  Sub-Components (Memoized)
-// ─────────────────────────────────────────────────────────────
 
-const ProfileProgress = memo(({ progress }) => (
-  <div className="w-full">
-    <div className="flex items-center justify-between mb-1.5">
-      <span className="text-[13px] text-gray-500">Profile Complete</span>
-      <span className="text-[13px] font-semibold text-gray-500">
-        {progress}%
-      </span>
-    </div>
-    <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-      <div
-        className="h-full rounded-full transition-all duration-500"
-        style={{
-          width: `${progress}%`,
-          background: "linear-gradient(to right, #C94621, #1F6EBD)",
-        }}
-      />
-    </div>
-  </div>
-));
-ProfileProgress.displayName = "ProfileProgress";
 
 const UserDashboard = () => {
   const navigate = useNavigate();
@@ -271,8 +249,8 @@ const UserDashboard = () => {
       {/* ══════════════════════════════
           MOBILE VIEW
       ══════════════════════════════ */}
-      <div className="md:hidden flex flex-col h-full overflow-hidden">
-        <div className="flex items-center justify-between px-5 pt-4 pb-3 bg-[#F9EDE8] z-20 shrink-0">
+      <div className="md:hidden flex flex-col h-full overflow-hidden shadow-md">
+        <div className="flex items-center justify-between px-5 pt-3 pb-3 bg-[#F9EDE8] z-20 shrink-0">
           <button
             onClick={openDrawer}
             className="p-1 border-none bg-transparent cursor-pointer"
@@ -337,7 +315,7 @@ const UserDashboard = () => {
             <ProfileProgress progress={profileComplete} />
           </div>
 
-          <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-4 pb-6 flex flex-col gap-4">
+          <div className="mt-3 mb-0 flex-1 bg-white rounded-t-2xl shadow-sm px-4 pt-3 pb-4 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-[15px] font-medium text-[#111111]">
                 My Dashboard
@@ -382,7 +360,6 @@ const UserDashboard = () => {
                 <StatsCard key={stat.label} {...stat} loading={statsLoading} />
               ))}
             </div>
-            {/* FabMenu moved out of this scrollable container */}
           </div>
         </div>
       </div>

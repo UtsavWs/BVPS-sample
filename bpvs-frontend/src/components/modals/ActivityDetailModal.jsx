@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X, Calendar, AlignLeft, Info, FileText, Briefcase, MapPin, Mail, Phone, DollarSign } from "lucide-react";
-import { DEFAULT_PROFILE_IMAGE } from "../ui/RoleBadge";
+import { formatDate } from "../../utils/dateUtils";
 
 const ACTIVITY_ICONS = {
   thankYouGiven: "/assets/logos/thankYouslipG.svg",
@@ -16,16 +16,7 @@ const getCompany = (u) =>
   u?.businessInformation?.brandName ||
   "—";
 
-const formatDate = (iso) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
+
 
 export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
   useEffect(() => {

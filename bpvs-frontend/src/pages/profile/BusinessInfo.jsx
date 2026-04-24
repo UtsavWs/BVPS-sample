@@ -6,7 +6,7 @@ import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
 import { apiGet, apiPut } from "../../api/api";
-import { formatDateDisplay, parseDateDisplay } from "../../utils/dateUtils";
+import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 
 const INITIAL_DATA = {
@@ -24,9 +24,7 @@ const INITIAL_DATA = {
 const formatFromBackend = (user) => {
   if (!user) return INITIAL_DATA;
   return {
-    dateOfJoin: user.businessInformation?.dateOfJoin
-      ? formatDateDisplay(user.businessInformation.dateOfJoin)
-      : "",
+    dateOfJoin: formatDate(user.businessInformation?.dateOfJoin, ""),
     companyName: user.businessInformation?.companyName || "",
     brandName: user.businessInformation?.brandName || "",
     gstNo: user.businessInformation?.gstNo || "",

@@ -15,6 +15,7 @@ import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
 import { apiGet } from "../../api/api";
 import { StatusPill } from "../../components/ui/RoleBadge";
+import { formatDate } from "../../utils/dateUtils";
 
 const ITEMS_PER_PAGE = 20;
 const DEFAULT_PROFILE_IMAGE = "/assets/logos/myProfile.svg";
@@ -271,13 +272,7 @@ const TableRow = ({ member, onClick }) => (
       </span>
     </td>
     <td className="py-2.5 px-3 text-[12px] text-gray-500 whitespace-nowrap">
-      {member.createdAt
-        ? new Date(member.createdAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })
-        : "—"}
+      {formatDate(member.createdAt)}
     </td>
     <td className="py-2.5 px-3">
       <StatusPill

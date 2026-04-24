@@ -6,7 +6,7 @@ import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
 import DatePicker from "../../components/forms/DatePicker";
 import { apiGet, apiPut } from "../../api/api";
-import { formatDateDisplay, parseDateDisplay } from "../../utils/dateUtils";
+import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 import {
@@ -33,7 +33,7 @@ const formatFromBackend = (user) => {
   if (!user) return INITIAL_DATA;
   return {
     fullName: user.fullName || "",
-    dateOfBirth: user.dateOfBirth ? formatDateDisplay(user.dateOfBirth) : "",
+    dateOfBirth: formatDate(user.dateOfBirth, ""),
     gender: user.gender || "",
     profileImage: isLocalDefault(user.profileImage) ? "" : user.profileImage,
     bannerImage: isLocalDefault(user.bannerImage) ? "" : user.bannerImage,

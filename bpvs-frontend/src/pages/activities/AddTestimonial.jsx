@@ -2,7 +2,7 @@ import { ArrowLeft, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "../../components/forms/DatePicker";
-import { formatDateDisplay } from "../../utils/dateUtils";
+import { formatDate, formatISODate } from "../../utils/dateUtils";
 import Dropdown from "../../components/forms/Dropdown";
 
 const MEMBER_OPTIONS = [
@@ -33,11 +33,7 @@ const AddTestimonial = () => {
   const fileInputRef = useRef(null);
 
   const handleDateConfirm = (dateDisplay) => {
-    const d = new Date(dateDisplay);
-    const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    set("date", `${yyyy}-${mm}-${dd}`);
+    set("date", formatISODate(dateDisplay));
     setShowDatePicker(false);
   };
 
@@ -162,7 +158,7 @@ const AddTestimonial = () => {
                 ${errors.date ? "border-red-400" : "border-gray-200 hover:border-gray-300"}`}
             >
               <span className={form.date ? "text-gray-800" : "text-gray-400"}>
-                {form.date ? formatDateDisplay(form.date) : "Select Date"}
+                {form.date ? formatDate(form.date) : "Select Date"}
               </span>
               <img
                 src="/assets/logos/calender.svg"

@@ -16,7 +16,7 @@ const signToken = (user, rememberMe = false) =>
 const serverError = (res) =>
   res
     .status(500)
-    .json({ success: false, message: "Server error. Please try again later." });
+    .json({ success: false, message: "Internal Server error. Please try again later." });
 
 const setOtp = async (user, action, email) => {
   const otp = generateOtp();

@@ -10,15 +10,26 @@ const MONTHS_FULL = [
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-// Backend Date/ISO → "04 Mar, 2026"
-export const formatDateDisplay = (date) => {
-  if (!date) return "";
+// Date/ISO → "04 Mar, 2026"
+export const formatDate = (date, fallback = "—") => {
+  if (!date) return fallback;
   const d = new Date(date);
-  if (isNaN(d.getTime())) return "";
+  if (isNaN(d.getTime())) return fallback;
   const day = String(d.getDate()).padStart(2, "0");
   const month = MONTHS_SHORT[d.getMonth()];
   const year = d.getFullYear();
   return `${day} ${month}, ${year}`;
+};
+
+// Date/ISO → "2026-03-04"
+export const formatISODate = (date) => {
+  if (!date) return "";
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 };
 
 // "04 Mar, 2026" → Date object (for sending to backend)

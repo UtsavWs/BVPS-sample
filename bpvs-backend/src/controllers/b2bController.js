@@ -17,11 +17,11 @@ exports.addB2b = async (req, res) => {
     if (memberId.toString() === addedBy.toString()) {
       return res.status(400).json({
         success: false,
-        message: "You cannot add a B2B with yourself.",
+        message: "You cannot create a B2B with yourself",
       });
     }
 
-    // Verify the selected member exists and is active
+    // verify member exists and is active
     const member = await User.findById(memberId);
     if (!member || member.status !== "active") {
       return res
