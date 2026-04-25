@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef, memo } from "react";
+import { useState, useEffect, useContext, useRef, memo, useMemo } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import TabBar from "../../components/ui/TabBar";
 import DesktopPagination from "../../components/ui/DesktopPagination";
@@ -6,10 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { apiGet } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import ActivityDetailModal from "../../components/modals/ActivityDetailModal";
-import { formatDate } from "../../utils/dateUtils";
+import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
+import DatePicker from "../../components/forms/DatePicker";
 
 const ITEMS_PER_PAGE = 20;
-const MOBILE_BATCH_SIZE = 8;
+const MOBILE_BATCH_SIZE = 20;
 
 const ACTIVITY_ICONS = {
   thankYouGiven: "/assets/logos/thankYouslipG.svg",
@@ -158,6 +159,8 @@ export default function ActivityLog() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateRange, setDateRange] = useState({ start: null, end: null });
   const navigate = useNavigate();
   const { isAuthenticated, loading: authLoading, user } = useContext(AuthContext);
   const mobileSentinelRef = useRef(null);
@@ -226,7 +229,24 @@ export default function ActivityLog() {
     };
   }, [authLoading, isAuthenticated]);
 
-  const logs = activeTab === "Given" ? givenLogs : receivedLogs;
+  const baseLogs = activeTab === "Given" ? givenLogs : receivedLogs;
+
+  const logs = useMemo(() => {
+    if (!dateRange.start || !dateRange.end) return baseLogs;
+    const start = parseDateDisplay(dateRange.start);
+    const end = parseDateDisplay(dateRange.end);
+    if (!start || !end) return baseLogs;
+
+    // Set time to boundaries for inclusive comparison
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    return baseLogs.filter((log) => {
+      const logDate = new Date(log.rawDate);
+      return logDate >= start && logDate <= end;
+    });
+  }, [baseLogs, dateRange]);
+
   const totalPages = Math.max(1, Math.ceil(logs.length / ITEMS_PER_PAGE));
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedLogs = logs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
@@ -276,6 +296,19 @@ export default function ActivityLog() {
         <ActivityDetailModal log={selectedLog} currentUser={user} onClose={() => setSelectedLog(null)} />
       )}
 
+      {/* ── DATE PICKER ────────────────────────────────────────────────────── */}
+      {showDatePicker && (
+        <DatePicker
+          mode="range"
+          onConfirm={(range) => {
+            setDateRange(range);
+            setCurrentPage(1);
+            setMobileVisibleCount(MOBILE_BATCH_SIZE);
+          }}
+          onClose={() => setShowDatePicker(false)}
+        />
+      )}
+
       {/* ══ MOBILE / TABLET (< lg) ══════════════════════════════════════════ */}
       <div className="lg:hidden w-full sm:max-w-lg sm:mx-auto md:max-w-full md:mx-auto md:rounded-2xl md:shadow-sm">
         <div className="top-0 sticky z-10 bg-white border-b border-stone-100 flex items-center justify-center relative px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 sm:rounded-t-2xl md:rounded-t-2xl">
@@ -303,12 +336,30 @@ export default function ActivityLog() {
           <h2 className="text-[15px] font-bold text-gray-900">
             {activeTab === "Given" ? "Given Logs" : "Received Logs"}
           </h2>
-          <button className="p-1.5 rounded-lg text-stone-400 hover:text-[#C94621] hover:bg-[#FEF0EA] transition-colors">
-            <img
-              src="/assets/logos/filter-horizontal.svg"
-              className="w-5 h-5"
-            />
-          </button>
+          <div className="flex items-center gap-2">
+            {dateRange.start && (
+              <button
+                onClick={() => setDateRange({ start: null, end: null })}
+                className="text-[12px] text-stone-500 underline"
+              >
+                Clear
+              </button>
+            )}
+            <button
+              onClick={() => setShowDatePicker(true)}
+              className={`p-1.5 rounded-lg transition-colors ${
+                dateRange.start
+                  ? "bg-[#FEF0EA] border border-[#C94621]/20"
+                  : "text-stone-400 hover:text-[#C94621] hover:bg-[#FEF0EA]"
+              }`}
+            >
+              <img
+                src="/assets/logos/filter-horizontal.svg"
+                className="w-5 h-5"
+                style={dateRange.start ? { opacity: 0.8 } : {}}
+              />
+            </button>
+          </div>
         </div>
 
         <div>
@@ -332,11 +383,11 @@ export default function ActivityLog() {
                   </div>
                 </div>
               )}
-              {!hasMoreMobile && logs.length > MOBILE_BATCH_SIZE && (
+              {/* {!hasMoreMobile && logs.length > MOBILE_BATCH_SIZE && (
                 <div className="flex justify-center px-4 py-5 text-[12px] text-stone-400">
                   You're all caught up
                 </div>
-              )}
+              )} */}
             </>
           )}
         </div>
@@ -376,23 +427,38 @@ export default function ActivityLog() {
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-[13px] text-stone-400">
-                Given:{" "}
+              <span className="text-[13px] text-stone-400 hidden sm:inline">
+                Given:
                 <span className="font-semibold text-gray-700">
                   {givenLogs.length}
                 </span>
                 <span className="mx-2 text-stone-300">|</span>
-                Received:{" "}
+                Received:
                 <span className="font-semibold text-gray-700">
                   {receivedLogs.length}
                 </span>
               </span>
-              <button className="flex items-center gap-1.5 px-3 py-1.75 rounded-lg border border-stone-200 text-stone-500 text-[13px] hover:border-[#C94621] hover:text-[#C94621] hover:bg-[#FEF8F6] transition-all cursor-pointer">
+              {dateRange.start && (
+                <button
+                  onClick={() => setDateRange({ start: null, end: null })}
+                  className="text-[12px] text-stone-500 hover:text-stone-700 underline"
+                >
+                  Clear Filter
+                </button>
+              )}
+              <button
+                onClick={() => setShowDatePicker(true)}
+                className={`flex items-center gap-1.5 px-3 py-1.75 rounded-lg border text-[13px] transition-all cursor-pointer ${
+                  dateRange.start
+                    ? "border-[#C94621] text-[#C94621] bg-[#FEF0EA]"
+                    : "border-stone-200 text-stone-500 hover:border-[#C94621] hover:text-[#C94621] hover:bg-[#FEF8F6]"
+                }`}
+              >
                 <img
                   src="/assets/logos/filter-horizontal.svg"
                   className="w-4 h-4"
                 />
-                <span>Filter</span>
+                <span>{dateRange.start ? `${dateRange.start} - ${dateRange.end}` : "Filter"}</span>
               </button>
             </div>
           </div>

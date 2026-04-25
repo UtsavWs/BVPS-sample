@@ -122,9 +122,9 @@ const contactInfoSchema = Joi.object({
     .allow("")
     .custom((value, helpers) => {
       if (!value) return value;
-      // Accept URLs with or without protocol
+      // Accept URLs with or without protocol, supporting long TLDs
       const urlPattern =
-        /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
+        /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z]{2,}([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
       if (!urlPattern.test(value)) {
         return helpers.error("string.uri");
       }

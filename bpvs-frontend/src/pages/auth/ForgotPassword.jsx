@@ -284,7 +284,7 @@ export default function ForgotPassword() {
 
               <div className="flex flex-col gap-5">
                 <div
-                  className="flex justify-between gap-1.5 sm:gap-2 w-full"
+                  className="flex justify-between items-center w-full gap-1.5 sm:gap-2 md:gap-2.5 mb-4"
                   onPaste={handleOtpPaste}
                 >
                   {otp.map((digit, idx) => (
@@ -300,14 +300,18 @@ export default function ForgotPassword() {
                       onChange={(e) => handleOtpChange(e.target.value, idx)}
                       onKeyDown={(e) => handleOtpKeyDown(e, idx)}
                       onFocus={(e) => e.target.select()}
-                      className={`flex-1 min-w-0 aspect-square text-center text-base sm:text-lg font-semibold rounded-lg border outline-none transition-all duration-200
-                                 ${error
-                          ? "border-red-400 text-red-500"
-                          : digit
-                            ? "border-[#C1512D] bg-[#fff5f2] text-[#C1512D]"
-                            : "border-gray-300 bg-white text-gray-900"
+                      className={`
+                        flex-1 min-w-0
+                        aspect-square
+                        max-w-12 sm:max-w-11 md:max-w-13
+                        text-center text-lg sm:text-xl font-bold
+                        bg-white rounded-[10px] outline-none transition-all
+                        focus:border-[#C1512D] focus:ring-2 focus:ring-[#C1512D]/20
+                        ${error
+                          ? "border border-[#C1512D] text-[#C1512D]"
+                          : "border border-gray-300 text-gray-800"
                         }
-                                 focus:border-[#C1512D] focus:ring-1 focus:ring-[#C1512D]`}
+                      `}
                     />
                   ))}
                 </div>

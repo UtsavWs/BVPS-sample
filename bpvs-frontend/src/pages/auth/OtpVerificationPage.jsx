@@ -164,7 +164,7 @@ export default function OtpVerificationPage() {
             Enter Code
           </h1>
           <p className="text-gray-400 text-sm font-medium">
-            Code has been sent to{" "}
+            Code has been sent to
             <span className="text-gray-500 font-semibold">{email}</span>
           </p>
         </div>
