@@ -94,12 +94,10 @@ export default function BusinessInfo() {
   const handleSubmit = async () => {
     setErrors({});
     if (form.gstNo) {
-      if (form.gstNo.length < 15) {
-        setErrors({ gstNo: "GST number must be at least 15 characters." });
-        return;
-      }
-      if (!/^(?=.*\d)[A-Z0-9]+$/.test(form.gstNo)) {
-        setErrors({ gstNo: "Must contain only uppercase letters and numbers, and include at least one number." });
+      if (!/^[A-Z0-9]{15}$/.test(form.gstNo)) {
+        setErrors({
+          gstNo: "GST number must be exactly 15 characters and contain only uppercase letters and numbers.",
+        });
         return;
       }
     }

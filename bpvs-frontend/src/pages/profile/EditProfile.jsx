@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
 import DatePicker from "../../components/forms/DatePicker";
-import { apiGet, apiPut } from "../../api/api";
+import { apiGet } from "../../api/api";
 import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import LoadingScreen from "../../components/ui/LoadingScreen";

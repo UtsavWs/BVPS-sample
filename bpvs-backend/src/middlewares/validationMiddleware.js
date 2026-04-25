@@ -14,10 +14,17 @@ exports.registerSchema = Joi.object({
     "string.max": "Mobile number must not exceed 15 digits.",
     "any.required": "Mobile number is required.",
   }),
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   password: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
     "string.min": "Password must be at least 8 characters.",
     "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
@@ -30,10 +37,17 @@ exports.registerSchema = Joi.object({
 });
 
 exports.loginSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   password: Joi.string().required().messages({
     "any.required": "Password is required.",
   }),
@@ -41,10 +55,17 @@ exports.loginSchema = Joi.object({
 });
 
 exports.verifyOtpSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   otp: Joi.string()
     .trim()
     .length(6)
@@ -57,24 +78,45 @@ exports.verifyOtpSchema = Joi.object({
 });
 
 exports.sendOtpSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
 });
 
 exports.forgotPasswordSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
 });
 
 exports.verifyForgotPasswordOtpSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   otp: Joi.string()
     .trim()
     .length(6)
@@ -87,10 +129,17 @@ exports.verifyForgotPasswordOtpSchema = Joi.object({
 });
 
 exports.resetPasswordSchema = Joi.object({
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   otp: Joi.string()
     .trim()
     .length(6)
@@ -141,10 +190,15 @@ const contactInfoSchema = Joi.object({
 const businessInfoSchema = Joi.object({
   companyName: Joi.string().trim().allow(""),
   brandName: Joi.string().trim().allow(""),
-  gstNo: Joi.string().trim().allow("").min(15).pattern(/^(?=.*\d)[A-Z0-9]+$/).messages({
-    "string.min": "GST number must be at least 15 characters.",
-    "string.pattern.base": "GST number must contain only uppercase letters and numbers, and include at least one number.",
-  }),
+  gstNo: Joi.string()
+    .trim()
+    .allow("")
+    .min(15)
+    .pattern(/^[A-Z0-9]+$/)
+    .messages({
+      "string.min": "GST number must be at least 15 characters.",
+      "string.pattern.base": "GST number must contain only uppercase letters and numbers.",
+    }),
   dateOfJoin: Joi.date().allow(null),
   profession: Joi.string().trim().allow(""),
   aboutBusiness: Joi.string().trim().allow(""),
@@ -251,10 +305,17 @@ exports.addReferralSchema = Joi.object({
       "string.pattern.base": "Contact number must be 10 digits.",
       "any.required": "Contact number is required.",
     }),
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   address: Joi.string().trim().required().messages({
     "string.empty": "Address is required.",
     "any.required": "Address is required.",
@@ -300,10 +361,17 @@ exports.addVisitorSchema = Joi.object({
       "string.pattern.base": "Contact number must be 10 digits.",
       "any.required": "Contact number is required.",
     }),
-  email: Joi.string().trim().email().lowercase().required().messages({
-    "string.email": "Please provide a valid email address.",
-    "any.required": "Email is required.",
-  }),
+  email: Joi.string()
+    .trim()
+    .email()
+    .lowercase()
+    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .required()
+    .messages({
+      "string.email": "Please provide a valid email address.",
+      "string.pattern.base": "Please provide a valid email address.",
+      "any.required": "Email is required.",
+    }),
   chapterOfInvite: Joi.string().trim().required().messages({
     "string.empty": "Chapter of invite is required.",
     "any.required": "Chapter of invite is required.",

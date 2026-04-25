@@ -13,7 +13,6 @@ import DesktopPagination from "../../components/ui/DesktopPagination";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
-import { apiGet } from "../../api/api";
 import { StatusPill } from "../../components/ui/RoleBadge";
 import { formatDate } from "../../utils/dateUtils";
 

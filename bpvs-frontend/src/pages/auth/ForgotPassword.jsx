@@ -35,7 +35,7 @@ export default function ForgotPassword() {
     return () => clearInterval(interval);
   }, [step]);
 
-  const isValidEmail = /\S+@\S+\.\S+/.test(email);
+  const isValidEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
 
   const handleConfirm = async () => {
     setError("");

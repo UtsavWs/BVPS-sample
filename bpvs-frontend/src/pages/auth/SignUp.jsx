@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import bpvsLogo from "../../assets/logos/bvps-logo.svg";
@@ -25,6 +25,11 @@ export default function SignUp() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError("");
+
+    if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
 
     if (mobile.length !== 10) {
       setError("Mobile number must be at least 10 digits.");

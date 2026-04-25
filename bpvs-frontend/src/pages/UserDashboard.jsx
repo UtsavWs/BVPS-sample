@@ -4,8 +4,7 @@ import {
   useContext,
   useEffect,
   useRef,
-  useMemo,
-  memo,
+  useMemo
 } from "react";
 import { useNavigate } from "react-router-dom";
 import FabMenu from "../components/layout/FabMenu";

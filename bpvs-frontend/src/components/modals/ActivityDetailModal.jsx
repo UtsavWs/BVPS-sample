@@ -61,7 +61,7 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
           className="flex items-center gap-3.5 p-5 border-b border-stone-100"
           style={{ background: "#FEF8F6" }}
         >
-          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 border-2 border-stone-100 shadow-sm">
+          <div className="w-16 h-16 rounded-2xl bg-transparent flex items-center justify-center shrink-0">
             <img
               src={ACTIVITY_ICONS[activityIcon]}
               alt={log.typeLabel}
