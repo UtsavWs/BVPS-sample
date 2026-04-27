@@ -6,7 +6,7 @@ const { approvalEmailHtml } = require("../utils/emailTemplates");
  * GET /api/admin/stats
  * Returns counts: total, active, pending, inactive
  */
-exports.getStats = async (req, res) => {
+exports.getAdminStats = async (req, res) => {
   try {
     const roleFilter =
       req.user.role === "admin" ? { $in: ["member", "subadmin"] } : "member";

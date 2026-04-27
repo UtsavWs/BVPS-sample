@@ -1,177 +1,64 @@
 const Joi = require("joi");
 
-// ── Auth Schemas ──────────────────────────────────────────────────────────────
-
-exports.registerSchema = Joi.object({
-  fullName: Joi.string().trim().min(2).required().messages({
-    "string.empty": "Full name is required.",
-    "string.min": "Full name must be at least 2 characters.",
-    "any.required": "Full name is required.",
-  }),
-  mobile: Joi.string().trim().min(10).max(15).required().messages({
-    "string.empty": "Mobile number is required.",
-    "string.min": "Mobile number must be at least 10 digits.",
-    "string.max": "Mobile number must not exceed 15 digits.",
-    "any.required": "Mobile number is required.",
-  }),
+// ── common Validations ─────────────────────────────────────────────────────────
+const baseValidations = {
   email: Joi.string()
     .trim()
     .email()
     .lowercase()
     .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
     .messages({
       "string.email": "Please provide a valid email address.",
       "string.pattern.base": "Please provide a valid email address.",
       "any.required": "Email is required.",
     }),
-  password: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
-    "string.min": "Password must be at least 8 characters.",
-    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-    "any.required": "Password is required.",
-  }),
-  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
-    "any.only": "Passwords do not match.",
-    "any.required": "Confirm password is required.",
-  }),
-});
-
-exports.loginSchema = Joi.object({
-  email: Joi.string()
-    .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
+  password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/)
     .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
+      "string.min": "Password must be at least 8 characters.",
+      "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      "any.required": "Password is required.",
     }),
-  password: Joi.string().required().messages({
-    "any.required": "Password is required.",
-  }),
-  rememberMe: Joi.boolean().optional(),
-});
-
-exports.verifyOtpSchema = Joi.object({
-  email: Joi.string()
+  mobile: Joi.string()
     .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
+    .min(10)
+    .max(15)
     .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
+      "string.empty": "Mobile number is required.",
+      "string.min": "Mobile number must be at least 10 digits.",
+      "string.max": "Mobile number must not exceed 15 digits.",
+      "any.required": "Mobile number is required.",
     }),
   otp: Joi.string()
     .trim()
     .length(6)
     .pattern(/^\d{6}$/)
-    .required()
     .messages({
       "string.length": "OTP must be 6 digits.",
       "any.required": "OTP is required.",
     }),
-});
-
-exports.sendOtpSchema = Joi.object({
-  email: Joi.string()
+  name: Joi.string()
     .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
+    .min(2)
     .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
+      "string.empty": "Full name is required.",
+      "string.min": "Full name must be at least 2 characters.",
+      "any.required": "Full name is required.",
     }),
-});
-
-exports.forgotPasswordSchema = Joi.object({
-  email: Joi.string()
+  mongoId: Joi.string()
     .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
+    .pattern(/^[0-9a-fA-F]{24}$/)
     .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
+      "string.empty": "Please select a member.",
+      "string.pattern.base": "Invalid member selected.",
+      "any.required": "Please select a member.",
     }),
-});
-
-exports.verifyForgotPasswordOtpSchema = Joi.object({
-  email: Joi.string()
-    .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
-    .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
-    }),
-  otp: Joi.string()
-    .trim()
-    .length(6)
-    .pattern(/^\d{6}$/)
-    .required()
-    .messages({
-      "string.length": "OTP must be 6 digits.",
-      "any.required": "OTP is required.",
-    }),
-});
-
-exports.resetPasswordSchema = Joi.object({
-  email: Joi.string()
-    .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
-    .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
-    }),
-  otp: Joi.string()
-    .trim()
-    .length(6)
-    .pattern(/^\d{6}$/)
-    .required()
-    .messages({
-      "string.length": "OTP must be 6 digits.",
-      "any.required": "OTP is required.",
-    }),
-  newPassword: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
-    "string.min": "Password must be at least 8 characters.",
-    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-    "any.required": "New password is required.",
-  }),
-  confirmPassword: Joi.string()
-    .valid(Joi.ref("newPassword"))
-    .required()
-    .messages({
-      "any.only": "Passwords do not match.",
-      "any.required": "Confirm password is required.",
-    }),
-});
-
-// ── User Schemas ─────────────────────────────────────────────────────────────
-
-const contactInfoSchema = Joi.object({
   website: Joi.string()
     .trim()
     .allow("")
     .custom((value, helpers) => {
       if (!value) return value;
-      // Accept URLs with or without protocol, supporting long TLDs
       const urlPattern =
         /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z]{2,}([-a-zA-Z0-9()@:%_+.~#?&//=]*)$/;
       if (!urlPattern.test(value)) {
@@ -183,6 +70,67 @@ const contactInfoSchema = Joi.object({
       "string.uri":
         "Website must be a valid URL (e.g. example.com or https://example.com).",
     }),
+};
+
+// ── Auth Schemas ──────────────────────────────────────────────────────────────
+
+exports.registerSchema = Joi.object({
+  fullName: baseValidations.name.required(),
+  mobile: baseValidations.mobile.required(),
+  email: baseValidations.email.required(),
+  password: baseValidations.password.required(),
+  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
+    "any.only": "Passwords do not match.",
+    "any.required": "Confirm password is required.",
+  }),
+});
+
+exports.loginSchema = Joi.object({
+  email: baseValidations.email.required(),
+  password: Joi.string().required().messages({
+    "any.required": "Password is required.",
+  }),
+  rememberMe: Joi.boolean().optional(),
+});
+
+exports.verifyOtpSchema = Joi.object({
+  email: baseValidations.email.required(),
+  otp: baseValidations.otp.required(),
+});
+
+exports.sendOtpSchema = Joi.object({
+  email: baseValidations.email.required(),
+});
+
+exports.forgotPasswordSchema = Joi.object({
+  email: baseValidations.email.required(),
+});
+
+exports.verifyForgotPasswordOtpSchema = Joi.object({
+  email: baseValidations.email.required(),
+  otp: baseValidations.otp.required(),
+});
+
+exports.resetPasswordSchema = Joi.object({
+  email: baseValidations.email.required(),
+  otp: baseValidations.otp.required(),
+  newPassword: baseValidations.password.required().messages({
+    "any.required": "New password is required.",
+  }),
+  confirmPassword: Joi.string()
+    .valid(Joi.ref("newPassword"))
+    .required()
+    .messages({
+      "any.only": "Passwords do not match.",
+      "any.required": "Confirm password is required.",
+    }),
+});
+
+
+// ── User Schemas ─────────────────────────────────────────────────────────────
+
+const contactInfoSchema = Joi.object({
+  website: baseValidations.website,
   location: Joi.string().trim().allow(""),
   nativePlace: Joi.string().trim().allow(""),
 });
@@ -214,13 +162,8 @@ const otherInfoSchema = Joi.object({
 });
 
 exports.updateProfileSchema = Joi.object({
-  fullName: Joi.string().trim().min(2).messages({
-    "string.min": "Full name must be at least 2 characters.",
-  }),
-  mobile: Joi.string().trim().min(10).max(15).messages({
-    "string.min": "Mobile number must be at least 10 digits.",
-    "string.max": "Mobile number must not exceed 15 digits.",
-  }),
+  fullName: baseValidations.name,
+  mobile: baseValidations.mobile,
   profileImage: Joi.string().trim().allow(""),
   bannerImage: Joi.string().trim().allow(""),
   dateOfBirth: Joi.date().allow(null),
@@ -236,9 +179,7 @@ exports.changePasswordSchema = Joi.object({
   currentPassword: Joi.string().required().messages({
     "any.required": "Current password is required.",
   }),
-  newPassword: Joi.string().min(8).pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/).required().messages({
-    "string.min": "New password must be at least 8 characters.",
-    "string.pattern.base": "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
+  newPassword: baseValidations.password.required().messages({
     "any.required": "New password is required.",
   }),
   confirmPassword: Joi.string()
@@ -253,15 +194,7 @@ exports.changePasswordSchema = Joi.object({
 // ── Thank-You Slip Schema ────────────────────────────────────────────────────
 
 exports.addThankyouSlipSchema = Joi.object({
-  receivedBy: Joi.string()
-    .trim()
-    .pattern(/^[0-9a-fA-F]{24}$/)
-    .required()
-    .messages({
-      "string.empty": "Please select a member.",
-      "string.pattern.base": "Invalid member selected.",
-      "any.required": "Please select a member.",
-    }),
+  receivedBy: baseValidations.mongoId.required(),
   businessType: Joi.string().valid("New", "Repeat").required().messages({
     "any.only": "Business type must be New or Repeat.",
     "any.required": "Business type is required.",
@@ -296,26 +229,10 @@ exports.addReferralSchema = Joi.object({
     "string.empty": "Please select a member.",
     "any.required": "Please select a member.",
   }),
-  contactNumber: Joi.string()
-    .trim()
-    .pattern(/^\d{10}$/)
-    .required()
-    .messages({
-      "string.empty": "Contact number is required.",
-      "string.pattern.base": "Contact number must be 10 digits.",
-      "any.required": "Contact number is required.",
-    }),
-  email: Joi.string()
-    .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
-    .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
-    }),
+  contactNumber: baseValidations.mobile.required().messages({
+    "string.pattern.base": "Contact number must be 10 digits.", // Matching specific override if needed, but base covers 10-15
+  }),
+  email: baseValidations.email.required(),
   address: Joi.string().trim().required().messages({
     "string.empty": "Address is required.",
     "any.required": "Address is required.",
@@ -330,12 +247,12 @@ exports.addReferralSchema = Joi.object({
 // ── Visitor Schema ─────────────────────────────────────────────────────────
 
 exports.addVisitorSchema = Joi.object({
-  firstName: Joi.string().trim().min(2).required().messages({
+  firstName: baseValidations.name.required().messages({
     "string.empty": "First name is required.",
     "string.min": "First name must be at least 2 characters.",
     "any.required": "First name is required.",
   }),
-  lastName: Joi.string().trim().min(2).required().messages({
+  lastName: baseValidations.name.required().messages({
     "string.empty": "Last name is required.",
     "string.min": "Last name must be at least 2 characters.",
     "any.required": "Last name is required.",
@@ -352,26 +269,10 @@ exports.addVisitorSchema = Joi.object({
     "string.empty": "Company name is required.",
     "any.required": "Company name is required.",
   }),
-  contactNumber: Joi.string()
-    .trim()
-    .pattern(/^\d{10}$/)
-    .required()
-    .messages({
-      "string.empty": "Contact number is required.",
-      "string.pattern.base": "Contact number must be 10 digits.",
-      "any.required": "Contact number is required.",
-    }),
-  email: Joi.string()
-    .trim()
-    .email()
-    .lowercase()
-    .pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
-    .required()
-    .messages({
-      "string.email": "Please provide a valid email address.",
-      "string.pattern.base": "Please provide a valid email address.",
-      "any.required": "Email is required.",
-    }),
+  contactNumber: baseValidations.mobile.required().messages({
+    "string.pattern.base": "Contact number must be 10 digits.",
+  }),
+  email: baseValidations.email.required(),
   chapterOfInvite: Joi.string().trim().required().messages({
     "string.empty": "Chapter of invite is required.",
     "any.required": "Chapter of invite is required.",
@@ -381,15 +282,7 @@ exports.addVisitorSchema = Joi.object({
 // ── B2B Schema ────────────────────────────────────────────────────────────
 
 exports.addB2bSchema = Joi.object({
-  memberId: Joi.string()
-    .trim()
-    .pattern(/^[0-9a-fA-F]{24}$/)
-    .required()
-    .messages({
-      "string.empty": "Please select a member.",
-      "string.pattern.base": "Invalid member selected.",
-      "any.required": "Please select a member.",
-    }),
+  memberId: baseValidations.mongoId.required(),
   initiatedBy: Joi.string().valid("My self", "Other Member").required().messages({
     "any.only": "Initiated by must be 'My self' or 'Other Member'.",
     "any.required": "Initiated by is required.",

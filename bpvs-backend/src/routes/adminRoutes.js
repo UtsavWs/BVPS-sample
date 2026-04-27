@@ -6,7 +6,7 @@ const {
   adminOrSubadmin,
 } = require("../middlewares/authMiddleware");
 const {
-  getStats,
+  getAdminStats,
   getUsers,
   updateUser,
   approveUser,
@@ -20,7 +20,7 @@ const {
 router.use(protect);
 
 // Shared: admin + subadmin can view and manage members
-router.get("/stats", adminOrSubadmin, getStats);
+router.get("/stats", adminOrSubadmin, getAdminStats);
 router.get("/users", adminOrSubadmin, getUsers);
 router.patch("/users/:id", adminOrSubadmin, updateUser);
 router.post("/users/:id/approve", adminOrSubadmin, approveUser);

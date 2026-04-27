@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import bpvsLogo from "../../assets/logos/bvps-logo.svg";
 import loginIllustration from "../../assets/images/Powerful-pana-1.svg";
@@ -10,7 +10,7 @@ export default function Login() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const { login, isAuthenticated, isInitializing, isProcessing } = auth;
+  const { login, isProcessing } = auth;
   const authLoading = isProcessing;
 
   const [email, setEmail] = useState("");
