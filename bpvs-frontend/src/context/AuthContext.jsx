@@ -26,6 +26,18 @@ const isTokenExpired = (token) => {
   }
 };
 
+/**
+ * Filter sensitive or bulky information before saving to localStorage.
+ * Only keep essential "shell" info for app initialization.
+ */
+const getMinimalUser = (user) => {
+  if (!user) return null;
+  return {
+    fullName: user.fullName,
+    role: user.role,
+  };
+};
+
 // ── Storage helpers (pure functions — no deps, defined once) ──────────────
 
 const readAuthStorage = () => {
@@ -93,7 +105,7 @@ export function AuthProvider({ children }) {
             const res = await apiGet("/users/profile", storedToken);
             if (res.success) {
               setUser(res.data.user);
-              storage.setItem(USER_KEY, JSON.stringify(res.data.user));
+              storage.setItem(USER_KEY, JSON.stringify(getMinimalUser(res.data.user)));
             } else {
               // Token invalid, clear storage
               clearAuthStorage();
@@ -129,7 +141,7 @@ export function AuthProvider({ children }) {
         clearAuthStorage();
         const storage = rememberMe ? localStorage : sessionStorage;
         storage.setItem(TOKEN_KEY, newToken);
-        storage.setItem(USER_KEY, JSON.stringify(userData));
+        storage.setItem(USER_KEY, JSON.stringify(getMinimalUser(userData)));
 
         setToken(newToken);
         setUser(userData);
@@ -261,7 +273,7 @@ export function AuthProvider({ children }) {
         setUser(freshUser);
         (storage || localStorage).setItem(
           USER_KEY,
-          JSON.stringify(freshUser),
+          JSON.stringify(getMinimalUser(freshUser)),
         );
         return { success: true, user: freshUser };
       } else {

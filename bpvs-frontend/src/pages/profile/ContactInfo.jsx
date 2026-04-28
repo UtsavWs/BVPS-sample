@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
-import { apiGet, apiPut } from "../../api/api";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 
 const INITIAL_DATA = {
@@ -51,28 +50,13 @@ export default function ContactInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch saved contactInformation from database
+  // Use data from Context instead of fetching from API
   useEffect(() => {
-    const fetchContactInfo = async () => {
-      if (!user) return;
-
-      try {
-        setIsLoading(true);
-        const res = await apiGet("/users/profile");
-        if (res.success && res.data.user) {
-          const formatted = formatFromBackend(res.data.user);
-          setSaved(formatted);
-          setForm(formatted);
-        }
-      } catch (err) {
-        console.error("Failed to fetch contact information:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     if (user) {
-      fetchContactInfo();
+      const formatted = formatFromBackend(user);
+      setSaved(formatted);
+      setForm(formatted);
+      setIsLoading(false);
     }
   }, [user]);
 
@@ -82,7 +66,7 @@ export default function ContactInfo() {
     try {
       setIsSaving(true);
       const updateData = formatToBackend(form);
-      const res = await apiPut("/users/profile", updateData);
+      const res = await auth.updateUser(updateData);
 
       if (res.success) {
         setSaved({ ...form });

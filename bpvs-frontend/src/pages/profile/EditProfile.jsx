@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
 import DatePicker from "../../components/forms/DatePicker";
-import { apiGet } from "../../api/api";
 import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import { uploadToCloudinary } from "../../utils/cloudinary";
 import LoadingScreen from "../../components/ui/LoadingScreen";
@@ -100,26 +99,15 @@ export default function EditProfile() {
 
   const isUploading = profileUploading || bannerUploading;
 
+  // Sync local state with AuthContext user data
   useEffect(() => {
-    const fetchProfileData = async () => {
-      // Defensive check: Don't fetch if still loading auth or if user is missing
-      if (loading || !user) return;
-      try {
-        setIsLoading(true);
-        const res = await apiGet("/users/profile");
-        if (res.success && res.data.user) {
-          const formatted = formatFromBackend(res.data.user);
-          setSaved(formatted);
-          setForm(formatted);
-        }
-      } catch (err) {
-        console.error("Failed to fetch profile data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (!loading && user) fetchProfileData();
-  }, [user?._id, loading]); // Added loading to dependencies
+    if (user) {
+      const formatted = formatFromBackend(user);
+      setSaved(formatted);
+      setForm(formatted);
+      setIsLoading(false);
+    }
+  }, [user]);
 
   const set = (field) => (value) => {
     setForm((prev) => ({ ...prev, [field]: value }));

@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
-import { apiGet, apiPut } from "../../api/api";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 
 const INITIAL_DATA = {
@@ -55,31 +54,15 @@ export default function OtherInfo() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch saved otherInformation from database
+  // Use data from Context instead of fetching from API
   useEffect(() => {
-    const fetchOtherInfo = async () => {
-      // Defensive check: Don't fetch if still loading auth or if user is missing
-      if (loading || !user) return;
-
-      try {
-        setIsLoading(true);
-        const res = await apiGet("/users/profile");
-        if (res.success && res.data.user.otherInformation) {
-          const formatted = formatFromBackend(res.data.user.otherInformation);
-          setSaved(formatted);
-          setForm(formatted);
-        }
-      } catch (err) {
-        console.error("Failed to fetch other information:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (!loading && user) {
-      fetchOtherInfo();
+    if (user && user.otherInformation) {
+      const formatted = formatFromBackend(user.otherInformation);
+      setSaved(formatted);
+      setForm(formatted);
     }
-  }, [user, loading]); // Added loading to dependencies
+    setIsLoading(false);
+  }, [user]);
 
   const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
 
@@ -87,7 +70,7 @@ export default function OtherInfo() {
     try {
       setIsSaving(true);
       const updateData = formatToBackend(form);
-      const res = await apiPut("/users/profile", updateData);
+      const res = await auth.updateUser(updateData);
 
       if (res.success) {
         setSaved({ ...form });

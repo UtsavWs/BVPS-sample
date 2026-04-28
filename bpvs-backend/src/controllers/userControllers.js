@@ -42,15 +42,7 @@ exports.getProfile = async (req, res) => {
           contactInformation: user.contactInformation,
           businessInformation: user.businessInformation,
           otherInformation: user.otherInformation,
-          referralGivenCount: (user.referralGiven || []).length,
-          referralReceivedCount: (user.referralReceived || []).length,
-          thankyouslipGivenCount: (user.thankyouslipGiven || []).length,
-          thankyouslipReceivedCount: (user.thankyouslipReceived || []).length,
-          b2bCount:
-            (user.b2bGiven || []).length + (user.b2bReceived || []).length,
-          visitorCount: (user.totalVisitors || []).length,
           createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
         },
       },
     });

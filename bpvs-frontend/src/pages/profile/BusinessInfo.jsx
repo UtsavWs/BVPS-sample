@@ -5,7 +5,6 @@ import DatePicker from "../../components/forms/DatePicker";
 import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
-import { apiGet, apiPut } from "../../api/api";
 import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import LoadingScreen from "../../components/ui/LoadingScreen";
 
@@ -66,27 +65,14 @@ export default function BusinessInfo() {
   const [form, setForm] = useState(INITIAL_DATA);
   const [errors, setErrors] = useState({});
 
-  // Fetch business info from database
+  // Fetch business info from Context instead of API
   useEffect(() => {
-    const fetchBusinessInfo = async () => {
-      if (!user) return;
-
-      try {
-        setIsLoading(true);
-        const res = await apiGet("/users/profile");
-        if (res.success && res.data.user) {
-          const formatted = formatFromBackend(res.data.user);
-          setSaved(formatted);
-          setForm(formatted);
-        }
-      } catch (err) {
-        console.error("Failed to fetch business information:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchBusinessInfo();
+    if (user) {
+      const formatted = formatFromBackend(user);
+      setSaved(formatted);
+      setForm(formatted);
+      setIsLoading(false);
+    }
   }, [user]);
 
   const set = (key) => (e) => setForm((p) => ({ ...p, [key]: e.target.value }));
@@ -105,7 +91,7 @@ export default function BusinessInfo() {
     try {
       setIsLoading(true);
       const dataToSend = formatToBackend(form);
-      const res = await apiPut("/users/profile", dataToSend);
+      const res = await auth.updateUser(dataToSend);
       if (res.success) {
         setSaved({ ...form });
         setIsEditing(false);
