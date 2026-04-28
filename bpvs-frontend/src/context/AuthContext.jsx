@@ -215,11 +215,30 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
+  //when user is in splashscreen it will prefetch dashboard data and store in dashboardStats state - holds cached statistics for the user dashboard
+  const [dashboardStats, setDashboardStats] = useState(null);
+
+  // Function to prefetch dashboard stats
+  const prefetchDashboardStats = useCallback(async () => {
+    const { token: currentToken } = readAuthStorage();
+    if (!currentToken || dashboardStats) return;
+
+    try {
+      const res = await apiGet("/users/dashboard-stats-all", currentToken);
+      if (res.success) {
+        setDashboardStats(res.data);
+      }
+    } catch (err) {
+      console.warn("Prefetch failed:", err);
+    }
+  }, [dashboardStats]);
+
   // Function to logout user
   const logout = useCallback(() => {
     clearAuthStorage();
     setToken(null);
     setUser(null);
+    setDashboardStats(null); // Clear stats on logout
     setError(null);
   }, []);
 
@@ -273,16 +292,18 @@ export function AuthProvider({ children }) {
       isSubadmin: user?.role === "subadmin",
       isStaff: user?.role === "admin" || user?.role === "subadmin",
       isApproved: user?.isApproved === true,
+      dashboardStats, // Global stats cache
       login,
       register,
       verifyOtp,
       resendOtp,
       logout,
       updateUser,
+      prefetchDashboardStats, // Prefetch function
       clearError,
     }),
-    [user, token, isInitializing, isProcessing, error,
-      login, register, verifyOtp, resendOtp, logout, updateUser, clearError],
+    [user, token, isInitializing, isProcessing, error, dashboardStats,
+      login, register, verifyOtp, resendOtp, logout, updateUser, prefetchDashboardStats, clearError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

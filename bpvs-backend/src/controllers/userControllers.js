@@ -9,7 +9,7 @@ const { deleteCloudinaryImage } = require("../utils/cloudinary");
  * Sanitize image URL - return default if it's a base64 data URL
  */
 const sanitizeImage = (image) => {
-  if (!image) return "";
+  if (!image) return ""; 
   // If it's a base64 data URL, return empty string to avoid payload too large
   if (image.startsWith("data:")) return "";
   return image;
@@ -301,25 +301,18 @@ const computeStatsForRange = async (userId, startDate, endDate) => {
 
   const inRange = { $gte: start, $lte: end };
 
-  const [referralAgg, thankyouAgg, visitorAgg, b2bAgg] = await Promise.all([
-    Referral.aggregate([
-      { $match: { createdAt: inRange, $or: [{ givenBy: userId }, { receivedBy: userId }] } },
-      {
-        $facet: {
-          given: [{ $match: { givenBy: userId } }, { $count: "n" }],
-          received: [{ $match: { receivedBy: userId } }, { $count: "n" }],
-        },
-      },
-    ]),
-    ThankyouSlip.aggregate([
-      { $match: { createdAt: inRange, $or: [{ givenBy: userId }, { receivedBy: userId }] } },
-      {
-        $facet: {
-          given: [{ $match: { givenBy: userId } }, { $count: "n" }],
-          received: [{ $match: { receivedBy: userId } }, { $count: "n" }],
-        },
-      },
-    ]),
+  const [
+    refG,
+    refR,
+    tsG,
+    tsR,
+    visitorCount,
+    b2bCount
+  ] = await Promise.all([
+    Referral.countDocuments({ givenBy: userId, createdAt: inRange }),
+    Referral.countDocuments({ receivedBy: userId, createdAt: inRange }),
+    ThankyouSlip.countDocuments({ givenBy: userId, createdAt: inRange }),
+    ThankyouSlip.countDocuments({ receivedBy: userId, createdAt: inRange }),
     Visitor.countDocuments({ addedBy: userId, createdAt: inRange }),
     B2b.countDocuments({
       $or: [{ addedBy: userId }, { memberId: userId }],
@@ -327,15 +320,13 @@ const computeStatsForRange = async (userId, startDate, endDate) => {
     }),
   ]);
 
-  const pick = (agg, key) => agg?.[0]?.[key]?.[0]?.n || 0;
-
   return {
-    referralGivenCount: pick(referralAgg, "given"),
-    referralReceivedCount: pick(referralAgg, "received"),
-    thankyouslipGivenCount: pick(thankyouAgg, "given"),
-    thankyouslipReceivedCount: pick(thankyouAgg, "received"),
-    visitorCount: visitorAgg,
-    b2bCount: b2bAgg,
+    referralGivenCount: refG,
+    referralReceivedCount: refR,
+    thankyouslipGivenCount: tsG,
+    thankyouslipReceivedCount: tsR,
+    visitorCount: visitorCount,
+    b2bCount: b2bCount,
   };
 };
 

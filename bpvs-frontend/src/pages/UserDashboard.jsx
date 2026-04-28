@@ -124,7 +124,7 @@ const UserDashboard = () => {
     let cancelled = false;
 
     const loadData = async () => {
-      // Priority 1: Custom Date Range
+      // Priority 1: Custom Date Range (Always fetch fresh for custom range)
       if (dateRange) {
         const start = parseDateDisplay(dateRange.start);
         const end = parseDateDisplay(dateRange.end);
@@ -141,14 +141,24 @@ const UserDashboard = () => {
         return;
       }
 
-      // Priority 2: Use Cache if available
+      // Priority 2: Use Local Tab Cache if available
       if (activeTab && tabCacheRef.current[activeTab]) {
         setFilteredCounts(tabCacheRef.current[activeTab]);
         setStatsLoading(false);
         return;
       }
 
-      // Priority 3: Fetch all (Initial/Prefetch)
+      // Priority 3: Use Prefetched Data from AuthContext if available
+      if (auth.dashboardStats) {
+        tabCacheRef.current = { ...tabCacheRef.current, ...auth.dashboardStats };
+        const data = auth.dashboardStats[activeTab] || auth.dashboardStats["Current Week"];
+        if (data) setFilteredCounts(data);
+        setStatsLoading(false);
+        // We still want to ensure tabCacheRef is populated for future switches
+        return;
+      }
+
+      // Priority 4: Fetch all (Initial/Fallback)
       setStatsLoading(true);
       const res = await apiGet("/users/dashboard-stats-all");
       if (!cancelled && res.success) {
@@ -163,7 +173,7 @@ const UserDashboard = () => {
     return () => {
       cancelled = true;
     };
-  }, [user, activeTab, dateRange]);
+  }, [user, activeTab, dateRange, auth.dashboardStats]);
 
   const handleTabClick = useCallback((tab) => {
     setActiveTab(tab);

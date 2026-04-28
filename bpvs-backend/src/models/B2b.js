@@ -36,5 +36,6 @@ const B2bSchema = new mongoose.Schema(
 );
 
 B2bSchema.index({ addedBy: 1, createdAt: -1 });
+B2bSchema.index({ memberId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("B2b", B2bSchema);

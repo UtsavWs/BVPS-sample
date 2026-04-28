@@ -41,10 +41,6 @@ const setOtp = async (user, action, email) => {
   }
 };
 
-// ── Clear Expired OTPs every minute ─────────────────────────────────────────
-setInterval(async () => {
-  await User.clearExpiredOtps();
-}, 60 * 1000);
 
 // ── POST /api/auth/register ──────────────────────────────────────────────────
 exports.register = async (req, res) => {

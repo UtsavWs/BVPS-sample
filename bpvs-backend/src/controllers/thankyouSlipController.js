@@ -7,9 +7,6 @@ const User = require("../models/User");
  *   - givenBy  → logged-in user (req.user)
  *   - receivedBy → selected member from the form
  * Both users get the slip reference pushed into their respective arrays.
- *
- * Note: Input validation (required fields, types, enums) is handled
- * by Joi in the route middleware. This controller only has business logic checks.
  */
 exports.addThankyouSlip = async (req, res) => {
   try {

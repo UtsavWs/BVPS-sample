@@ -4,21 +4,26 @@ import { AuthContext } from "../../context/AuthContext";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
-  const { isAuthenticated, loading } = useContext(AuthContext);
+  const { isAuthenticated, loading, prefetchDashboardStats } = useContext(AuthContext);
 
   useEffect(() => {
     if (loading) return;
+
+    // If authenticated, start prefetching dashboard data while the splash screen is visible
+    if (isAuthenticated) {
+      prefetchDashboardStats();
+    }
 
     const timer = setTimeout(() => {
       if (isAuthenticated) {
         navigate("/dashboard", { replace: true });
       } else {
-        navigate("/onboarding");
+        navigate("/onboarding", { replace: true });
       }
-    }, 2500);
+    }, 1500);
 
     return () => clearTimeout(timer);
-  }, [navigate, isAuthenticated, loading]);
+  }, [navigate, isAuthenticated, loading, prefetchDashboardStats]);
   return (
     <>
       <div

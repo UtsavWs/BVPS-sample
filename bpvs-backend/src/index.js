@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 const apiRoutes = require("./routemain/apiRoutes");
+const initCronJobs = require("./utils/cronJobs");
 
 const app = express();
 
@@ -20,13 +21,14 @@ app.get("/", (_req, res) => {
 });
 
 // ── Database + Server ─────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/bpvs";
+const PORT = process.env.PORT
+const MONGO_URI = process.env.MONGO_URI
 
 mongoose
   .connect(MONGO_URI)
   .then(async () => {
     console.log("✅ MongoDB connected");
+    initCronJobs();
     app.listen(PORT, () =>
       console.log(`🚀 Server running on http://localhost:${PORT}`),
     );
