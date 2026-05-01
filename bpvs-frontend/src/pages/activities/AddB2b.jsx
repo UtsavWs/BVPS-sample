@@ -24,7 +24,6 @@ const AddB2B = () => {
     members: rawMembers,
     loadMore,
     loadingMore,
-    hasMore,
     setSearchQuery,
   } = useContext(MemberContext);
 

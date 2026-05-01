@@ -428,12 +428,11 @@ export default function BvpsMembers() {
       {/* ══ MOBILE / TABLET (< lg) ══════════════════════════════════════════ */}
       <div className="lg:hidden w-full sm:max-w-lg sm:mx-auto md:max-w-full md:mx-auto md:rounded-2xl md:shadow-sm">
         <div className="top-0 sticky z-10 bg-white border-b border-stone-100 flex items-center justify-center relative px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6 sm:rounded-t-2xl md:rounded-t-2xl">
-          <button className="absolute left-4 sm:left-6 p-1 text-gray-800">
-            <ArrowLeft
-              onClick={() => navigate(-1)}
-              size={21}
-              strokeWidth={2.2}
-            />
+          <button
+            onClick={() => navigate(-1)}
+            className="absolute left-4 sm:left-6 p-1 text-gray-800"
+          >
+            <ArrowLeft size={21} strokeWidth={2.2} />
           </button>
           <h1 className="text-[15px] sm:text-base font-semibold text-gray-900">
             BVPS Members
@@ -499,12 +498,11 @@ export default function BvpsMembers() {
       {/* ══ DESKTOP (lg+) ═══════════════════════════════════════════════════ */}
       <div className="hidden lg:flex lg:flex-col h-screen w-full max-w-412.5 mx-auto px-8 pt-6 pb-6">
         <div className="flex items-center gap-4 mb-6 shrink-0">
-          <button className="p-1 text-gray-800 hover:text-[#C94621] transition-colors">
-            <ArrowLeft
-              onClick={() => navigate(-1)}
-              size={21}
-              strokeWidth={2.2}
-            />
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1 text-gray-800 hover:text-[#C94621] transition-colors"
+          >
+            <ArrowLeft size={21} strokeWidth={2.2} />
           </button>
           <h1 className="text-xl font-bold text-gray-900">BVPS Members</h1>
         </div>

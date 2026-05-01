@@ -62,6 +62,11 @@ const UserSchema = new mongoose.Schema(
       default: null,
     },
 
+    approvedBy: {
+      id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      name: { type: String },
+    },
+
     // ───── OTP Fields ─────────────────────────────────────────────────────────────
     otp: {
       code: {
@@ -274,11 +279,12 @@ UserSchema.methods.addToPasswordHistory = async function () {
 // ───── Clear Expired OTPs (runs every minute) ─────
 UserSchema.statics.clearExpiredOtps = async function () {
   const result = await this.updateMany(
-    { "otp.expiresAt": { $lt: new Date() } },
+    { "otp.expiresAt": { $lt: new Date(), $ne: null } },
     { $set: { "otp.code": null, "otp.expiresAt": null } },
   );
+
   if (result.modifiedCount > 0) {
-    console.log(`Cleared expired OTP(s)`);
+  console.log(`OTP cleanup: ${result.modifiedCount} expired OTP(s) cleared.`);
   }
   return result.modifiedCount;
 };

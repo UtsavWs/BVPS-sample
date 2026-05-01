@@ -54,7 +54,7 @@ exports.getUsers = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .select(
-        "fullName email mobile profileImage status isApproved role createdAt businessInformation",
+        "fullName email mobile profileImage status isApproved approvedBy role createdAt businessInformation",
       )
       .lean();
 
@@ -145,9 +145,13 @@ exports.approveUser = async (req, res) => {
     const { id } = req.params;
     const user = await User.findOneAndUpdate(
       { _id: id },
-      { isApproved: true, status: "active" },
+      {
+        isApproved: true,
+        status: "active",
+        approvedBy: { id: req.user._id, name: req.user.fullName },
+      },
       { new: true },
-    ).select("fullName email isApproved status");
+    ).select("fullName email isApproved status approvedBy");
 
     if (!user) {
       return res
@@ -164,7 +168,12 @@ exports.approveUser = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "User approved successfully.",
-      data: { id: user._id, isApproved: user.isApproved, status: user.status },
+      data: {
+        id: user._id,
+        isApproved: user.isApproved,
+        status: user.status,
+        approvedBy: user.approvedBy,
+      },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error." });

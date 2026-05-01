@@ -87,6 +87,9 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[16%]">
       {u.mobile}
     </td>
+    <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[16%]">
+      {u.approvedBy?.name || "-"}
+    </td>
     <td className="py-2.5 px-3 w-[12%]">
       <StatusPill
         status={u.status}
@@ -504,6 +507,9 @@ export default function AdminManageMembers() {
                     </th>
                     <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[16%]">
                       Mobile
+                    </th>
+                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[16%]">
+                      Approved By
                     </th>
                     <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[12%]">
                       Status

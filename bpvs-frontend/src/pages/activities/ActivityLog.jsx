@@ -347,11 +347,10 @@ export default function ActivityLog() {
             )}
             <button
               onClick={() => setShowDatePicker(true)}
-              className={`p-1.5 rounded-lg transition-colors ${
-                dateRange.start
+              className={`p-1.5 rounded-lg transition-colors ${dateRange.start
                   ? "bg-[#FEF0EA] border border-[#C94621]/20"
                   : "text-stone-400 hover:text-[#C94621] hover:bg-[#FEF0EA]"
-              }`}
+                }`}
             >
               <img
                 src="/assets/logos/filter-horizontal.svg"
@@ -417,8 +416,8 @@ export default function ActivityLog() {
                   key={tab}
                   onClick={() => handleTabChange(tab)}
                   className={`px-4 py-1.5 text-[13px] rounded-md font-medium transition-all ${activeTab === tab
-                      ? "bg-[#C94621] text-white shadow-sm"
-                      : "text-stone-500 hover:text-gray-700"
+                    ? "bg-[#C94621] text-white shadow-sm"
+                    : "text-stone-500 hover:text-gray-700"
                     }`}
                 >
                   {tab}
@@ -448,11 +447,10 @@ export default function ActivityLog() {
               )}
               <button
                 onClick={() => setShowDatePicker(true)}
-                className={`flex items-center gap-1.5 px-3 py-1.75 rounded-lg border text-[13px] transition-all cursor-pointer ${
-                  dateRange.start
+                className={`flex items-center gap-1.5 px-3 py-1.75 rounded-lg border text-[13px] transition-all cursor-pointer ${dateRange.start
                     ? "border-[#C94621] text-[#C94621] bg-[#FEF0EA]"
                     : "border-stone-200 text-stone-500 hover:border-[#C94621] hover:text-[#C94621] hover:bg-[#FEF8F6]"
-                }`}
+                  }`}
               >
                 <img
                   src="/assets/logos/filter-horizontal.svg"

@@ -6,15 +6,21 @@ const User = require("../models/User");
  * - Clearing expired OTPs every 1 minute.
  */
 const initCronJobs = () => {
-  setInterval(async () => {
+  console.log("⏰ Background cron jobs initialized.");
+
+  const runCleanup = async () => {
     try {
       await User.clearExpiredOtps();
     } catch (error) {
-      console.error("Error in OTP cleanup job:", error.message);
+      console.error("❌ Error in OTP cleanup job:", error.message);
     }
-  }, 60 * 1000);
+  };
 
-  console.log("Expired otp cleared.");
+  // Run immediately on start
+  runCleanup();
+
+  // Then run every 1 minute
+  setInterval(runCleanup, 60 * 1000);
 };
 
 module.exports = initCronJobs;

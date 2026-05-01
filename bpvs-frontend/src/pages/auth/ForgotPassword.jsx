@@ -181,10 +181,10 @@ export default function ForgotPassword() {
         <div
           key={i}
           className={`h-2 rounded-full transition-all duration-300 ${i < current
-              ? "w-2 bg-[#C1512D]"
-              : i === current
-                ? "w-6 bg-[#C1512D]"
-                : "w-2 bg-gray-200"
+            ? "w-2 bg-[#C1512D]"
+            : i === current
+              ? "w-6 bg-[#C1512D]"
+              : "w-2 bg-gray-200"
             }`}
         />
       ))}

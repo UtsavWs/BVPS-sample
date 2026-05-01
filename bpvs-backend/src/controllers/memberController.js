@@ -53,7 +53,7 @@ exports.getAllMembers = async (req, res) => {
       .limit(limitNum)
       .lean()
       .select(
-        "fullName email mobile profileImage status role businessInformation contactInformation otherInformation createdAt",
+        "fullName email mobile profileImage status role businessInformation contactInformation createdAt",
       );
 
     res.status(200).json({

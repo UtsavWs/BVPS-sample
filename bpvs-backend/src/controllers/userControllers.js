@@ -9,7 +9,7 @@ const { deleteCloudinaryImage } = require("../utils/cloudinary");
  * Sanitize image URL - return default if it's a base64 data URL
  */
 const sanitizeImage = (image) => {
-  if (!image) return ""; 
+  if (!image) return "";
   // If it's a base64 data URL, return empty string to avoid payload too large
   if (image.startsWith("data:")) return "";
   return image;

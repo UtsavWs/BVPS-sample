@@ -4,6 +4,7 @@ import {
   useEffect,
   useContext,
   useCallback,
+  useMemo,
 } from "react";
 import { apiGet } from "../api/api";
 import { AuthContext } from "./AuthContext";
@@ -37,7 +38,22 @@ export const MemberProvider = ({ children }) => {
   });
 
   const debouncedSearch = useDebounce(searchQuery, 400);
-  const debouncedFilters = useDebounce(filters, 300);
+
+  // Serialize filters to a primitive string so useDebounce compares by value,
+  // not by object reference. This prevents the infinite re-render loop that
+  // occurs when debouncing an object (new reference every render).
+  const filterKey = `${filters.tab}|${filters.days}|${filters.status}`;
+  const debouncedFilterKey = useDebounce(filterKey, 300);
+
+  // Parse the debounced string back into an object for use in API calls
+  const debouncedFilters = useMemo(() => {
+    const [tab, days, status] = debouncedFilterKey.split("|");
+    return {
+      tab,
+      days: days === "null" ? null : Number(days),
+      status,
+    };
+  }, [debouncedFilterKey]);
 
   /**
    * Fetch members from API with optional filters
@@ -118,7 +134,7 @@ export const MemberProvider = ({ children }) => {
   /**
    * Load More (Incremental) - Primarily for Dropdowns and Mobile Directory
    */
-  const loadMore = async () => {
+  const loadMore = useCallback(async () => {
     if (loadingMore || loading) return;
     setLoadingMore(true);
 
@@ -155,12 +171,13 @@ export const MemberProvider = ({ children }) => {
       }
     }
     setLoadingMore(false);
-  };
+  }, [loadingMore, loading, debouncedSearch, debouncedFilters,
+      cachedHasMore, cachedPage, dirHasMore, dirPage, fetchFromApi]);
 
   /**
    * Explicit Page Fetch (for Desktop Pagination)
    */
-  const fetchPage = async (pageNum) => {
+  const fetchPage = useCallback(async (pageNum) => {
     setDirLoading(true);
     const data = await fetchFromApi(pageNum, debouncedSearch, debouncedFilters);
     if (data) {
@@ -170,7 +187,7 @@ export const MemberProvider = ({ children }) => {
       setDirTotal(data.total);
     }
     setDirLoading(false);
-  };
+  }, [debouncedSearch, debouncedFilters, fetchFromApi]);
 
   return (
     <MemberContext.Provider
