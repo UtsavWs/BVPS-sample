@@ -1,27 +1,23 @@
 const nodemailer = require("nodemailer");
 
 /**
- * Creates the transporter lazily (on first call) so that
- * environment variables are guaranteed to be loaded.
- * This is critical for Vercel serverless where env vars
- * may not be available at module-parse time.
+ * Creates a fresh transporter on every call.
+ * DO NOT cache the transporter — a cached/pooled SMTP connection
+ * can go stale on deployed servers (Render, Railway, etc.) after
+ * idle periods, causing silent failures on subsequent sends.
+ * Creating a new transporter per call is safe and correct for
+ * low-volume transactional email.
  */
-let transporter = null;
-
-const getTransporter = () => {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT) || 587,
-      secure: process.env.EMAIL_PORT === "465",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-  }
-  return transporter;
-};
+const getTransporter = () =>
+  nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    port: parseInt(process.env.EMAIL_PORT) || 587,
+    secure: process.env.EMAIL_PORT === "465",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
 /**
  * Strip HTML tags to produce a plain-text fallback.

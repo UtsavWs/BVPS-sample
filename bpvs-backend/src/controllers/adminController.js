@@ -103,16 +103,18 @@ exports.createUser = async (req, res) => {
       createdBy: { id: req.user._id, name: req.user.fullName },
     });
 
-    // Send welcome email with credentials (fire-and-forget)
-    sendEmail({
-      to: lowerEmail,
-      subject: "Welcome to BPVS — Your Account Details",
-      html: welcomeEmailHtml(fullName, lowerEmail, defaultPassword),
-    }).catch((e) => {
-      console.error("Welcome email failed:", e.message);
+    // Send welcome email with credentials
+    try {
+      await sendEmail({
+        to: lowerEmail,
+        subject: "Welcome to BPVS — Your Account Details",
+        html: welcomeEmailHtml(fullName, lowerEmail, defaultPassword),
+      });
+    } catch (emailErr) {
+      // Log but don't fail the request — user is already created
+      console.error("Welcome email failed:", emailErr.message);
       console.error("Email config → HOST:", process.env.EMAIL_HOST, "| PORT:", process.env.EMAIL_PORT, "| USER:", process.env.EMAIL_USER ? "SET" : "MISSING", "| PASS:", process.env.EMAIL_PASS ? "SET" : "MISSING");
-      console.error(e.stack);
-    });
+    }
 
     res.status(201).json({
       success: true,
