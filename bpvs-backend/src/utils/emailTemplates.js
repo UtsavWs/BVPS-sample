@@ -97,31 +97,45 @@ const otpEmailHtml = (otp, purpose = "verification", fullName = "User") => {
   return shell("BPVS verification code", inner);
 };
 
-const approvalEmailHtml = (fullName = "User") => {
+const welcomeEmailHtml = (fullName = "User", email, password) => {
   const loginUrl = `${process.env.FRONTEND_URL || "#"}/login`;
   const inner = `
     <tr>
       <td style="padding:8px 40px 8px 40px;background-color:${BRAND.card};" align="center">
         <div style="display:inline-block;background-color:${BRAND.warm};color:${BRAND.primary};font-size:12px;font-weight:700;padding:6px 14px;border-radius:999px;letter-spacing:0.5px;text-transform:uppercase;font-family:${BRAND.font};margin-top:12px;">
-          Account Approved
+          Account Created
         </div>
         <h1 style="margin:16px 0 8px 0;font-size:26px;font-weight:800;color:${BRAND.navy};font-family:${BRAND.font};letter-spacing:-0.3px;">
           Welcome to BPVS
         </h1>
         <p style="margin:0;font-size:15px;line-height:1.6;color:${BRAND.muted};font-family:${BRAND.font};">
-          Your membership is now active.
+          Your account has been created by an admin.
         </p>
       </td>
     </tr>
     <tr>
-      <td style="padding:24px 40px 32px 40px;background-color:${BRAND.card};" align="center">
-        <p style="margin:0 0 14px 0;font-size:15px;line-height:1.7;color:${BRAND.text};font-family:${BRAND.font};text-align:left;">
+      <td style="padding:24px 40px 32px 40px;background-color:${BRAND.card};">
+        <p style="margin:0 0 14px 0;font-size:15px;line-height:1.7;color:${BRAND.text};font-family:${BRAND.font};">
           Hi <strong>${fullName}</strong>,
         </p>
-        <p style="margin:0 0 20px 0;font-size:15px;line-height:1.7;color:${BRAND.text};font-family:${BRAND.font};text-align:left;">
-          Great news — an admin has reviewed and <strong style="color:${BRAND.primary};">approved</strong> your BPVS account. You can now log in and start connecting with the community.
+        <p style="margin:0 0 20px 0;font-size:15px;line-height:1.7;color:${BRAND.text};font-family:${BRAND.font};">
+          Your BPVS account is ready. Here are your login credentials:
         </p>
-        
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
+          <tr>
+            <td style="background-color:${BRAND.warm};border:1px solid ${BRAND.border};border-radius:12px;padding:20px 24px;">
+              <p style="margin:0 0 10px 0;font-size:14px;color:${BRAND.text};font-family:${BRAND.font};">
+                <strong>Email:</strong> ${email}
+              </p>
+              <p style="margin:0;font-size:14px;color:${BRAND.text};font-family:${BRAND.font};">
+                <strong>Password:</strong> ${password}
+              </p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin:0 0 20px 0;font-size:14px;line-height:1.6;color:${BRAND.text};font-family:${BRAND.font};">
+          We recommend changing your password after your first login using the <strong style="color:${BRAND.primary};">Forgot Password</strong> option.
+        </p>
         <p style="margin:0 0 6px 0;font-size:14px;line-height:1.6;color:${BRAND.text};font-family:${BRAND.font};text-align:center;">
           We're glad to have you on board.
         </p>
@@ -130,7 +144,7 @@ const approvalEmailHtml = (fullName = "User") => {
         </p>
       </td>
     </tr>`;
-  return shell("Your BPVS account is approved", inner);
+  return shell("Welcome to BPVS", inner);
 };
 
-module.exports = { otpEmailHtml, approvalEmailHtml };
+module.exports = { otpEmailHtml, welcomeEmailHtml };

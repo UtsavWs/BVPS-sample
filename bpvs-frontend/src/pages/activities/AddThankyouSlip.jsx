@@ -1,3 +1,4 @@
+
 import { ArrowLeft } from "lucide-react";
 import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
@@ -7,23 +8,8 @@ import { MemberContext } from "../../context/MemberContext";
 import Dropdown from "../../components/forms/Dropdown";
 import InputFields from "../../components/forms/InputFields";
 
-const REFERENCE_OPTIONS = [
-  "Select Reference",
-  "Reference A",
-  "Reference B",
-  "Reference C",
-  "Reference D",
-  "Reference E",
-];
-
-const BUSINESS_TYPES = ["New", "Repeat"];
-const REFERENCE_TYPES = ["Inside", "Outside"];
-
 const INITIAL = {
   memberName: "Select Member",
-  businessType: "New",
-  referenceType: "Inside",
-  reference: "Select Reference",
   amount: "",
 };
 
@@ -69,8 +55,6 @@ const AddThankYouSlip = () => {
     const e = {};
     if (form.memberName === "Select Member")
       e.memberName = "Please select a member";
-    if (form.reference === "Select Reference")
-      e.reference = "Please select a reference";
     if (!form.amount.trim()) e.amount = "Amount is required";
     else if (isNaN(Number(form.amount))) e.amount = "Enter a valid amount";
     return e;
@@ -93,9 +77,6 @@ const AddThankYouSlip = () => {
     try {
       const res = await apiPost("/thankyouslip", {
         receivedBy: receiverId,
-        businessType: form.businessType,
-        referenceType: form.referenceType,
-        reference: form.reference,
         amount: form.amount,
       });
 
@@ -112,32 +93,6 @@ const AddThankYouSlip = () => {
       setSubmitting(false);
     }
   };
-
-  /* ── Reusable toggle-button group ── */
-  const ToggleGroup = ({ label, options, value, onChange, errorKey }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-[13px] font-semibold text-gray-700">{label}</label>
-      <div className="grid grid-cols-2 gap-3">
-        {options.map((opt) => (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => onChange(opt)}
-            className={`h-13 rounded-xl border text-[15px] font-semibold transition-all duration-200 cursor-pointer
-              ${value === opt
-                ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
-                : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-              }`}
-          >
-            {opt}
-          </button>
-        ))}
-      </div>
-      {errors[errorKey] && (
-        <p className="text-[12px] text-red-500 mt-0.5">{errors[errorKey]}</p>
-      )}
-    </div>
-  );
 
   return (
     <div className="min-h-screen bg-white lg:bg-gray-50 lg:flex lg:items-center lg:justify-center">
@@ -186,42 +141,6 @@ const AddThankYouSlip = () => {
             {errors.memberName && (
               <p className="text-[12px] text-red-500 mt-0.5">
                 {errors.memberName}
-              </p>
-            )}
-          </div>
-
-          {/* Business Type toggle */}
-          <ToggleGroup
-            label="Business Type"
-            options={BUSINESS_TYPES}
-            value={form.businessType}
-            onChange={(v) => set("businessType", v)}
-            errorKey="businessType"
-          />
-
-          {/* Reference Type toggle */}
-          <ToggleGroup
-            label="Reference Type"
-            options={REFERENCE_TYPES}
-            value={form.referenceType}
-            onChange={(v) => set("referenceType", v)}
-            errorKey="referenceType"
-          />
-
-          {/* Reference */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Reference
-            </label>
-            <Dropdown
-              value={form.reference}
-              options={REFERENCE_OPTIONS}
-              onChange={(v) => set("reference", v)}
-              error={errors.reference}
-            />
-            {errors.reference && (
-              <p className="text-[12px] text-red-500 mt-0.5">
-                {errors.reference}
               </p>
             )}
           </div>

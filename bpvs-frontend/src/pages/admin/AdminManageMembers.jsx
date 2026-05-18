@@ -8,9 +8,9 @@ import {
   X,
   Users,
   UserCheck,
-  Clock,
   UserX,
   Pencil,
+  Plus,
 } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
@@ -48,14 +48,6 @@ const TABS = [
     bg: "#fef2f2",
     statKey: "inactive",
   },
-  {
-    key: "pending",
-    label: "Pending Approval",
-    icon: Clock,
-    color: "#d97706",
-    bg: "#fffbeb",
-    statKey: "pending",
-  },
 ];
 
 // ── Member Table Row ──────────────────────────────────────────────────────────
@@ -87,15 +79,8 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[16%]">
       {u.mobile}
     </td>
-    <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[16%]">
-      {u.approvedBy?.name || "-"}
-    </td>
     <td className="py-2.5 px-3 w-[12%]">
-      <StatusPill
-        status={u.status}
-        isApproved={u.isApproved}
-        variant="active-inactive"
-      />
+      <StatusPill status={u.status} />
     </td>
     <td className="py-2.5 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[13%]">
       {formatDate(u.createdAt)}
@@ -122,60 +107,15 @@ const MemberRow = ({ u, onEdit, onDelete, actionLoading }) => (
   </tr>
 );
 
-// ── Pending Approval Row ──────────────────────────────────────────────────────
-const PendingRow = ({ u, onApprove, onReject, actionLoading }) => (
-  <tr className="border-b border-stone-100 hover:bg-amber-50/40 transition-colors">
-    <td className="py-3 pl-4 pr-3 w-[22%]">
-      <span className="text-[13px] font-semibold text-gray-900 whitespace-nowrap">
-        {u.fullName}
-      </span>
-    </td>
-    <td className="py-3 px-3 text-[13px] text-gray-500 max-w-0 w-[28%] truncate">
-      {u.email}
-    </td>
-    <td className="py-3 px-3 text-[13px] text-gray-500 whitespace-nowrap w-[18%]">
-      {u.mobile}
-    </td>
-    <td className="py-3 px-3 w-[14%]">
-      <StatusPill
-        status={u.status}
-        isApproved={u.isApproved}
-        variant="approval"
-      />
-    </td>
-    <td className="py-3 px-3 whitespace-nowrap">
-      <div className="flex items-center gap-1.5">
-        <button
-          onClick={() => onApprove(u._id)}
-          disabled={actionLoading === u._id}
-          title="Approve"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-green-50 text-green-700 hover:bg-green-100 transition disabled:opacity-50 border-none cursor-pointer whitespace-nowrap"
-        >
-          <UserCheck size={13} strokeWidth={2} />
-          <span>Approve</span>
-        </button>
-        <button
-          onClick={() => onReject(u._id)}
-          disabled={actionLoading === u._id}
-          title="Reject"
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[12px] font-medium bg-red-50 text-red-600 hover:bg-red-100 transition disabled:opacity-50 border-none cursor-pointer whitespace-nowrap"
-        >
-          <X size={13} strokeWidth={2} />
-          <span>Reject</span>
-        </button>
-      </div>
-    </td>
-  </tr>
-);
-
 // ── Stat Card ─────────────────────────────────────────────────────────────────
 const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${active
-      ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
-      : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
-      }`}
+    className={`flex items-center gap-3 px-4 py-3 rounded-xl border transition-all cursor-pointer text-left w-full ${
+      active
+        ? "border-[#C94621] bg-[#FEF8F6] shadow-sm"
+        : "border-stone-100 bg-white hover:border-stone-200 hover:shadow-sm"
+    }`}
   >
     <div
       className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
@@ -198,18 +138,10 @@ const StatCard = ({ label, value, icon: Icon, color, bg, active, onClick }) => (
 const EmptyState = ({ tab, searchQuery, onClearSearch }) => (
   <div className="flex flex-col items-center justify-center h-full py-16 gap-3">
     <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center">
-      {tab === "pending" ? (
-        <Clock size={20} className="text-stone-400" />
-      ) : (
-        <Users size={20} className="text-stone-400" />
-      )}
+      <Users size={20} className="text-stone-400" />
     </div>
     <p className="text-stone-400 text-sm">
-      {searchQuery
-        ? "No results match your search"
-        : tab === "pending"
-          ? "No pending approval requests"
-          : "No members found"}
+      {searchQuery ? "No results match your search" : "No members found"}
     </p>
     {searchQuery && (
       <button
@@ -222,6 +154,134 @@ const EmptyState = ({ tab, searchQuery, onClearSearch }) => (
   </div>
 );
 
+// ── Add User Modal ────────────────────────────────────────────────────────────
+const AddUserModal = ({ onClose, onSave }) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSave = async () => {
+    if (!fullName.trim() || !email.trim() || !mobile.trim()) {
+      setError("All fields are required.");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      await onSave({
+        fullName: fullName.trim(),
+        email: email.trim(),
+        mobile: mobile.trim(),
+      });
+      onClose();
+    } catch (err) {
+      setError(err.message || "Failed to create user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.45)" }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="bg-white rounded-2xl w-full overflow-hidden"
+        style={{ maxWidth: 420, margin: "auto" }}
+      >
+        {/* Header */}
+        <div
+          className="flex items-center justify-between px-5 py-4 border-b border-stone-100"
+          style={{ background: "#FEF8F6" }}
+        >
+          <h2 className="text-base font-semibold text-gray-900">
+            Add New User
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-stone-200 bg-white text-gray-500 hover:bg-stone-100 transition-colors"
+          >
+            <X size={15} strokeWidth={2.2} />
+          </button>
+        </div>
+
+        {/* Form */}
+        <div className="px-5 py-4 flex flex-col gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Enter full name"
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10 transition"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email address"
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10 transition"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-500 mb-1.5">
+              Mobile
+            </label>
+            <input
+              type="tel"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              placeholder="Enter mobile number"
+              className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-800 outline-none focus:border-[#C94621] focus:ring-2 focus:ring-[#C94621]/10 transition"
+            />
+          </div>
+          <p className="text-[11px] text-stone-400 mt-0.5">
+            A default password will be set. The user will receive their
+            credentials via email.
+          </p>
+          {error && (
+            <p className="text-xs text-red-500 font-medium">{error}</p>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 px-5 pb-5">
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={loading}
+            className={`flex-1 py-3 rounded-xl text-sm font-semibold text-white transition ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-[#C94621] hover:bg-[#B33D1E]"
+            }`}
+          >
+            {loading ? "Creating..." : "Create User"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function AdminManageMembers() {
   const navigate = useNavigate();
@@ -231,14 +291,10 @@ export default function AdminManageMembers() {
   const [currentPage, setCurrentPage] = useState(1);
   const [users, setUsers] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
-  const [stats, setStats] = useState({
-    total: 0,
-    active: 0,
-    inactive: 0,
-    pending: 0,
-  });
+  const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 });
   const [fetching, setFetching] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
+  const [showAddUser, setShowAddUser] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -257,11 +313,10 @@ export default function AdminManageMembers() {
   }, [isStaff]);
 
   // ── Fetch users ───────────────────────────────────────────────────────────
-  // The backend handles tab-based filtering:
   const fetchUsers = async () => {
     setFetching(true);
     const res = await apiGet(
-      `/admin/users?page=${currentPage}&limit=${ITEMS_PER_PAGE}&tab=${activeTab}`,
+      `/admin/users?page=${currentPage}&limit=${ITEMS_PER_PAGE}&tab=${activeTab}`
     );
     if (res.success) {
       setUsers(res.data.users);
@@ -294,7 +349,6 @@ export default function AdminManageMembers() {
 
   const handleSaveEdit = async (userId, updates) => {
     const { role: newRole, previousRole, ...patch } = updates;
-
     if (newRole && newRole !== previousRole) {
       const endpoint =
         newRole === "subadmin"
@@ -303,37 +357,20 @@ export default function AdminManageMembers() {
       const roleRes = await apiPost(endpoint, {});
       if (!roleRes.success) throw new Error(roleRes.message);
     }
-
     const res = await apiPatch(`/admin/users/${userId}`, patch);
     if (!res.success) throw new Error(res.message);
     fetchUsers();
     refreshStats();
   };
 
-  const handleApprove = async (userId) => {
-    setActionLoading(userId);
-    const res = await apiPost(`/admin/users/${userId}/approve`, {});
-    if (res.success) {
-      fetchUsers();
-      refreshStats();
-    }
-    setActionLoading(null);
-  };
-
-  const handleReject = async (userId) => {
-    if (!window.confirm("Are you sure you want to reject this user?")) return;
-    setActionLoading(userId);
-    const res = await apiPost(`/admin/users/${userId}/reject`, {});
-    if (res.success) {
-      fetchUsers();
-      refreshStats();
-    }
-    setActionLoading(null);
+  const handleCreateUser = async (userData) => {
+    const res = await apiPost("/admin/users", userData);
+    if (!res.success) throw new Error(res.message);
+    fetchUsers();
+    refreshStats();
   };
 
   // ── Client-side search filter ─────────────────────────────────────────────
-  // Status filtering is handled server-side via the tab param.
-  // Only search is applied client-side on the current page of results.
   const filteredUsers = useMemo(() => {
     if (!searchQuery.trim()) return users;
     const q = searchQuery.toLowerCase();
@@ -341,20 +378,17 @@ export default function AdminManageMembers() {
       (u) =>
         u.fullName?.toLowerCase().includes(q) ||
         u.email?.toLowerCase().includes(q) ||
-        u.mobile?.includes(q),
+        u.mobile?.includes(q)
     );
   }, [searchQuery, users]);
 
   const totalPages = useMemo(
     () => Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE)),
-    [totalItems],
+    [totalItems]
   );
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const isPendingTab = activeTab === "pending";
 
-  if (loading || !isStaff) {
-    return <LoadingScreen />;
-  }
+  if (loading || !isStaff) return <LoadingScreen />;
 
   return (
     <div className="h-screen flex flex-col bg-[#F9EDE8] overflow-hidden">
@@ -372,7 +406,7 @@ export default function AdminManageMembers() {
       {/* ── Body ── */}
       <div className="flex-1 flex flex-col min-h-0 max-w-412.5 w-full mx-auto px-4 sm:px-6 py-5 gap-4">
         {/* ── Stat Cards ── */}
-        <div className="shrink-0 grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="shrink-0 grid grid-cols-3 gap-3">
           {TABS.map(({ key, label, icon, color, bg, statKey }) => (
             <StatCard
               key={key}
@@ -389,57 +423,138 @@ export default function AdminManageMembers() {
 
         {/* ── Main Card ── */}
         <div className="flex flex-col flex-1 bg-white border border-stone-100 rounded-2xl overflow-hidden shadow-sm min-h-0">
+
           {/* ── Toolbar ── */}
-          <div className="shrink-0 flex items-center justify-between px-4 sm:px-5 pt-4 pb-3 border-b border-stone-100 gap-3 flex-wrap">
-            {/* Tab pills */}
-            <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 flex-wrap">
-              {TABS.map(({ key, label, statKey }) => (
-                <button
-                  key={key}
-                  onClick={() => handleTabChange(key)}
-                  className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${activeTab === key
-                    ? "bg-white text-gray-900 shadow-sm"
-                    : "text-stone-500 hover:text-gray-700 bg-transparent"
+          <div className="shrink-0 px-4 sm:px-5 pt-4 pb-3 border-b border-stone-100">
+
+            {/* MOBILE ONLY: stacked layout (<640px) */}
+            <div className="flex flex-col gap-2.5 sm:hidden">
+              {/* Row 1: Tab pills full width */}
+              <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 w-full">
+                {TABS.map(({ key, label, statKey }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleTabChange(key)}
+                    className={`flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${
+                      activeTab === key
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-stone-500 hover:text-gray-700 bg-transparent"
                     }`}
-                >
-                  {label}
-                  <span
-                    className={`ml-1.5 text-[11px] font-semibold ${activeTab === key ? "text-[#C94621]" : "text-stone-400"}`}
                   >
-                    {stats[statKey] ?? 0}
-                  </span>
+                    {label}
+                    <span
+                      className={`text-[11px] font-semibold ${
+                        activeTab === key ? "text-[#C94621]" : "text-stone-400"
+                      }`}
+                    >
+                      {stats[statKey] ?? 0}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Row 2: Search full width + Add User */}
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder="Search members..."
+                    className="pl-8 pr-8 py-2 text-[13px] w-full rounded-lg border border-stone-200 bg-stone-50 text-gray-800 placeholder-stone-400 outline-none focus:border-[#C94621] focus:bg-white transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-gray-600 transition-colors border-none bg-transparent cursor-pointer p-0"
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => setShowAddUser(true)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-semibold bg-[#C94621] text-white hover:bg-[#B33D1E] transition-colors cursor-pointer border-none whitespace-nowrap shrink-0"
+                >
+                  <Plus size={14} strokeWidth={2.5} />
+                  <span>Add User</span>
                 </button>
-              ))}
+              </div>
             </div>
 
-            {/* Search */}
-            <div className="relative w-full sm:w-auto">
-              <Search
-                size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setCurrentPage(1);
-                }}
-                placeholder={
-                  isPendingTab ? "Search requests..." : "Search members..."
-                }
-                className="pl-8 pr-8 py-1.75 text-[13px] w-full sm:w-52 rounded-lg border border-stone-200 bg-stone-50 text-gray-800 placeholder-stone-400 outline-none focus:border-[#C94621] focus:bg-white transition-colors"
-              />
-              {searchQuery && (
+            {/* TABLET/DESKTOP ONLY: original single-row layout (≥640px) */}
+            <div className="hidden sm:flex items-center justify-between gap-3 flex-wrap">
+              {/* Tab pills */}
+              <div className="flex items-center gap-1 bg-stone-100 rounded-xl p-1 flex-wrap">
+                {TABS.map(({ key, label, statKey }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleTabChange(key)}
+                    className={`px-3 py-1.5 rounded-lg text-[12px] font-medium transition-all whitespace-nowrap cursor-pointer border-none ${
+                      activeTab === key
+                        ? "bg-white text-gray-900 shadow-sm"
+                        : "text-stone-500 hover:text-gray-700 bg-transparent"
+                    }`}
+                  >
+                    {label}
+                    <span
+                      className={`ml-1.5 text-[11px] font-semibold ${
+                        activeTab === key ? "text-[#C94621]" : "text-stone-400"
+                      }`}
+                    >
+                      {stats[statKey] ?? 0}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Search */}
+                <div className="relative">
+                  <Search
+                    size={14}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none"
+                  />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setCurrentPage(1);
+                    }}
+                    placeholder="Search members..."
+                    className="pl-8 pr-8 py-1.75 text-[13px] w-full sm:w-52 rounded-lg border border-stone-200 bg-stone-50 text-gray-800 placeholder-stone-400 outline-none focus:border-[#C94621] focus:bg-white transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery("")}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-gray-600 transition-colors border-none bg-transparent cursor-pointer p-0"
+                    >
+                      <X size={13} />
+                    </button>
+                  )}
+                </div>
+
+                {/* Add User Button */}
                 <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-gray-600 transition-colors border-none bg-transparent cursor-pointer p-0"
+                  onClick={() => setShowAddUser(true)}
+                  className="flex items-center gap-1.5 px-3 py-1.75 rounded-lg text-[13px] font-semibold bg-[#C94621] text-white hover:bg-[#B33D1E] transition-colors cursor-pointer border-none whitespace-nowrap"
                 >
-                  <X size={13} />
+                  <Plus size={14} strokeWidth={2.5} />
+                  <span className="hidden sm:inline">Add User</span>
                 </button>
-              )}
+              </div>
             </div>
+
           </div>
+          {/* ── END Toolbar ── */}
 
           {/* ── Single scrollable container with sticky thead ── */}
           <div className="flex-1 overflow-auto min-h-0">
@@ -453,42 +568,6 @@ export default function AdminManageMembers() {
                 searchQuery={searchQuery}
                 onClearSearch={() => setSearchQuery("")}
               />
-            ) : isPendingTab ? (
-              <table
-                className="w-full border-collapse"
-                style={{ minWidth: "560px" }}
-              >
-                <thead className="sticky top-0 z-10">
-                  <tr className="border-b border-stone-100 bg-stone-50">
-                    <th className="py-3 pl-4 pr-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[22%]">
-                      Member
-                    </th>
-                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[28%]">
-                      Email
-                    </th>
-                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[18%]">
-                      Mobile
-                    </th>
-                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[14%]">
-                      Status
-                    </th>
-                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide whitespace-nowrap">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map((u) => (
-                    <PendingRow
-                      key={u._id}
-                      u={u}
-                      onApprove={handleApprove}
-                      onReject={handleReject}
-                      actionLoading={actionLoading}
-                    />
-                  ))}
-                </tbody>
-              </table>
             ) : (
               <table
                 className="w-full border-collapse"
@@ -507,9 +586,6 @@ export default function AdminManageMembers() {
                     </th>
                     <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[16%]">
                       Mobile
-                    </th>
-                    <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[16%]">
-                      Approved By
                     </th>
                     <th className="py-3 px-3 text-left text-[11px] font-semibold text-stone-400 uppercase tracking-wide w-[12%]">
                       Status
@@ -545,7 +621,7 @@ export default function AdminManageMembers() {
             totalItems={totalItems}
             startIndex={startIndex}
             itemsPerPage={ITEMS_PER_PAGE}
-            label={isPendingTab ? "requests" : "members"}
+            label="members"
           />
         </div>
       </div>
@@ -557,6 +633,14 @@ export default function AdminManageMembers() {
           onClose={() => setEditingUser(null)}
           onSave={handleSaveEdit}
           canManageRole={user?.role === "admin"}
+        />
+      )}
+
+      {/* ── Add User Modal ── */}
+      {showAddUser && (
+        <AddUserModal
+          onClose={() => setShowAddUser(false)}
+          onSave={handleCreateUser}
         />
       )}
     </div>

@@ -4,17 +4,38 @@ const User = require("../models/User");
 /**
  * POST /api/b2b
  * Create a new B2B entry.
- *   - addedBy → logged-in user (req.user)
- *   - memberId → selected member from the form
+ *   - givenBy → logged-in user (req.user)
+ *   - receivedBy → selected member from the form
  */
 exports.addB2b = async (req, res) => {
   try {
-    const { memberId, initiatedBy, location, topicOfConversation, eventMaster } =
-      req.body;
-    const addedBy = req.user._id;
+    const {
+      receivedBy,
+      initiatedBy,
+      location,
+      topicOfConversation,
+      activityDate,
+      image,
+    } = req.body;
+    const givenBy = req.user._id;
+
+    // Validate activityDate is within last 30 days
+    const date = new Date(activityDate);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+    if (isNaN(date.getTime()) || date > today || date < thirtyDaysAgo) {
+      return res.status(400).json({
+        success: false,
+        message: "Activity date must be within the last 30 days.",
+      });
+    }
 
     // Prevent self B2B
-    if (memberId.toString() === addedBy.toString()) {
+    if (receivedBy.toString() === givenBy.toString()) {
       return res.status(400).json({
         success: false,
         message: "You cannot create a B2B with yourself",
@@ -22,7 +43,7 @@ exports.addB2b = async (req, res) => {
     }
 
     // verify member exists and is active
-    const member = await User.findById(memberId);
+    const member = await User.findById(receivedBy);
     if (!member || member.status !== "active") {
       return res
         .status(404)
@@ -30,20 +51,21 @@ exports.addB2b = async (req, res) => {
     }
 
     const b2b = await B2b.create({
-      addedBy,
-      memberId,
+      givenBy,
+      receivedBy,
       initiatedBy,
       location,
       topicOfConversation,
-      eventMaster,
+      activityDate: date,
+      image: image || "",
     });
 
     // Push B2B reference into both users' arrays
     await Promise.all([
-      User.findByIdAndUpdate(addedBy, {
+      User.findByIdAndUpdate(givenBy, {
         $push: { b2bGiven: b2b._id },
       }),
-      User.findByIdAndUpdate(memberId, {
+      User.findByIdAndUpdate(receivedBy, {
         $push: { b2bReceived: b2b._id },
       }),
     ]);
@@ -63,41 +85,3 @@ exports.addB2b = async (req, res) => {
       });
   }
 };
-
-// Unused — superseded by GET /api/activity-log (batched feed).
-// /**
-//  * GET /api/b2b
-//  * Fetch the logged-in user's B2B entries.
-//  */
-// exports.getMyB2b = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//
-//     const populateFields =
-//       "fullName businessInformation.companyName businessInformation.brandName";
-//
-//     const [given, received] = await Promise.all([
-//       B2b.find({ addedBy: userId })
-//         .populate("memberId", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//       B2b.find({ memberId: userId })
-//         .populate("addedBy", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//     ]);
-//
-//     res.status(200).json({
-//       success: true,
-//       data: { given, received },
-//     });
-//   } catch (err) {
-//     console.error("Get B2B error:", err);
-//     res
-//       .status(500)
-//       .json({
-//         success: false,
-//         message: "Server error. Please try again later.",
-//       });
-//   }
-// };

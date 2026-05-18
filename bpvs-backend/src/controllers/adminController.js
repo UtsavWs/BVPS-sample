@@ -1,26 +1,25 @@
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
-const { approvalEmailHtml } = require("../utils/emailTemplates");
+const { welcomeEmailHtml } = require("../utils/emailTemplates");
 
 /**
  * GET /api/admin/stats
- * Returns counts: total, active, pending, inactive
+ * Returns counts: total, active, inactive
  */
 exports.getAdminStats = async (req, res) => {
   try {
     const roleFilter =
       req.user.role === "admin" ? { $in: ["member", "subadmin"] } : "member";
 
-    const [total, active, pending, inactive] = await Promise.all([
+    const [total, active, inactive] = await Promise.all([
       User.countDocuments({ role: roleFilter }),
       User.countDocuments({ role: roleFilter, status: "active" }),
-      User.countDocuments({ role: roleFilter, isApproved: null, isVerified: true }),
       User.countDocuments({ role: roleFilter, status: "inactive" }),
     ]);
 
     res.status(200).json({
       success: true,
-      data: { total, active, pending, inactive },
+      data: { total, active, inactive },
     });
   } catch (err) {
     res.status(500).json({ success: false, message: "Server error." });
@@ -29,7 +28,7 @@ exports.getAdminStats = async (req, res) => {
 
 /**
  * GET /api/admin/users
- * Query params: tab (pending|active|inactive|all), page, limit
+ * Query params: tab (active|inactive|all), page, limit
  * Returns paginated list of non-admin users
  */
 exports.getUsers = async (req, res) => {
@@ -39,10 +38,7 @@ exports.getUsers = async (req, res) => {
       req.user.role === "admin" ? { $in: ["member", "subadmin"] } : "member";
     const filter = { role: roleFilter };
 
-    if (tab === "pending") {
-      filter.isApproved = null;
-      filter.isVerified = true;
-    } else if (tab === "active") {
+    if (tab === "active") {
       filter.status = "active";
     } else if (tab === "inactive") {
       filter.status = "inactive";
@@ -54,7 +50,7 @@ exports.getUsers = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(parseInt(limit))
       .select(
-        "fullName email mobile profileImage status isApproved approvedBy role createdAt businessInformation",
+        "fullName email mobile profileImage status role createdAt businessInformation",
       )
       .lean();
 
@@ -70,6 +66,67 @@ exports.getUsers = async (req, res) => {
       },
     });
   } catch (err) {
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+};
+
+/**
+ * POST /api/admin/users
+ * Create a new user from the admin panel.
+ * The user is immediately active and verified.
+ */
+exports.createUser = async (req, res) => {
+  try {
+    const { fullName, email, mobile } = req.body;
+    const lowerEmail = email.toLowerCase();
+    const defaultPassword = "Bvps@123";
+
+    // Check if email or mobile already exists
+    const existing = await User.findOne({
+      $or: [{ email: lowerEmail }, { mobile }],
+    });
+    if (existing) {
+      const field = existing.email === lowerEmail ? "Email" : "Mobile";
+      return res.status(409).json({
+        success: false,
+        message: `${field} is already registered.`,
+      });
+    }
+
+    const user = await User.create({
+      fullName,
+      email: lowerEmail,
+      mobile,
+      password: defaultPassword,
+      isVerified: true,
+      status: "active",
+      role: "member",
+      createdBy: { id: req.user._id, name: req.user.fullName },
+    });
+
+    // Send welcome email with credentials (fire-and-forget)
+    sendEmail({
+      to: lowerEmail,
+      subject: "Welcome to BPVS — Your Account Details",
+      html: welcomeEmailHtml(fullName, lowerEmail, defaultPassword),
+    }).catch((e) => console.error("Welcome email failed:", e.message));
+
+    res.status(201).json({
+      success: true,
+      message: "User created successfully.",
+      data: {
+        user: {
+          id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          mobile: user.mobile,
+          status: user.status,
+          role: user.role,
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Create user error:", err);
     res.status(500).json({ success: false, message: "Server error." });
   }
 };
@@ -132,79 +189,6 @@ exports.updateUser = async (req, res) => {
         .status(409)
         .json({ success: false, message: `${field} is already in use.` });
     }
-    res.status(500).json({ success: false, message: "Server error." });
-  }
-};
-
-/**
- * POST /api/admin/users/:id/approve
- * Set user isApproved to true and status to 'active'
- */
-exports.approveUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findOneAndUpdate(
-      { _id: id },
-      {
-        isApproved: true,
-        status: "active",
-        approvedBy: { id: req.user._id, name: req.user.fullName },
-      },
-      { new: true },
-    ).select("fullName email isApproved status approvedBy");
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    sendEmail({
-      to: user.email,
-      subject: "Your BPVS account has been approved",
-      html: approvalEmailHtml(user.fullName),
-    }).catch((e) => console.error("Approval email failed:", e.message));
-
-    res.status(200).json({
-      success: true,
-      message: "User approved successfully.",
-      data: {
-        id: user._id,
-        isApproved: user.isApproved,
-        status: user.status,
-        approvedBy: user.approvedBy,
-      },
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Server error." });
-  }
-};
-
-/**
- * POST /api/admin/users/:id/reject
- * Set user isApproved to false
- */
-exports.rejectUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findOneAndUpdate(
-      { _id: id },
-      { isApproved: false },
-      { new: true },
-    ).select("isApproved");
-
-    if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found." });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "User rejected successfully.",
-      data: { id: user._id, isApproved: user.isApproved },
-    });
-  } catch (err) {
     res.status(500).json({ success: false, message: "Server error." });
   }
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X, Calendar, AlignLeft, Info, FileText, Briefcase, MapPin, Mail, Phone, DollarSign } from "lucide-react";
+import { X, Calendar, AlignLeft, Info, MapPin, Mail, Phone, DollarSign } from "lucide-react";
 import { formatDate } from "../../utils/dateUtils";
 
 const ACTIVITY_ICONS = {
@@ -34,8 +34,8 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
   let givenBy, receivedBy;
 
   if (logType === "b2b") {
-    givenBy = isGiven ? currentUser : rawData.addedBy;
-    receivedBy = isGiven ? rawData.memberId : currentUser;
+    givenBy = isGiven ? currentUser : rawData.givenBy;
+    receivedBy = isGiven ? rawData.receivedBy : currentUser;
   } else {
     givenBy = isGiven ? currentUser : rawData.givenBy;
     receivedBy = isGiven ? rawData.receivedBy : currentUser;
@@ -134,27 +134,39 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
             <>
               <DetailRow icon={<Info size={14} />} label="Topic of Conversation" value={rawData.topicOfConversation} />
               <DetailRow icon={<MapPin size={14} />} label="Location" value={rawData.location} />
-              <DetailRow icon={<Calendar size={14} />} label="Date" value={formatDate(rawData.createdAt)} />
+              <DetailRow icon={<Calendar size={14} />} label="Date of B2B" value={formatDate(rawData.activityDate)} />
+              {rawData.image && (
+                <div className="py-2.5 border-b border-stone-50 last:border-0">
+                  <p className="text-[12.5px] text-stone-400 mb-2">Image</p>
+                  <a
+                    href={rawData.image}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
+                  >
+                    <img
+                      src={rawData.image}
+                      alt="B2B"
+                      className="w-full max-h-64 object-cover rounded-xl border border-stone-100"
+                    />
+                  </a>
+                </div>
+              )}
             </>
           )}
 
           {logType === "referral" && (
             <>
-              <DetailRow icon={<Info size={14} />} label="Reference Type" value={rawData.referenceType} />
               <DetailRow icon={<Phone size={14} />} label="Contact No" value={rawData.contactNo} />
               <DetailRow icon={<Mail size={14} />} label="Email" value={rawData.email} />
               <DetailRow icon={<MapPin size={14} />} label="Address" value={rawData.address} />
               <DetailRow icon={<AlignLeft size={14} />} label="Description" value={rawData.description} />
-              <DetailRow icon={<Calendar size={14} />} label="Event Master" value={rawData.eventMaster?.eventName || rawData.eventMaster} />
             </>
           )}
 
           {logType === "thankyouslip" && (
             <>
               <DetailRow icon={<DollarSign size={14} />} label="Amount" value={`₹${rawData.amount?.toLocaleString() || 0}`} />
-              <DetailRow icon={<Briefcase size={14} />} label="Business Type" value={rawData.businessType} />
-              <DetailRow icon={<Info size={14} />} label="Reference Type" value={rawData.referenceType} />
-              <DetailRow icon={<FileText size={14} />} label="Reference" value={rawData.reference} />
               <DetailRow icon={<AlignLeft size={14} />} label="Remarks" value={rawData.remarks} />
             </>
           )}
@@ -176,7 +188,7 @@ const DetailRow = ({ icon, label, value }) => {
       </div>
       <div
         onClick={() => setIsExpanded(!isExpanded)}
-        className={`text-[13px] font-medium text-gray-800 text-left max-w-[50%] sm:max-w-[60%] cursor-pointer select-none transition-all ${isExpanded ? "break-words whitespace-normal" : "truncate"}`}
+        className={`text-[13px] font-medium text-gray-800 text-left max-w-[50%] sm:max-w-[60%] cursor-pointer select-none transition-all ${isExpanded ? "wrap-break-word whitespace-normal" : "truncate"}`}
         title={isExpanded ? "" : "Tap to see more"}
       >
         {value}

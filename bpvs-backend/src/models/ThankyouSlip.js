@@ -12,21 +12,6 @@ const ThankyouSlipSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "receivedBy (receiver) is required"],
     },
-    businessType: {
-      type: String,
-      enum: ["New", "Repeat"],
-      required: [true, "Business type is required"],
-    },
-    referenceType: {
-      type: String,
-      enum: ["Inside", "Outside"],
-      required: [true, "Reference type is required"],
-    },
-    reference: {
-      type: String,
-      trim: true,
-      required: [true, "Reference is required"],
-    },
     amount: {
       type: Number,
       required: [true, "Amount is required"],

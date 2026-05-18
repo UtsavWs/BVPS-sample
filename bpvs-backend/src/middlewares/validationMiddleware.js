@@ -74,32 +74,12 @@ const baseValidations = {
 
 // ── Auth Schemas ──────────────────────────────────────────────────────────────
 
-exports.registerSchema = Joi.object({
-  fullName: baseValidations.name.required(),
-  mobile: baseValidations.mobile.required(),
-  email: baseValidations.email.required(),
-  password: baseValidations.password.required(),
-  confirmPassword: Joi.string().valid(Joi.ref("password")).required().messages({
-    "any.only": "Passwords do not match.",
-    "any.required": "Confirm password is required.",
-  }),
-});
-
 exports.loginSchema = Joi.object({
   email: baseValidations.email.required(),
   password: Joi.string().required().messages({
     "any.required": "Password is required.",
   }),
   rememberMe: Joi.boolean().optional(),
-});
-
-exports.verifyOtpSchema = Joi.object({
-  email: baseValidations.email.required(),
-  otp: baseValidations.otp.required(),
-});
-
-exports.sendOtpSchema = Joi.object({
-  email: baseValidations.email.required(),
 });
 
 exports.forgotPasswordSchema = Joi.object({
@@ -195,18 +175,6 @@ exports.changePasswordSchema = Joi.object({
 
 exports.addThankyouSlipSchema = Joi.object({
   receivedBy: baseValidations.mongoId.required(),
-  businessType: Joi.string().valid("New", "Repeat").required().messages({
-    "any.only": "Business type must be New or Repeat.",
-    "any.required": "Business type is required.",
-  }),
-  referenceType: Joi.string().valid("Inside", "Outside").required().messages({
-    "any.only": "Reference type must be Inside or Outside.",
-    "any.required": "Reference type is required.",
-  }),
-  reference: Joi.string().trim().required().messages({
-    "string.empty": "Reference is required.",
-    "any.required": "Reference is required.",
-  }),
   amount: Joi.number().positive().required().messages({
     "number.base": "Amount must be a valid number.",
     "number.positive": "Amount must be positive.",
@@ -221,10 +189,6 @@ exports.addReferralSchema = Joi.object({
     "string.empty": "Please select a receiver.",
     "any.required": "Receiver is required.",
   }),
-  referenceType: Joi.string().valid("Inside", "Outside").required().messages({
-    "any.only": "Reference type must be Inside or Outside.",
-    "any.required": "Reference type is required.",
-  }),
   memberName: Joi.string().trim().required().messages({
     "string.empty": "Please select a member.",
     "any.required": "Please select a member.",
@@ -236,10 +200,6 @@ exports.addReferralSchema = Joi.object({
   address: Joi.string().trim().required().messages({
     "string.empty": "Address is required.",
     "any.required": "Address is required.",
-  }),
-  eventMaster: Joi.string().trim().required().messages({
-    "string.empty": "Please select an event master.",
-    "any.required": "Please select an event master.",
   }),
   description: Joi.string().trim().allow("").optional(),
 });
@@ -273,16 +233,16 @@ exports.addVisitorSchema = Joi.object({
     "string.pattern.base": "Contact number must be 10 digits.",
   }),
   email: baseValidations.email.required(),
-  chapterOfInvite: Joi.string().trim().required().messages({
-    "string.empty": "Chapter of invite is required.",
-    "any.required": "Chapter of invite is required.",
+  nativePlace: Joi.string().trim().required().messages({
+    "string.empty": "Native place is required.",
+    "any.required": "Native place is required.",
   }),
 });
 
 // ── B2B Schema ────────────────────────────────────────────────────────────
 
 exports.addB2bSchema = Joi.object({
-  memberId: baseValidations.mongoId.required(),
+  receivedBy: baseValidations.mongoId.required(),
   initiatedBy: Joi.string().valid("My self", "Other Member").required().messages({
     "any.only": "Initiated by must be 'My self' or 'Other Member'.",
     "any.required": "Initiated by is required.",
@@ -295,10 +255,21 @@ exports.addB2bSchema = Joi.object({
     "string.empty": "Topic of conversation is required.",
     "any.required": "Topic of conversation is required.",
   }),
-  eventMaster: Joi.string().trim().required().messages({
-    "string.empty": "Please select an event master.",
-    "any.required": "Please select an event master.",
+  activityDate: Joi.date().iso().required().messages({
+    "date.format": "Activity date must be a valid date.",
+    "any.required": "Activity date is required.",
   }),
+  image: Joi.string().uri().allow("", null).optional().messages({
+    "string.uri": "Image must be a valid URL.",
+  }),
+});
+
+// ── Admin Create User Schema ─────────────────────────────────────────────────
+
+exports.createUserSchema = Joi.object({
+  fullName: baseValidations.name.required(),
+  email: baseValidations.email.required(),
+  mobile: baseValidations.mobile.required(),
 });
 
 // ── Validation Middleware Factory ────────────────────────────────────────────

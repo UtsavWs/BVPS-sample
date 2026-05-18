@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
   // isInitializing state - true while checking if user is already logged in (app startup)
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // isProcessing state - true during login, register, etc.
+  // isProcessing state - true during login, etc.
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Error state - holds any error messages
@@ -152,7 +152,6 @@ export function AuthProvider({ children }) {
         return {
           success: false,
           message: res.message,
-          status: res.data?.user?.status,
         };
       }
     } catch (err) {
@@ -161,69 +160,6 @@ export function AuthProvider({ children }) {
       return { success: false, message: errorMsg };
     } finally {
       setIsProcessing(false);
-    }
-  }, []);
-
-  // Function to register new user
-  const register = useCallback(async (userData) => {
-    setError(null);
-    setIsProcessing(true);
-    try {
-      const res = await apiPost("/auth/register", userData);
-
-      if (res.success) {
-        return { success: true, message: res.message, email: userData.email };
-      } else {
-        setError(res.message);
-        return { success: false, message: res.message };
-      }
-    } catch (err) {
-      const errorMsg = "Network error. Please try again.";
-      setError(errorMsg);
-      return { success: false, message: errorMsg };
-    } finally {
-      setIsProcessing(false);
-    }
-  }, []);
-
-  // Function to verify OTP
-  const verifyOtp = useCallback(async (email, otp) => {
-    setError(null);
-    setIsProcessing(true);
-    try {
-      const res = await apiPost("/auth/verify-otp", { email, otp });
-
-      if (res.success) {
-        return { success: true, message: res.message };
-      } else {
-        setError(res.message);
-        return { success: false, message: res.message };
-      }
-    } catch (err) {
-      const errorMsg = "Network error. Please try again.";
-      setError(errorMsg);
-      return { success: false, message: errorMsg };
-    } finally {
-      setIsProcessing(false);
-    }
-  }, []);
-
-  // Function to resend OTP
-  const resendOtp = useCallback(async (email) => {
-    setError(null);
-    try {
-      const res = await apiPost("/auth/resend-otp", { email });
-
-      if (res.success) {
-        return { success: true, message: res.message };
-      } else {
-        setError(res.message);
-        return { success: false, message: res.message };
-      }
-    } catch (err) {
-      const errorMsg = "Network error. Please try again.";
-      setError(errorMsg);
-      return { success: false, message: errorMsg };
     }
   }, []);
 
@@ -303,19 +239,15 @@ export function AuthProvider({ children }) {
       isAdmin: user?.role === "admin",
       isSubadmin: user?.role === "subadmin",
       isStaff: user?.role === "admin" || user?.role === "subadmin",
-      isApproved: user?.isApproved === true,
       dashboardStats, // Global stats cache
       login,
-      register,
-      verifyOtp,
-      resendOtp,
       logout,
       updateUser,
       prefetchDashboardStats, // Prefetch function
       clearError,
     }),
     [user, token, isInitializing, isProcessing, error, dashboardStats,
-      login, register, verifyOtp, resendOtp, logout, updateUser, prefetchDashboardStats, clearError],
+      login, logout, updateUser, prefetchDashboardStats, clearError],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -12,12 +12,10 @@ exports.addReferral = async (req, res) => {
   try {
     const {
       receivedBy,
-      referenceType,
       memberName,
       contactNumber,
       email,
       address,
-      eventMaster,
       description,
     } = req.body;
     const givenBy = req.user._id;
@@ -42,12 +40,10 @@ exports.addReferral = async (req, res) => {
     const referral = await Referral.create({
       givenBy,
       receivedBy,
-      referenceType,
       memberName,
       contactNumber,
       email,
       address,
-      eventMaster,
       description,
     });
 
@@ -76,42 +72,3 @@ exports.addReferral = async (req, res) => {
       });
   }
 };
-
-// Unused — superseded by GET /api/activity-log (batched feed).
-// /**
-//  * GET /api/referrals
-//  * Fetch the logged-in user's referrals, split into `given` and `received`.
-//  * Each referral is populated with the counterparty's name and company.
-//  */
-// exports.getMyReferrals = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//
-//     const populateFields =
-//       "fullName businessInformation.companyName businessInformation.brandName";
-//
-//     const [given, received] = await Promise.all([
-//       Referral.find({ givenBy: userId })
-//         .populate("receivedBy", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//       Referral.find({ receivedBy: userId })
-//         .populate("givenBy", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//     ]);
-//
-//     res.status(200).json({
-//       success: true,
-//       data: { given, received },
-//     });
-//   } catch (err) {
-//     console.error("Get referrals error:", err);
-//     res
-//       .status(500)
-//       .json({
-//         success: false,
-//         message: "Server error. Please try again later.",
-//       });
-//   }
-// };

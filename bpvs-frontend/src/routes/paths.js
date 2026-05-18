@@ -2,8 +2,6 @@ export const PUBLIC_PATHS = {
   SPLASH: "/",
   ONBOARDING: "/onboarding",
   LOGIN: "/login",
-  SIGNUP: "/signup",
-  VERIFY_OTP: "/verify-otp",
   FORGOT_PASSWORD: "/forgot-password",
 };
 
@@ -17,7 +15,6 @@ export const PROTECTED_PATHS = {
   SETTINGS: "/settings",
   MEMBERS: "/members",
   ACTIVITY: "/activity",
-  PENDING_APPROVAL: "/pending-approval",
   ABOUT_US: "/about-us",
   ADD_B2B: "/add-b2b",
   ADD_VISITOR: "/add-visitor",

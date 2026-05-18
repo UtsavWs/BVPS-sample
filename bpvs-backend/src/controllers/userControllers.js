@@ -34,7 +34,6 @@ exports.getProfile = async (req, res) => {
           dateOfBirth: user.dateOfBirth,
           gender: user.gender,
           isVerified: user.isVerified,
-          isApproved: user.isApproved,
           role: user.role,
           status: user.status,
           profileImage: sanitizeImage(user.profileImage),
@@ -133,7 +132,6 @@ exports.updateProfile = async (req, res) => {
           email: updatedUser.email,
           mobile: updatedUser.mobile,
           isVerified: updatedUser.isVerified,
-          isApproved: updatedUser.isApproved,
           role: updatedUser.role,
           status: updatedUser.status,
           profileImage: updatedUser.profileImage,
@@ -307,7 +305,7 @@ const computeStatsForRange = async (userId, startDate, endDate) => {
     ThankyouSlip.countDocuments({ receivedBy: userId, createdAt: inRange }),
     Visitor.countDocuments({ addedBy: userId, createdAt: inRange }),
     B2b.countDocuments({
-      $or: [{ addedBy: userId }, { memberId: userId }],
+      $or: [{ givenBy: userId }, { receivedBy: userId }],
       createdAt: inRange,
     }),
   ]);

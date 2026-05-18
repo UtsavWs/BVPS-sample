@@ -67,7 +67,7 @@ const UserDashboard = () => {
   const fabWrapRefMobile = useRef(null);
   const fabWrapRefDesktop = useRef(null);
 
-  const { user, logout, loading, isApproved, isStaff: isAdmin } = auth;
+  const { user, logout, loading, isStaff: isAdmin } = auth;
 
   const [filteredCounts, setFilteredCounts] = useState({
     referralGivenCount: 0,
@@ -96,11 +96,7 @@ const UserDashboard = () => {
     navigate("/login");
   }, [logout, navigate]);
 
-  useEffect(() => {
-    if (!loading && user && !isApproved) {
-      navigate("/pending-approval");
-    }
-  }, [loading, user, isApproved, navigate]);
+
 
   // Click outside handler for FabMenu
   useEffect(() => {
@@ -250,7 +246,6 @@ const UserDashboard = () => {
           onClose={closeDrawer}
           onLogout={handleLogout}
           user={user}
-          isApproved={isApproved}
           isAdmin={isAdmin}
         />
       </div>
@@ -512,7 +507,7 @@ const UserDashboard = () => {
               wrapRef={fabWrapRefDesktop}
               menuOpen={menuOpen}
               setMenuOpen={setMenuOpen}
-              isApproved={isApproved}
+
               navigate={navigate}
             />
           </div>
@@ -526,7 +521,7 @@ const UserDashboard = () => {
           wrapRef={fabWrapRefMobile}
           menuOpen={menuOpen}
           setMenuOpen={setMenuOpen}
-          isApproved={isApproved}
+
           navigate={navigate}
         />
       </div>

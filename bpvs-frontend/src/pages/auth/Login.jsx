@@ -35,17 +35,6 @@ export default function Login() {
         navigate("/dashboard");
         return;
       }
-      if (result.status === "inactive") {
-        navigate("/pending-approval");
-        return;
-      }
-      if (
-        result.message?.includes("verify") ||
-        result.message?.includes("Verify")
-      ) {
-        navigate("/verify-otp", { state: { email } });
-        return;
-      }
       setError(result.message || "Login failed.");
       setLoading(false);
     } catch {
@@ -177,18 +166,6 @@ export default function Login() {
             >
               {isLoading ? "Verifying..." : "Login"}
             </button>
-
-            {/* Sign Up Link */}
-            <p className="text-center text-sm text-gray-700">
-              Don&apos;t have an account?{" "}
-              <button
-                type="button"
-                onClick={() => navigate("/signup")}
-                className="text-[#C1512D] font-semibold hover:underline"
-              >
-                Sign Up
-              </button>
-            </p>
           </form>
         </div>
 

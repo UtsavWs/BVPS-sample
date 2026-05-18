@@ -12,11 +12,6 @@ const ReferralSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "receivedBy (receiver) is required"],
     },
-    referenceType: {
-      type: String,
-      enum: ["Inside", "Outside"],
-      required: [true, "Reference type is required"],
-    },
     memberName: {
       type: String,
       trim: true,
@@ -37,10 +32,6 @@ const ReferralSchema = new mongoose.Schema(
       type: String,
       trim: true,
       required: [true, "Address is required"],
-    },
-    eventMaster: {
-      type: String,
-      required: [true, "Event master is required"],
     },
     description: {
       type: String,

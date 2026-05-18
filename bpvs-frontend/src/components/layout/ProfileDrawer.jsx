@@ -15,7 +15,7 @@ const MenuItem = memo(({ icon, label, active = false }) => (
 MenuItem.displayName = "MenuItem";
 
 const ProfileDrawer = memo(
-  ({ onClose, onLogout, user, isApproved = true, isAdmin = false }) => {
+  ({ onClose, onLogout, user, isAdmin = false }) => {
     return (
       <>
         <div className="flex flex-col w-75 md:w-80 h-full bg-white">
@@ -61,11 +61,9 @@ const ProfileDrawer = memo(
             <Link to="/my-profile">
               <MenuItem icon={<img src="/assets/logos/ProfileIcon.svg" />} label="My Profile" />
             </Link>
-            {isApproved && (
-              <Link to="/members">
-                <MenuItem icon={<img src="/assets/logos/bvpsMembers.svg" />} label="BPVS Members" />
-              </Link>
-            )}
+            <Link to="/members">
+              <MenuItem icon={<img src="/assets/logos/bvpsMembers.svg" />} label="BPVS Members" />
+            </Link>
             {isAdmin && (
               <Link to="/admin">
                 <MenuItem icon={<img src="/assets/logos/shieldIcon.svg" />} label="Admin Panel" />

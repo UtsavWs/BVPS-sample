@@ -2,20 +2,15 @@ const mongoose = require("mongoose");
 
 const B2bSchema = new mongoose.Schema(
   {
-    addedBy: {
+    givenBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "addedBy (creator) is required"],
+      required: [true, "givenBy (creator) is required"],
     },
-    memberId: {
+    receivedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: [true, "Member is required"],
-    },
-    initiatedBy: {
-      type: String,
-      enum: ["My self", "Other Member"],
-      required: [true, "Initiated by is required"],
     },
     location: {
       type: String,
@@ -27,15 +22,20 @@ const B2bSchema = new mongoose.Schema(
       trim: true,
       required: [true, "Topic of conversation is required"],
     },
-    eventMaster: {
+    activityDate: {
+      type: Date,
+      required: [true, "Activity date is required"],
+    },
+    image: {
       type: String,
-      required: [true, "Event master is required"],
+      trim: true,
+      default: "",
     },
   },
   { timestamps: true },
 );
 
-B2bSchema.index({ addedBy: 1, createdAt: -1 });
-B2bSchema.index({ memberId: 1, createdAt: -1 });
+B2bSchema.index({ givenBy: 1, createdAt: -1 });
+B2bSchema.index({ receivedBy: 1, createdAt: -1 });
 
 module.exports = mongoose.model("B2b", B2bSchema);

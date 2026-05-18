@@ -15,7 +15,7 @@ exports.addVisitor = async (req, res) => {
       companyName,
       contactNumber,
       email,
-      chapterOfInvite,
+      nativePlace,
     } = req.body;
 
     const visitor = await Visitor.create({
@@ -26,7 +26,7 @@ exports.addVisitor = async (req, res) => {
       companyName,
       contactNumber,
       email,
-      chapterOfInvite,
+      nativePlace,
       addedBy: req.user._id,
     });
 

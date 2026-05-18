@@ -5,15 +5,9 @@ const {
   validate,
   addReferralSchema,
 } = require("../middlewares/validationMiddleware");
-const {
-  addReferral,
-  // getMyReferrals, // Unused — superseded by GET /api/activity-log
-} = require("../controllers/referralController");
+const { addReferral } = require("../controllers/referralController");
 
 // POST /api/referrals — create a new referral (authenticated)
 router.post("/", protect, validate(addReferralSchema), addReferral);
-
-// GET /api/referrals — get current user's referrals
-// router.get("/", protect, getMyReferrals);
 
 module.exports = router;

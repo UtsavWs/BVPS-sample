@@ -63,7 +63,7 @@ const mapReferral = (referral, tab) => {
 
 // Map a raw b2b entry from the API into the row shape used by the UI.
 const mapB2b = (b2b, tab) => {
-  const counterparty = tab === "Given" ? b2b.memberId : b2b.addedBy;
+  const counterparty = tab === "Given" ? b2b.receivedBy : b2b.givenBy;
   return {
     id: b2b._id,
     name: counterparty?.fullName || "Unknown member",

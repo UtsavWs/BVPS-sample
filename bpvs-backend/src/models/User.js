@@ -57,12 +57,7 @@ const UserSchema = new mongoose.Schema(
       default: "inactive",
     },
 
-    isApproved: {
-      type: Boolean,
-      default: null,
-    },
-
-    approvedBy: {
+    createdBy: {
       id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
       name: { type: String },
     },
@@ -290,7 +285,7 @@ UserSchema.statics.clearExpiredOtps = async function () {
 };
 
 // ───── Indexes ─────
-UserSchema.index({ role: 1, status: 1, isApproved: 1 });
+UserSchema.index({ role: 1, status: 1 });
 UserSchema.index({ createdAt: -1 });
 UserSchema.index({ "otp.expiresAt": 1 });
 

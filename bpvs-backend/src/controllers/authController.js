@@ -41,121 +41,6 @@ const setOtp = async (user, action, email) => {
   }
 };
 
-
-// ── POST /api/auth/register ──────────────────────────────────────────────────
-exports.register = async (req, res) => {
-  try {
-    const { fullName, mobile, email, password } = req.body;
-    const lowerEmail = email.toLowerCase();
-
-    let user = await User.findOne({ $or: [{ email: lowerEmail }, { mobile }] });
-
-    if (user) {
-      if (user.isVerified)
-        return res.status(409).json({
-          success: false,
-          message: `${user.email === lowerEmail ? "Email" : "Mobile"} is already registered.`,
-        });
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      await User.findByIdAndUpdate(user._id, {
-        $set: {
-          fullName,
-          mobile,
-          email: lowerEmail,
-          password: hashedPassword,
-        },
-      });
-    } else {
-      const isFirstUser = (await User.countDocuments()) === 0;
-      user = await User.create({
-        fullName,
-        mobile,
-        email: lowerEmail,
-        password,
-        isVerified: false,
-        role: isFirstUser ? "admin" : "member",
-        status: isFirstUser ? "active" : "inactive",
-        isApproved: isFirstUser ? true : null,
-      });
-    }
-
-    await setOtp(user, "account verification", lowerEmail);
-
-    res.status(201).json({
-      success: true,
-      message: "Account created. Please verify your email with the OTP sent.",
-      data: { userId: user._id, email: user.email },
-    });
-  } catch (err) {
-    console.error("❌ Registration error:", err);
-    serverError(res);
-  }
-};
-
-// ── POST /api/auth/verify-otp ─────────────────────────────────────────────────
-exports.verifyOtp = async (req, res) => {
-  try {
-    const { email, otp } = req.body;
-    const lowerEmail = email.toLowerCase();
-    const user = await User.findOne({ email: lowerEmail });
-
-    if (!user?.otp?.code || user.otp.expiresAt < Date.now())
-      return res.status(401).json({
-        success: false,
-        message: "OTP expired or not found. Please request a new one.",
-      });
-
-    if (!(await bcrypt.compare(otp, user.otp.code)))
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid OTP. Please try again." });
-
-    await User.findByIdAndUpdate(user._id, {
-      $set: {
-        isVerified: true,
-        "otp.code": null,
-        "otp.expiresAt": null,
-      },
-    });
-
-    res.status(200).json({
-      success: true,
-      message:
-        "Email verified successfully! Your account is now pending admin approval.",
-    });
-  } catch (err) {
-    serverError(res);
-  }
-};
-
-// ── POST /api/auth/send-otp ───────────────────────────────────────────────────
-exports.sendOtp = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const lowerEmail = email.toLowerCase();
-    const user = await User.findOne({ email: lowerEmail }).select("+password");
-
-    if (!user)
-      return res
-        .status(404)
-        .json({ success: false, message: "No account found with this email." });
-    if (user.isVerified)
-      return res
-        .status(400)
-        .json({ success: false, message: "Account is already verified." });
-
-    await setOtp(user, "account verification", lowerEmail);
-
-    res.status(200).json({
-      success: true,
-      message: "A new OTP has been sent to your email.",
-    });
-  } catch (err) {
-    serverError(res);
-  }
-};
-
 // ── POST /api/auth/login ──────────────────────────────────────────────────────
 exports.login = async (req, res) => {
   try {
@@ -173,16 +58,8 @@ exports.login = async (req, res) => {
         .status(401)
         .json({ success: false, message: "Invalid email or password." });
 
-    if (!user.isVerified)
-      return res.status(403).json({
-        success: false,
-        message: "Account not verified. Please verify your email first.",
-        data: { email: user.email },
-      });
-
     if (user.status === "inactive")
       return res.status(403).json({
-        inactive: true,
         success: false,
         message: "Your account is inactive. Please contact admin.",
       });
@@ -199,7 +76,6 @@ exports.login = async (req, res) => {
           mobile: user.mobile,
           role: user.role,
           status: user.status,
-          isApproved: user.isApproved,
           profileImage: user.profileImage,
           bannerImage: user.bannerImage,
           contactInformation: user.contactInformation,

@@ -37,12 +37,12 @@ exports.getMyActivityLog = async (req, res) => {
         .populate("givenBy", populateFields)
         .sort({ createdAt: -1 })
         .lean(),
-      B2b.find({ addedBy: userId })
-        .populate("memberId", populateFields)
+      B2b.find({ givenBy: userId })
+        .populate("receivedBy", populateFields)
         .sort({ createdAt: -1 })
         .lean(),
-      B2b.find({ memberId: userId })
-        .populate("addedBy", populateFields)
+      B2b.find({ receivedBy: userId })
+        .populate("givenBy", populateFields)
         .sort({ createdAt: -1 })
         .lean(),
     ]);

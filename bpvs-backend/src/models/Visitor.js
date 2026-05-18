@@ -38,9 +38,9 @@ const VisitorSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    chapterOfInvite: {
+    nativePlace: {
       type: String,
-      required: [true, "Chapter of invite is required"],
+      required: [true, "Native place is required"],
       trim: true,
     },
     addedBy: {

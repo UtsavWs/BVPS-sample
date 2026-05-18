@@ -6,11 +6,14 @@ const {
   adminOrSubadmin,
 } = require("../middlewares/authMiddleware");
 const {
+  validate,
+  createUserSchema,
+} = require("../middlewares/validationMiddleware");
+const {
   getAdminStats,
   getUsers,
+  createUser,
   updateUser,
-  approveUser,
-  rejectUser,
   deleteUser,
   promoteToSubadmin,
   demoteToMember,
@@ -22,9 +25,8 @@ router.use(protect);
 // Shared: admin + subadmin can view and manage members
 router.get("/stats", adminOrSubadmin, getAdminStats);
 router.get("/users", adminOrSubadmin, getUsers);
+router.post("/users", adminOrSubadmin, validate(createUserSchema), createUser);
 router.patch("/users/:id", adminOrSubadmin, updateUser);
-router.post("/users/:id/approve", adminOrSubadmin, approveUser);
-router.post("/users/:id/reject", adminOrSubadmin, rejectUser);
 
 // Admin-only: role management + deletion
 router.get("/subadmins", adminOnly, getSubadmins);

@@ -12,9 +12,7 @@ import LoadingScreen from "../components/ui/LoadingScreen";
 const SplashScreen = lazy(() => import("../pages/onboarding/SplashScreen"));
 const Onboarding = lazy(() => import("../pages/onboarding/Onboarding"));
 
-const SignUp = lazy(() => import("../pages/auth/SignUp"));
 const Login = lazy(() => import("../pages/auth/Login"));
-const OtpVerificationPage = lazy(() => import("../pages/auth/OtpVerificationPage"));
 const ForgotPassword = lazy(() => import("../pages/auth/ForgotPassword"));
 const ResetPassword = lazy(() => import("../pages/auth/ResetPassword"));
 
@@ -27,7 +25,6 @@ const OtherInfo = lazy(() => import("../pages/profile/OtherInfo"));
 const Settings = lazy(() => import("../pages/profile/Settings"));
 const BvpsMembers = lazy(() => import("../pages/members/BvpsMembers"));
 const ActivityLog = lazy(() => import("../pages/activities/ActivityLog"));
-const PendingApproval = lazy(() => import("../pages/auth/PendingApproval"));
 const AboutUs = lazy(() => import("../pages/onboarding/AboutUs"));
 const AddB2B = lazy(() => import("../pages/activities/AddB2b"));
 const AddVisitor = lazy(() => import("../pages/activities/AddVisitor"));
@@ -42,14 +39,11 @@ const AdminManageMembers = lazy(() => import("../pages/admin/AdminManageMembers"
 const openRoutes = [
   { path: PUBLIC_PATHS.SPLASH, element: <SplashScreen /> },
   { path: PUBLIC_PATHS.ONBOARDING, element: <Onboarding /> },
-  { path: PROTECTED_PATHS.PENDING_APPROVAL, element: <PendingApproval /> },
   { path: PUBLIC_PATHS.FORGOT_PASSWORD, element: <ForgotPassword /> },
 ];
 
 const authRoutes = [
   { path: PUBLIC_PATHS.LOGIN, element: <Login /> },
-  { path: PUBLIC_PATHS.SIGNUP, element: <SignUp /> },
-  { path: PUBLIC_PATHS.VERIFY_OTP, element: <OtpVerificationPage /> },
 ];
 
 const privateRoutes = [

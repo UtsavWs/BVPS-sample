@@ -10,8 +10,7 @@ const User = require("../models/User");
  */
 exports.addThankyouSlip = async (req, res) => {
   try {
-    const { receivedBy, businessType, referenceType, reference, amount } =
-      req.body;
+    const { receivedBy, amount } = req.body;
     const givenBy = req.user._id;
 
     // prevent self-slip
@@ -34,9 +33,6 @@ exports.addThankyouSlip = async (req, res) => {
     const slip = await ThankyouSlip.create({
       givenBy,
       receivedBy,
-      businessType,
-      referenceType,
-      reference,
       amount,
     });
 
@@ -65,42 +61,3 @@ exports.addThankyouSlip = async (req, res) => {
       });
   }
 };
-
-// Unused — superseded by GET /api/activity-log (batched feed).
-// /**
-//  * GET /api/thankyouslip
-//  * Fetch the logged-in user's thank-you slips, split into `given` and `received`.
-//  * Each slip is populated with the counterparty's name and company.
-//  */
-// exports.getMyThankyouSlips = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//
-//     const populateFields =
-//       "fullName businessInformation.companyName businessInformation.brandName";
-//
-//     const [given, received] = await Promise.all([
-//       ThankyouSlip.find({ givenBy: userId })
-//         .populate("receivedBy", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//       ThankyouSlip.find({ receivedBy: userId })
-//         .populate("givenBy", populateFields)
-//         .sort({ createdAt: -1 })
-//         .lean(),
-//     ]);
-//
-//     res.status(200).json({
-//       success: true,
-//       data: { given, received },
-//     });
-//   } catch (err) {
-//     console.error("Get thank-you slips error:", err);
-//     res
-//       .status(500)
-//       .json({
-//         success: false,
-//         message: "Server error. Please try again later.",
-//       });
-//   }
-// };

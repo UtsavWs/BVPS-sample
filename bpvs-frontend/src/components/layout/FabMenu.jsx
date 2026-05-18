@@ -25,7 +25,6 @@ function FabMenu({
   wrapRef,
   menuOpen,
   setMenuOpen,
-  isApproved,
   navigate,
 }) {
   return (
@@ -40,8 +39,7 @@ function FabMenu({
           : "absolute bottom-8 right-8 z-60",
       ].join(" ")}
     >
-      {isApproved &&
-        MENU_ITEMS.map((item, i) => {
+      {MENU_ITEMS.map((item, i) => {
           const delay = menuOpen
             ? `${(MENU_ITEMS.length - 1 - i) * 50}ms`
             : `${i * 30}ms`;

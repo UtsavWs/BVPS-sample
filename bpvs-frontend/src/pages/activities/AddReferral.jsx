@@ -8,24 +8,11 @@ import { ArrowLeft } from "lucide-react";
 import Dropdown from "../../components/forms/Dropdown";
 import InputFields from "../../components/forms/InputFields";
 
-const REFERENCE_TYPES = ["Inside", "Outside"];
-
-const EVENT_OPTIONS = [
-  "Select",
-  "Event A",
-  "Event B",
-  "Event C",
-  "Event D",
-  "Event E",
-];
-
 const INITIAL = {
-  referenceType: "Inside",
   memberName: "Select Member",
   contactNumber: "",
   email: "",
   address: "",
-  eventMaster: "Select",
   description: "",
 };
 
@@ -36,7 +23,6 @@ const AddReferral = () => {
     members: rawMembers,
     loadMore,
     loadingMore,
-    hasMore,
     setSearchQuery,
   } = useContext(MemberContext);
 
@@ -68,8 +54,6 @@ const AddReferral = () => {
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
     if (!form.address.trim()) e.address = "Address is required";
-    if (form.eventMaster === "Select")
-      e.eventMaster = "Please select an event master";
     return e;
   };
 
@@ -133,29 +117,6 @@ const AddReferral = () => {
             lg:flex-1 lg:overflow-y-auto lg:min-h-0
           "
         >
-          {/* Reference Type toggle — full width */}
-          <div className="flex flex-col gap-1.5 lg:col-span-2">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Reference Type
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {REFERENCE_TYPES.map((type) => (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => set("referenceType", type)}
-                  className={`h-13 rounded-xl border text-[15px] font-semibold transition-all duration-200 cursor-pointer
-                    ${form.referenceType === type
-                      ? "bg-[#F9EDE8] text-[#C94621] border-[#C94621]"
-                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-                    }`}
-                >
-                  {type}
-                </button>
-              ))}
-            </div>
-          </div>
-
           {/* Member Name */}
           <div className="flex flex-col gap-1.5">
             <label className="text-[13px] font-semibold text-gray-700">
@@ -201,24 +162,6 @@ const AddReferral = () => {
             onChange={(e) => set("email", e.target.value)}
             error={errors.email}
           />
-
-          {/* Event Master */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Event Master
-            </label>
-            <Dropdown
-              value={form.eventMaster}
-              options={EVENT_OPTIONS}
-              onChange={(v) => set("eventMaster", v)}
-              error={errors.eventMaster}
-            />
-            {errors.eventMaster && (
-              <p className="text-[12px] text-red-500 mt-0.5">
-                {errors.eventMaster}
-              </p>
-            )}
-          </div>
 
           {/* Address */}
           <div className="lg:col-span-2">

@@ -14,7 +14,7 @@ import {
  *  mode="single" → onConfirm(formattedString)
  *  mode="range"  → onConfirm({ start, end })
  */
-function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
+function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100, minDate = null }) {
   const today = new Date();
   const todayY = today.getFullYear();
   const todayM = today.getMonth();
@@ -29,6 +29,15 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
     year > todayY ||
     (year === todayY && month > todayM) ||
     (year === todayY && month === todayM && d > todayD);
+
+  const isBeforeMin = (d) => {
+    if (!minDate) return false;
+    const cellDate = new Date(year, month, d);
+    return cellDate < minDate;
+  };
+
+  const isDisabled = (d) => isFuture(d) || isBeforeMin(d);
+
   const atCurrentMonth = year === todayY && month === todayM;
 
   // Single-mode selection
@@ -91,7 +100,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
   };
 
   const handleDayClick = (d) => {
-    if (isFuture(d)) return;
+    if (isDisabled(d)) return;
     if (!isRange) {
       setSelected({ d, m: month, y: year });
       return;
@@ -111,7 +120,7 @@ function DatePicker({ mode = "single", onConfirm, onClose, yearRange = 100 }) {
   const getDayClass = (d) => {
     const base =
       "aspect-square flex items-center justify-center text-[13px] transition border-none ";
-    if (isFuture(d)) {
+    if (isDisabled(d)) {
       return (
         base + "rounded-full text-gray-300 cursor-not-allowed bg-transparent"
       );

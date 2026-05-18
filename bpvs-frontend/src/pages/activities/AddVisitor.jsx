@@ -3,27 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { apiPost } from "../../api/api";
 import InputFields from "../../components/forms/InputFields";
-import Dropdown from "../../components/forms/Dropdown";
-
-const PROFESSION_OPTIONS = [
-  "Select Profession",
-  "Doctor",
-  "Engineer",
-  "Lawyer",
-  "Accountant",
-  "Architect",
-  "Teacher",
-  "Business Owner",
-  "Other",
-];
-
-const CHAPTER_OPTIONS = [
-  "Select",
-  "Chapter A",
-  "Chapter B",
-  "Chapter C",
-  "Chapter D",
-];
 
 const AddVisitor = () => {
   const navigate = useNavigate();
@@ -31,12 +10,12 @@ const AddVisitor = () => {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    profession: "Select Profession",
+    profession: "",
     specialty: "",
     companyName: "",
     contactNumber: "",
     email: "",
-    chapterOfInvite: "Select",
+    nativePlace: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -52,16 +31,14 @@ const AddVisitor = () => {
     const e = {};
     if (!form.firstName.trim()) e.firstName = "First name is required";
     if (!form.lastName.trim()) e.lastName = "Last name is required";
-    if (form.profession === "Select Profession")
-      e.profession = "Please select a profession";
+    if (!form.profession.trim()) e.profession = "Profession is required";
     if (!form.specialty.trim()) e.specialty = "Specialty is required";
     if (!form.companyName.trim()) e.companyName = "Company name is required";
     if (!form.contactNumber.trim())
       e.contactNumber = "Contact number is required";
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
-    if (form.chapterOfInvite === "Select")
-      e.chapterOfInvite = "Please select a chapter";
+    if (!form.nativePlace.trim()) e.nativePlace = "Native place is required";
     return e;
   };
 
@@ -137,21 +114,14 @@ const AddVisitor = () => {
           />
 
           {/* Profession */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Profession
-            </label>
-            <Dropdown
-              value={form.profession}
-              options={PROFESSION_OPTIONS}
-              onChange={(v) => set("profession", v)}
-            />
-            {errors.profession && (
-              <p className="text-[12px] text-red-500 mt-0.5">
-                {errors.profession}
-              </p>
-            )}
-          </div>
+          <InputFields
+            label="Profession"
+            placeholder="Enter Profession"
+            value={form.profession}
+            isEditing={true}
+            onChange={(e) => set("profession", e.target.value)}
+            error={errors.profession}
+          />
 
           {/* Specialty */}
           <InputFields
@@ -215,22 +185,15 @@ const AddVisitor = () => {
             error={errors.email}
           />
 
-          {/* Chapter of Invite */}
-          <div className="flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Chapter of Invite
-            </label>
-            <Dropdown
-              value={form.chapterOfInvite}
-              options={CHAPTER_OPTIONS}
-              onChange={(v) => set("chapterOfInvite", v)}
-            />
-            {errors.chapterOfInvite && (
-              <p className="text-[12px] text-red-500 mt-0.5">
-                {errors.chapterOfInvite}
-              </p>
-            )}
-          </div>
+          {/* Native Place */}
+          <InputFields
+            label="Native Place"
+            placeholder="Enter Native Place"
+            value={form.nativePlace}
+            isEditing={true}
+            onChange={(e) => set("nativePlace", e.target.value)}
+            error={errors.nativePlace}
+          />
 
           {/* Submit error */}
           {errors.submit && (
