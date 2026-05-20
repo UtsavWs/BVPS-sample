@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef, memo, useMemo } from "react";
+import { useState, useEffect, useContext, useRef, memo, useCallback } from "react";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import TabBar from "../../components/ui/TabBar";
 import DesktopPagination from "../../components/ui/DesktopPagination";
@@ -10,7 +10,6 @@ import { formatDate, parseDateDisplay } from "../../utils/dateUtils";
 import DatePicker from "../../components/forms/DatePicker";
 
 const ITEMS_PER_PAGE = 20;
-const MOBILE_BATCH_SIZE = 20;
 
 const ACTIVITY_ICONS = {
   thankYouGiven: "/assets/logos/thankYouslipG.svg",
@@ -40,7 +39,7 @@ const mapSlip = (slip, tab) => {
     typeLabel: "Thank You",
     rawData: slip,
     logType: "thankyouslip",
-    tab
+    tab,
   };
 };
 
@@ -57,7 +56,7 @@ const mapReferral = (referral, tab) => {
     typeLabel: "Referral",
     rawData: referral,
     logType: "referral",
-    tab
+    tab,
   };
 };
 
@@ -74,8 +73,15 @@ const mapB2b = (b2b, tab) => {
     typeLabel: "B2B",
     rawData: b2b,
     logType: "b2b",
-    tab
+    tab,
   };
+};
+
+const mapItem = (item, tab) => {
+  if (item.logType === "thankyouslip") return mapSlip(item, tab);
+  if (item.logType === "referral") return mapReferral(item, tab);
+  if (item.logType === "b2b") return mapB2b(item, tab);
+  return null;
 };
 
 // ── Shared colgroup ────────────────────────────────────────────────────────────
@@ -151,12 +157,15 @@ const TableRow = ({ log, onClick }) => (
 // ── Main Page ──────────────────────────────────────────────────────────────────
 export default function ActivityLog() {
   const [activeTab, setActiveTab] = useState("Given");
+  const [logs, setLogs] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [mobileVisibleCount, setMobileVisibleCount] =
-    useState(MOBILE_BATCH_SIZE);
-  const [givenLogs, setGivenLogs] = useState([]);
-  const [receivedLogs, setReceivedLogs] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [givenTotal, setGivenTotal] = useState(0);
+  const [receivedTotal, setReceivedTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState("");
   const [selectedLog, setSelectedLog] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -172,114 +181,97 @@ export default function ActivityLog() {
     }
   }, [authLoading, isAuthenticated, navigate]);
 
-  useEffect(() => {
-    if (authLoading || !isAuthenticated) return;
-    let cancelled = false;
-    const fetchActivity = async () => {
-      setLoading(true);
+  const fetchActivity = useCallback(
+    async (pageNum, { append = false } = {}) => {
+      if (append) setLoadingMore(true);
+      else setLoading(true);
       setError("");
       try {
-        const res = await apiGet("/activity-log");
-        if (cancelled) return;
+        const params = new URLSearchParams({
+          tab: activeTab,
+          page: String(pageNum),
+          limit: String(ITEMS_PER_PAGE),
+        });
+        if (dateRange.start && dateRange.end) {
+          const start = parseDateDisplay(dateRange.start);
+          const end = parseDateDisplay(dateRange.end);
+          if (start) params.set("startDate", start.toISOString());
+          if (end) params.set("endDate", end.toISOString());
+        }
+
+        const res = await apiGet(`/activity-log?${params.toString()}`);
 
         if (!res.success || !res.data) {
           setError("Failed to load activity");
-          setGivenLogs([]);
-          setReceivedLogs([]);
+          if (!append) setLogs([]);
           return;
         }
 
-        const { thankyouslip = {}, referrals = {}, b2b = {} } = res.data;
+        const mapped = (res.data.items || [])
+          .map((item) => mapItem(item, activeTab))
+          .filter(Boolean);
 
-        const slipGiven = (thankyouslip.given || []).map((s) =>
-          mapSlip(s, "Given"),
-        );
-        const slipReceived = (thankyouslip.received || []).map((s) =>
-          mapSlip(s, "Received"),
-        );
-        const refGiven = (referrals.given || []).map((r) =>
-          mapReferral(r, "Given"),
-        );
-        const refReceived = (referrals.received || []).map((r) =>
-          mapReferral(r, "Received"),
-        );
-        const b2bGiven = (b2b.given || []).map((b) => mapB2b(b, "Given"));
-        const b2bReceived = (b2b.received || []).map((b) =>
-          mapB2b(b, "Received"),
-        );
-
-        // Merge and sort by date descending
-        const sortByDate = (a, b) => new Date(b.rawDate) - new Date(a.rawDate);
-        setGivenLogs([...slipGiven, ...refGiven, ...b2bGiven].sort(sortByDate));
-        setReceivedLogs(
-          [...slipReceived, ...refReceived, ...b2bReceived].sort(sortByDate),
-        );
+        setLogs((prev) => (append ? [...prev, ...mapped] : mapped));
+        const pageFromApi = res.data.pagination?.page || pageNum;
+        const pagesFromApi = Math.max(1, res.data.pagination?.pages || 1);
+        setCurrentPage(pageFromApi);
+        setTotalPages(pagesFromApi);
+        setTotal(res.data.pagination?.total || 0);
+        setHasMore(pageFromApi < pagesFromApi);
+        setGivenTotal(res.data.totals?.given || 0);
+        setReceivedTotal(res.data.totals?.received || 0);
       } catch (err) {
-        if (!cancelled) {
-          console.error("Failed to fetch activity:", err);
-          setError("Network error. Please try again.");
-        }
+        console.error("Failed to fetch activity:", err);
+        setError("Network error. Please try again.");
       } finally {
-        if (!cancelled) setLoading(false);
+        setLoading(false);
+        setLoadingMore(false);
       }
-    };
-    fetchActivity();
-    return () => {
-      cancelled = true;
-    };
-  }, [authLoading, isAuthenticated]);
+    },
+    [activeTab, dateRange],
+  );
 
-  const baseLogs = activeTab === "Given" ? givenLogs : receivedLogs;
-
-  const logs = useMemo(() => {
-    if (!dateRange.start || !dateRange.end) return baseLogs;
-    const start = parseDateDisplay(dateRange.start);
-    const end = parseDateDisplay(dateRange.end);
-    if (!start || !end) return baseLogs;
-
-    // Set time to boundaries for inclusive comparison
-    start.setHours(0, 0, 0, 0);
-    end.setHours(23, 59, 59, 999);
-
-    return baseLogs.filter((log) => {
-      const logDate = new Date(log.rawDate);
-      return logDate >= start && logDate <= end;
-    });
-  }, [baseLogs, dateRange]);
-
-  const totalPages = Math.max(1, Math.ceil(logs.length / ITEMS_PER_PAGE));
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedLogs = logs.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  const visibleMobileLogs = logs.slice(0, mobileVisibleCount);
-  const remainingMobileCount = Math.max(0, logs.length - mobileVisibleCount);
-  const hasMoreMobile = remainingMobileCount > 0;
-
-  // Infinite scroll for mobile/tablet: reveal next batch when sentinel enters viewport.
+  // Refetch page 1 whenever the tab or date filter changes.
   useEffect(() => {
-    if (!hasMoreMobile) return;
+    if (authLoading || !isAuthenticated) return;
+    fetchActivity(1);
+  }, [authLoading, isAuthenticated, fetchActivity]);
+
+  const loadMore = useCallback(() => {
+    if (!hasMore || loadingMore || loading) return;
+    fetchActivity(currentPage + 1, { append: true });
+  }, [hasMore, loadingMore, loading, currentPage, fetchActivity]);
+
+  // Infinite scroll for mobile/tablet.
+  useEffect(() => {
+    if (!hasMore) return;
     const node = mobileSentinelRef.current;
     if (!node) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setMobileVisibleCount((c) => c + MOBILE_BATCH_SIZE);
-        }
+        if (entries[0]?.isIntersecting) loadMore();
       },
       { rootMargin: "200px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [hasMoreMobile, activeTab]);
+  }, [hasMore, loadMore]);
 
   // Avoid rendering page contents while auth is initializing or redirecting.
   if (authLoading || !isAuthenticated) return null;
 
   const handleTabChange = (tab) => {
+    if (tab === activeTab) return;
     setActiveTab(tab);
+    setLogs([]);
     setCurrentPage(1);
-    setMobileVisibleCount(MOBILE_BATCH_SIZE);
   };
+
+  const handlePageChange = (page) => {
+    fetchActivity(page);
+  };
+
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
 
   const emptyMessage = loading
     ? "Loading…"
@@ -303,7 +295,6 @@ export default function ActivityLog() {
           onConfirm={(range) => {
             setDateRange(range);
             setCurrentPage(1);
-            setMobileVisibleCount(MOBILE_BATCH_SIZE);
           }}
           onClose={() => setShowDatePicker(false)}
         />
@@ -362,16 +353,20 @@ export default function ActivityLog() {
         </div>
 
         <div>
-          {logs.length === 0 ? (
+          {loading && logs.length === 0 ? (
+            <div className="flex items-center justify-center py-20 text-stone-400 text-sm">
+              Loading…
+            </div>
+          ) : logs.length === 0 ? (
             <div className="flex items-center justify-center py-20 text-stone-400 text-sm">
               {emptyMessage}
             </div>
           ) : (
             <>
-              {visibleMobileLogs.map((log) => (
+              {logs.map((log) => (
                 <MobileLogRow key={log.id} log={log} onClick={() => setSelectedLog(log)} />
               ))}
-              {hasMoreMobile && (
+              {hasMore && (
                 <div
                   ref={mobileSentinelRef}
                   className="flex items-center justify-center px-4 py-6"
@@ -382,11 +377,6 @@ export default function ActivityLog() {
                   </div>
                 </div>
               )}
-              {/* {!hasMoreMobile && logs.length > MOBILE_BATCH_SIZE && (
-                <div className="flex justify-center px-4 py-5 text-[12px] text-stone-400">
-                  You're all caught up
-                </div>
-              )} */}
             </>
           )}
         </div>
@@ -429,12 +419,12 @@ export default function ActivityLog() {
               <span className="text-[13px] text-stone-400 hidden sm:inline">
                 Given:
                 <span className="font-semibold text-gray-700">
-                  {givenLogs.length}
+                  {givenTotal}
                 </span>
                 <span className="mx-2 text-stone-300">|</span>
                 Received:
                 <span className="font-semibold text-gray-700">
-                  {receivedLogs.length}
+                  {receivedTotal}
                 </span>
               </span>
               {dateRange.start && (
@@ -491,7 +481,11 @@ export default function ActivityLog() {
 
             {/* Scrollable body */}
             <div className="flex-1 overflow-y-auto min-h-0">
-              {paginatedLogs.length === 0 ? (
+              {loading ? (
+                <div className="flex items-center justify-center h-full py-16">
+                  <div className="w-7 h-7 rounded-full border-[3px] border-[#C94621]/20 border-t-[#C94621] animate-spin" />
+                </div>
+              ) : logs.length === 0 ? (
                 <div className="flex items-center justify-center h-full py-16 text-stone-400 text-sm">
                   {emptyMessage}
                 </div>
@@ -502,7 +496,7 @@ export default function ActivityLog() {
                 >
                   <TableColgroup />
                   <tbody>
-                    {paginatedLogs.map((log) => (
+                    {logs.map((log) => (
                       <TableRow key={log.id} log={log} onClick={() => setSelectedLog(log)} />
                     ))}
                   </tbody>
@@ -514,8 +508,8 @@ export default function ActivityLog() {
           <DesktopPagination
             currentPage={currentPage}
             totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            totalItems={logs.length}
+            onPageChange={handlePageChange}
+            totalItems={total}
             startIndex={startIndex}
             itemsPerPage={ITEMS_PER_PAGE}
             label="logs"
