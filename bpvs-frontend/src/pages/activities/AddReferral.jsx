@@ -4,9 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { apiPost } from "../../api/api";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 import Dropdown from "../../components/forms/Dropdown";
 import InputFields from "../../components/forms/InputFields";
+import DatePicker from "../../components/forms/DatePicker";
+import { parseDateDisplay } from "../../utils/dateUtils";
 
 const INITIAL = {
   memberName: "Select Member",
@@ -14,6 +16,15 @@ const INITIAL = {
   email: "",
   address: "",
   description: "",
+  activityDate: "",
+};
+
+// Allow dates within the last 30 days (matches AddB2b).
+const getMinDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  d.setHours(0, 0, 0, 0);
+  return d;
 };
 
 const AddReferral = () => {
@@ -30,6 +41,7 @@ const AddReferral = () => {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Filter out current user and map to names for dropdown
   const filteredMembers = useMemo(() => {
@@ -54,6 +66,7 @@ const AddReferral = () => {
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
     if (!form.address.trim()) e.address = "Address is required";
+    if (!form.activityDate) e.activityDate = "Please select a date";
     return e;
   };
 
@@ -61,6 +74,11 @@ const AddReferral = () => {
     const e = validate();
     if (Object.keys(e).length) {
       setErrors(e);
+      return;
+    }
+    const dateObj = parseDateDisplay(form.activityDate);
+    if (!dateObj) {
+      setErrors({ activityDate: "Invalid date" });
       return;
     }
     setSubmitting(true);
@@ -71,6 +89,7 @@ const AddReferral = () => {
       const payload = {
         ...form,
         receivedBy: selectedMember?._id,
+        activityDate: dateObj.toISOString(),
       };
       const res = await apiPost("/referrals", payload);
       if (res.success) {
@@ -177,6 +196,34 @@ const AddReferral = () => {
             />
           </div>
 
+          {/* Activity Date */}
+          <div className="w-full lg:col-span-2">
+            <label className="text-[13px] font-semibold text-gray-700 block mb-1.5">
+              Date of Referral
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(true)}
+              className={`w-full flex items-center justify-between rounded-xl border bg-white h-13 px-4 py-3.5 lg:py-4 text-sm lg:text-base text-left transition-all duration-150 cursor-pointer ${
+                errors.activityDate ? "border-red-400" : "border-gray-200"
+              }`}
+            >
+              <span
+                className={
+                  form.activityDate ? "text-gray-800" : "text-gray-400"
+                }
+              >
+                {form.activityDate || "Select Date"}
+              </span>
+              <CalendarDays size={18} className="text-gray-400 shrink-0" />
+            </button>
+            {errors.activityDate && (
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.activityDate}
+              </p>
+            )}
+          </div>
+
           {/* Description — full width */}
           <div className="lg:col-span-2">
             <InputFields
@@ -213,6 +260,18 @@ const AddReferral = () => {
           </div>
         </div>
       </div>
+
+      {showDatePicker && (
+        <DatePicker
+          mode="single"
+          onConfirm={(dateStr) => {
+            set("activityDate", dateStr);
+            setShowDatePicker(false);
+          }}
+          onClose={() => setShowDatePicker(false)}
+          minDate={getMinDate()}
+        />
+      )}
     </div>
   );
 };

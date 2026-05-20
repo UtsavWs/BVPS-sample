@@ -26,4 +26,5 @@ export const PROTECTED_PATHS = {
 
 export const ADMIN_PATHS = {
   ADMIN_MEMBERS: "/admin",
+  ADMIN_VISITOR_APPROVALS: "/admin/visitor-approvals",
 };

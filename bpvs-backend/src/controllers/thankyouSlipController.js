@@ -10,7 +10,7 @@ const User = require("../models/User");
  */
 exports.addThankyouSlip = async (req, res) => {
   try {
-    const { receivedBy, amount } = req.body;
+    const { receivedBy, amount, activityDate } = req.body;
     const givenBy = req.user._id;
 
     // prevent self-slip
@@ -34,6 +34,7 @@ exports.addThankyouSlip = async (req, res) => {
       givenBy,
       receivedBy,
       amount,
+      activityDate,
     });
 
     // Push slip reference into both users

@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { protect } = require("../middlewares/authMiddleware");
+const { protect, adminOrSubadmin } = require("../middlewares/authMiddleware");
 const {
   validate,
   addVisitorSchema,
@@ -8,12 +8,18 @@ const {
 const {
   addVisitor,
   getMyVisitors,
+  getVisitorsForAdmin,
+  approveVisitor,
+  rejectVisitor,
 } = require("../controllers/visitorController");
 
-// POST /api/visitors — add a new visitor (authenticated)
+// Member-facing
 router.post("/", protect, validate(addVisitorSchema), addVisitor);
-
-// GET /api/visitors — get current user's visitors
 router.get("/", protect, getMyVisitors);
+
+// Admin / sub-admin moderation
+router.get("/admin", protect, adminOrSubadmin, getVisitorsForAdmin);
+router.post("/:id/approve", protect, adminOrSubadmin, approveVisitor);
+router.post("/:id/reject", protect, adminOrSubadmin, rejectVisitor);
 
 module.exports = router;

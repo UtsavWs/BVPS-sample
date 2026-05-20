@@ -38,6 +38,10 @@ const ReferralSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    activityDate: {
+      type: Date,
+      required: [true, "Activity date is required"],
+    },
   },
   { timestamps: true },
 );

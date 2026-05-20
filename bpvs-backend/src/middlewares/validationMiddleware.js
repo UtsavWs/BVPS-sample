@@ -180,6 +180,10 @@ exports.addThankyouSlipSchema = Joi.object({
     "number.positive": "Amount must be positive.",
     "any.required": "Amount is required.",
   }),
+  activityDate: Joi.date().iso().required().messages({
+    "date.format": "Activity date must be a valid date.",
+    "any.required": "Activity date is required.",
+  }),
 });
 
 // ── Referral Schema ─────────────────────────────────────────────────────────
@@ -202,6 +206,10 @@ exports.addReferralSchema = Joi.object({
     "any.required": "Address is required.",
   }),
   description: Joi.string().trim().allow("").optional(),
+  activityDate: Joi.date().iso().required().messages({
+    "date.format": "Activity date must be a valid date.",
+    "any.required": "Activity date is required.",
+  }),
 });
 
 // ── Visitor Schema ─────────────────────────────────────────────────────────
@@ -236,6 +244,10 @@ exports.addVisitorSchema = Joi.object({
   nativePlace: Joi.string().trim().required().messages({
     "string.empty": "Native place is required.",
     "any.required": "Native place is required.",
+  }),
+  activityDate: Joi.date().iso().required().messages({
+    "date.format": "Activity date must be a valid date.",
+    "any.required": "Activity date is required.",
   }),
 });
 

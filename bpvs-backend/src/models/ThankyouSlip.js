@@ -17,6 +17,10 @@ const ThankyouSlipSchema = new mongoose.Schema(
       required: [true, "Amount is required"],
       min: [0, "Amount must be positive"],
     },
+    activityDate: {
+      type: Date,
+      required: [true, "Activity date is required"],
+    },
   },
   { timestamps: true },
 );

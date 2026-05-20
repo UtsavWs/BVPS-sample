@@ -17,6 +17,7 @@ exports.addReferral = async (req, res) => {
       email,
       address,
       description,
+      activityDate,
     } = req.body;
     const givenBy = req.user._id;
 
@@ -45,6 +46,7 @@ exports.addReferral = async (req, res) => {
       email,
       address,
       description,
+      activityDate,
     });
 
     // Push referral reference into both users

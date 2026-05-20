@@ -301,7 +301,11 @@ const computeStatsForRange = async (userId, startDate, endDate) => {
     Referral.countDocuments({ receivedBy: userId, createdAt: inRange }),
     ThankyouSlip.countDocuments({ givenBy: userId, createdAt: inRange }),
     ThankyouSlip.countDocuments({ receivedBy: userId, createdAt: inRange }),
-    Visitor.countDocuments({ addedBy: userId, createdAt: inRange }),
+    Visitor.countDocuments({
+      addedBy: userId,
+      status: "approved",
+      createdAt: inRange,
+    }),
     B2b.countDocuments({
       $or: [{ givenBy: userId }, { receivedBy: userId }],
       createdAt: inRange,

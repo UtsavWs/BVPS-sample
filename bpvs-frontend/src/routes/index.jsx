@@ -33,6 +33,7 @@ const AddThankYouSlip = lazy(() => import("../pages/activities/AddThankyouSlip")
 const AddTestimonial = lazy(() => import("../pages/activities/AddTestimonial"));
 
 const AdminManageMembers = lazy(() => import("../pages/admin/AdminManageMembers"));
+const AdminVisitorApprovals = lazy(() => import("../pages/admin/AdminVisitorApprovals"));
 
 // ─── Route Config ─────────────────────────────────────────────────────────────
 
@@ -67,6 +68,7 @@ const privateRoutes = [
 
 const adminRoutes = [
   { path: ADMIN_PATHS.ADMIN_MEMBERS, element: <AdminManageMembers /> },
+  { path: ADMIN_PATHS.ADMIN_VISITOR_APPROVALS, element: <AdminVisitorApprovals /> },
 ];
 
 const renderRoutes = (routes) =>

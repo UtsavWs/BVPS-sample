@@ -1,5 +1,5 @@
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 import { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiPost } from "../../api/api";
@@ -7,10 +7,21 @@ import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
 import Dropdown from "../../components/forms/Dropdown";
 import InputFields from "../../components/forms/InputFields";
+import DatePicker from "../../components/forms/DatePicker";
+import { parseDateDisplay } from "../../utils/dateUtils";
 
 const INITIAL = {
   memberName: "Select Member",
   amount: "",
+  activityDate: "",
+};
+
+// Allow dates within the last 30 days (matches AddB2b).
+const getMinDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  d.setHours(0, 0, 0, 0);
+  return d;
 };
 
 const AddThankYouSlip = () => {
@@ -28,6 +39,7 @@ const AddThankYouSlip = () => {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   // Filter and map members
   const filteredMembers = useMemo(() => {
@@ -57,6 +69,7 @@ const AddThankYouSlip = () => {
       e.memberName = "Please select a member";
     if (!form.amount.trim()) e.amount = "Amount is required";
     else if (isNaN(Number(form.amount))) e.amount = "Enter a valid amount";
+    if (!form.activityDate) e.activityDate = "Please select a date";
     return e;
   };
 
@@ -73,11 +86,18 @@ const AddThankYouSlip = () => {
       return;
     }
 
+    const dateObj = parseDateDisplay(form.activityDate);
+    if (!dateObj) {
+      setErrors({ activityDate: "Invalid date" });
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await apiPost("/thankyouslip", {
         receivedBy: receiverId,
         amount: form.amount,
+        activityDate: dateObj.toISOString(),
       });
 
       if (res.success) {
@@ -158,6 +178,34 @@ const AddThankYouSlip = () => {
             error={errors.amount}
           />
 
+          {/* Activity Date */}
+          <div className="w-full lg:col-span-2">
+            <label className="text-[13px] font-semibold text-gray-700 block mb-1.5">
+              Date of Thank-you
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(true)}
+              className={`w-full flex items-center justify-between rounded-xl border bg-white h-13 px-4 py-3.5 lg:py-4 text-sm lg:text-base text-left transition-all duration-150 cursor-pointer ${
+                errors.activityDate ? "border-red-400" : "border-gray-200"
+              }`}
+            >
+              <span
+                className={
+                  form.activityDate ? "text-gray-800" : "text-gray-400"
+                }
+              >
+                {form.activityDate || "Select Date"}
+              </span>
+              <CalendarDays size={18} className="text-gray-400 shrink-0" />
+            </button>
+            {errors.activityDate && (
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.activityDate}
+              </p>
+            )}
+          </div>
+
           {/* Server error message */}
           {errors.submit && (
             <div className="lg:col-span-2">
@@ -190,6 +238,18 @@ const AddThankYouSlip = () => {
           </div>
         </div>
       </div>
+
+      {showDatePicker && (
+        <DatePicker
+          mode="single"
+          onConfirm={(dateStr) => {
+            set("activityDate", dateStr);
+            setShowDatePicker(false);
+          }}
+          onClose={() => setShowDatePicker(false)}
+          minDate={getMinDate()}
+        />
+      )}
     </div>
   );
 };

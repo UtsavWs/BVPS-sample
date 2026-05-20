@@ -1,8 +1,18 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CalendarDays } from "lucide-react";
 import { apiPost } from "../../api/api";
 import InputFields from "../../components/forms/InputFields";
+import DatePicker from "../../components/forms/DatePicker";
+import { parseDateDisplay } from "../../utils/dateUtils";
+
+// Allow dates within the last 30 days (matches AddB2b).
+const getMinDate = () => {
+  const d = new Date();
+  d.setDate(d.getDate() - 30);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
 
 const AddVisitor = () => {
   const navigate = useNavigate();
@@ -16,11 +26,13 @@ const AddVisitor = () => {
     contactNumber: "",
     email: "",
     nativePlace: "",
+    activityDate: "",
   });
 
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const set = (key, val) => {
     setForm((f) => ({ ...f, [key]: val }));
@@ -39,6 +51,7 @@ const AddVisitor = () => {
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = "Enter a valid email";
     if (!form.nativePlace.trim()) e.nativePlace = "Native place is required";
+    if (!form.activityDate) e.activityDate = "Please select a date";
     return e;
   };
 
@@ -48,12 +61,20 @@ const AddVisitor = () => {
       setErrors(e);
       return;
     }
+    const dateObj = parseDateDisplay(form.activityDate);
+    if (!dateObj) {
+      setErrors({ activityDate: "Invalid date" });
+      return;
+    }
     setSubmitting(true);
     try {
-      const res = await apiPost("/visitors", form);
+      const res = await apiPost("/visitors", {
+        ...form,
+        activityDate: dateObj.toISOString(),
+      });
       if (res.success) {
         setSubmitted(true);
-        setTimeout(() => navigate(-1), 1200);
+        setTimeout(() => navigate(-1), 1600);
       } else {
         setErrors({ submit: res.message || "Something went wrong." });
       }
@@ -195,6 +216,34 @@ const AddVisitor = () => {
             error={errors.nativePlace}
           />
 
+          {/* Visit Date */}
+          <div className="w-full lg:col-span-2">
+            <label className="text-[13px] font-semibold text-gray-700 block mb-1.5">
+              Date of Visit
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowDatePicker(true)}
+              className={`w-full flex items-center justify-between rounded-xl border bg-white h-13 px-4 py-3.5 lg:py-4 text-sm lg:text-base text-left transition-all duration-150 cursor-pointer ${
+                errors.activityDate ? "border-red-400" : "border-gray-200"
+              }`}
+            >
+              <span
+                className={
+                  form.activityDate ? "text-gray-800" : "text-gray-400"
+                }
+              >
+                {form.activityDate || "Select Date"}
+              </span>
+              <CalendarDays size={18} className="text-gray-400 shrink-0" />
+            </button>
+            {errors.activityDate && (
+              <p className="text-[12px] text-red-500 mt-0.5">
+                {errors.activityDate}
+              </p>
+            )}
+          </div>
+
           {/* Submit error */}
           {errors.submit && (
             <div className="w-full lg:col-span-2">
@@ -218,14 +267,32 @@ const AddVisitor = () => {
               "
             >
               {submitted
-                ? "✓ Submitted!"
+                ? "✓ Sent for approval"
                 : submitting
                   ? "Submitting…"
                   : "Submit"}
             </button>
+            {submitted && (
+              <p className="mt-3 text-[12.5px] text-gray-500 text-center">
+                Your visitor request has been sent to the admin. They'll appear
+                on your dashboard once approved.
+              </p>
+            )}
           </div>
         </div>
       </div>
+
+      {showDatePicker && (
+        <DatePicker
+          mode="single"
+          onConfirm={(dateStr) => {
+            set("activityDate", dateStr);
+            setShowDatePicker(false);
+          }}
+          onClose={() => setShowDatePicker(false)}
+          minDate={getMinDate()}
+        />
+      )}
     </div>
   );
 };

@@ -9,8 +9,12 @@ const B2b = require("../models/B2b");
  *   tab        - "Given" | "Received" (default "Given")
  *   page       - 1-based page number (default 1)
  *   limit      - items per page (default 20, max 100)
- *   startDate  - ISO date (inclusive)
+ *   startDate  - ISO date (inclusive) — applied to createdAt
  *   endDate    - ISO date (inclusive)
+ *
+ * The feed is sorted/filtered by `createdAt` (when the entry was logged).
+ * `activityDate` is data that travels along on each record for the UI to
+ * display, but it never drives sorting or filtering here.
  */
 exports.getMyActivityLog = async (req, res) => {
   try {

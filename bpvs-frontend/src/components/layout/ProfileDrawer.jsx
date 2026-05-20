@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { Link } from "react-router-dom";
+import { UserCheck } from "lucide-react";
 import { getProfileImage } from "../ui/RoleBadge";
 
 const MenuItem = memo(({ icon, label, active = false }) => (
@@ -67,6 +68,14 @@ const ProfileDrawer = memo(
             {isAdmin && (
               <Link to="/admin">
                 <MenuItem icon={<img src="/assets/logos/shieldIcon.svg" />} label="Admin Panel" />
+              </Link>
+            )}
+            {isAdmin && (
+              <Link to="/admin/visitor-approvals">
+                <MenuItem
+                  icon={<img src="/assets/logos/userCheck.svg"/>}
+                  label="Visitor Approvals"
+                />
               </Link>
             )}
             <Link to="/settings">

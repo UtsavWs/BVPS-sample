@@ -134,7 +134,7 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
             <>
               <DetailRow icon={<Info size={14} />} label="Topic of Conversation" value={rawData.topicOfConversation} />
               <DetailRow icon={<MapPin size={14} />} label="Location" value={rawData.location} />
-              <DetailRow icon={<Calendar size={14} />} label="Date of B2B" value={formatDate(rawData.activityDate)} />
+              <DetailRow icon={<Calendar size={14} />} label="Date of B2B" value={rawData.activityDate ? formatDate(rawData.activityDate) : ""} />
               {rawData.image && (
                 <div className="py-2.5 border-b border-stone-50 last:border-0">
                   <p className="text-[12.5px] text-stone-400 mb-2">Image</p>
@@ -161,6 +161,11 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
               <DetailRow icon={<Mail size={14} />} label="Email" value={rawData.email} />
               <DetailRow icon={<MapPin size={14} />} label="Address" value={rawData.address} />
               <DetailRow icon={<AlignLeft size={14} />} label="Description" value={rawData.description} />
+              <DetailRow
+                icon={<Calendar size={14} />}
+                label="Date of Referral"
+                value={rawData.activityDate ? formatDate(rawData.activityDate) : ""}
+              />
             </>
           )}
 
@@ -168,6 +173,11 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
             <>
               <DetailRow icon={<DollarSign size={14} />} label="Amount" value={`₹${rawData.amount?.toLocaleString() || 0}`} />
               <DetailRow icon={<AlignLeft size={14} />} label="Remarks" value={rawData.remarks} />
+              <DetailRow
+                icon={<Calendar size={14} />}
+                label="Date of Thank-you"
+                value={rawData.activityDate ? formatDate(rawData.activityDate) : ""}
+              />
             </>
           )}
         </div>
