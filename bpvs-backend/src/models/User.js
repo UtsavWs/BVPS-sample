@@ -134,6 +134,10 @@ const UserSchema = new mongoose.Schema(
         type: String,
         trim: true,
       },
+      businessAddress: {
+        type: String,
+        trim: true,
+      },
     },
 
     // ─────────────────────────────

@@ -15,6 +15,7 @@ const INITIAL_DATA = {
   gstNo: "",
   profession: "",
   aboutBusiness: "",
+  businessAddress: "",
   goals: "",
   keywords: "",
 };
@@ -29,6 +30,7 @@ const formatFromBackend = (user) => {
     gstNo: user.businessInformation?.gstNo || "",
     profession: user.businessInformation?.profession || "",
     aboutBusiness: user.businessInformation?.aboutBusiness || "",
+    businessAddress: user.businessInformation?.businessAddress || "",
     goals: user.otherInformation?.goals || "",
     keywords: user.otherInformation?.keywords || "",
   };
@@ -44,6 +46,7 @@ const formatToBackend = (formData) => {
       dateOfJoin: parseDateDisplay(formData.dateOfJoin),
       profession: formData.profession,
       aboutBusiness: formData.aboutBusiness,
+      businessAddress: formData.businessAddress,
     },
     otherInformation: {
       goals: formData.goals,
@@ -211,6 +214,18 @@ export default function BusinessInfo() {
             isEditing={isEditing}
             onChange={set("profession")}
           />
+
+          {/* Business Address — full width on desktop */}
+          <div className="w-full lg:col-span-2">
+            <InputFields
+              textarea
+              label="Business Address"
+              placeholder="Enter Business Address"
+              value={isEditing ? form.businessAddress : saved.businessAddress}
+              isEditing={isEditing}
+              onChange={set("businessAddress")}
+            />
+          </div>
 
           {/* About Business — full width on desktop */}
           <div className="w-full lg:col-span-2">

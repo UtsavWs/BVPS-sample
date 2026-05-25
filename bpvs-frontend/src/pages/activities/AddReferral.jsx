@@ -87,7 +87,7 @@ const AddReferral = () => {
         (m) => m.fullName === form.memberName,
       );
       const payload = {
-        ...form,
+        ...form, 
         receivedBy: selectedMember?._id,
         activityDate: dateObj.toISOString(),
       };
@@ -182,22 +182,8 @@ const AddReferral = () => {
             error={errors.email}
           />
 
-          {/* Address */}
-          <div className="lg:col-span-2">
-            <InputFields
-              label="Address"
-              placeholder="Enter Address"
-              value={form.address}
-              textarea={true}
-              cols={2}
-              isEditing={true}
-              onChange={(e) => set("address", e.target.value)}
-              error={errors.address}
-            />
-          </div>
-
           {/* Activity Date */}
-          <div className="w-full lg:col-span-2">
+          <div className="w-full">
             <label className="text-[13px] font-semibold text-gray-700 block mb-1.5">
               Date of Referral
             </label>
@@ -222,6 +208,20 @@ const AddReferral = () => {
                 {errors.activityDate}
               </p>
             )}
+          </div>
+
+          {/* Address */}
+          <div className="lg:col-span-2">
+            <InputFields
+              label="Address"
+              placeholder="Enter Address"
+              value={form.address}
+              textarea={true}
+              cols={2}
+              isEditing={true}
+              onChange={(e) => set("address", e.target.value)}
+              error={errors.address}
+            />
           </div>
 
           {/* Description — full width */}
