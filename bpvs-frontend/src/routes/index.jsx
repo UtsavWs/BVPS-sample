@@ -32,6 +32,7 @@ const AddReferral = lazy(() => import("../pages/activities/AddReferral"));
 const AddThankYouSlip = lazy(() => import("../pages/activities/AddThankyouSlip"));
 const AddTestimonial = lazy(() => import("../pages/activities/AddTestimonial"));
 
+const BvpsDashboard = lazy(() => import("../pages/members/BvpsDashboard"));
 const AdminManageMembers = lazy(() => import("../pages/admin/AdminManageMembers"));
 const AdminVisitorApprovals = lazy(() => import("../pages/admin/AdminVisitorApprovals"));
 
@@ -64,6 +65,7 @@ const privateRoutes = [
   { path: PROTECTED_PATHS.ADD_THANKYOU_SLIP, element: <AddThankYouSlip /> },
   { path: PROTECTED_PATHS.ADD_TESTIMONIAL, element: <AddTestimonial /> },
   { path: PROTECTED_PATHS.RESET_PASSWORD, element: <ResetPassword /> },
+  { path: ADMIN_PATHS.ADMIN_DASHBOARD, element: <BvpsDashboard /> },
 ];
 
 const adminRoutes = [

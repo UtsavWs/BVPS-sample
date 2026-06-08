@@ -9,6 +9,7 @@ const referralRoutes = require("../routes/referralRoutes");
 const visitorRoutes = require("../routes/visitorRoutes");
 const b2bRoutes = require("../routes/b2bRoutes");
 const activityLogRoutes = require("../routes/activityLogRoutes");
+const dashboardRoutes = require("../routes/dashboardRoutes");
 
 router.use("/auth", authRoutes);
 router.use("/users", userRoutes);
@@ -19,5 +20,6 @@ router.use("/referrals", referralRoutes);
 router.use("/visitors", visitorRoutes);
 router.use("/b2b", b2bRoutes);
 router.use("/activity-log", activityLogRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 module.exports = router;

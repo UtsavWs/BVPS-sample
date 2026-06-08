@@ -25,6 +25,7 @@ export const PROTECTED_PATHS = {
 };
 
 export const ADMIN_PATHS = {
+  ADMIN_DASHBOARD: "/admin/bvpsdashboard",
   ADMIN_MEMBERS: "/admin",
   ADMIN_VISITOR_APPROVALS: "/admin/visitor-approvals",
 };
