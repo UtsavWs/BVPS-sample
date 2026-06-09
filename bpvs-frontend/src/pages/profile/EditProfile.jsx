@@ -1,4 +1,5 @@
 import { ArrowLeft, Camera, Upload, Trash2, ImagePlus } from "lucide-react";
+import toast from "react-hot-toast";
 import FabButton from "../../components/ui/FabButton";
 import { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -126,7 +127,7 @@ export default function EditProfile() {
     if (!user) return;
 
     if (isUploading) {
-      alert("Please wait for images to finish uploading.");
+      toast("Please wait for images to finish uploading.", { icon: "⏳" });
       return;
     }
 
@@ -147,7 +148,7 @@ export default function EditProfile() {
         } catch (err) {
           if (err.name === "AbortError") return;
           console.error("Failed to upload profile image:", err);
-          alert("Failed to upload profile image. Please try again.");
+          toast.error("Failed to upload profile image. Please try again.");
           setIsSaving(false);
           setProfileUploading(false);
           return;
@@ -166,7 +167,7 @@ export default function EditProfile() {
         } catch (err) {
           if (err.name === "AbortError") return;
           console.error("Failed to upload banner image:", err);
-          alert("Failed to upload banner image. Please try again.");
+          toast.error("Failed to upload banner image. Please try again.");
           setIsSaving(false);
           setBannerUploading(false);
           return;
@@ -187,13 +188,14 @@ export default function EditProfile() {
         setProfileFile(null);
         setBannerFile(null);
         setIsEditing(false);
+        toast.success("Profile updated successfully.");
       } else {
-        alert(res.message || "Failed to save profile");
+        toast.error(res.message || "Failed to save profile.");
       }
     } catch (err) {
       if (err.name === "AbortError") return;
       console.error("Failed to save profile:", err);
-      alert("Failed to save profile. Please try again.");
+      toast.error("Failed to save profile. Please try again.");
     } finally {
       setIsSaving(false);
       abortControllerRef.current = null;

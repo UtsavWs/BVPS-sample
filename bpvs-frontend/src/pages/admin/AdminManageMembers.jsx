@@ -13,6 +13,7 @@ import {
   Plus,
 } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
+import { useConfirm } from "../../context/ConfirmProvider";
 import { apiGet, apiPatch, apiDelete, apiPost } from "../../api/api";
 import AdminEditModal from "../../components/modals/AdminEditModal";
 import DesktopPagination from "../../components/ui/DesktopPagination";
@@ -286,6 +287,7 @@ const AddUserModal = ({ onClose, onSave }) => {
 export default function AdminManageMembers() {
   const navigate = useNavigate();
   const { user, loading, isStaff } = useContext(AuthContext);
+  const confirm = useConfirm();
 
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -337,7 +339,14 @@ export default function AdminManageMembers() {
   };
 
   const handleDelete = async (userId) => {
-    if (!window.confirm("Are you sure you want to delete this member?")) return;
+    const ok = await confirm({
+      title: "Delete member?",
+      message:
+        "This member and their account will be permanently removed. This action cannot be undone.",
+      confirmText: "Delete",
+      variant: "danger",
+    });
+    if (!ok) return;
     setActionLoading(userId);
     const res = await apiDelete(`/admin/users/${userId}`);
     if (res.success) {

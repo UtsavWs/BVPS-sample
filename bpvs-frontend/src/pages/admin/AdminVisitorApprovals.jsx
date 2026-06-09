@@ -13,6 +13,7 @@ import {
 import LoadingScreen from "../../components/ui/LoadingScreen";
 import DesktopPagination from "../../components/ui/DesktopPagination";
 import { AuthContext } from "../../context/AuthContext";
+import { useConfirm } from "../../context/ConfirmProvider";
 import { apiGet, apiPost } from "../../api/api";
 import { formatDate } from "../../utils/dateUtils";
 
@@ -206,6 +207,7 @@ const VisitorRow = ({ v, onApprove, onReject, actionLoading }) => {
 export default function AdminVisitorApprovals() {
   const navigate = useNavigate();
   const { user, loading, isStaff } = useContext(AuthContext);
+  const confirm = useConfirm();
 
   const [activeStatus, setActiveStatus] = useState("pending");
   const [currentPage, setCurrentPage] = useState(1);
@@ -262,13 +264,13 @@ export default function AdminVisitorApprovals() {
   };
 
   const handleReject = async (id) => {
-    if (
-      !window.confirm(
-        "Reject this visitor request? They will be marked as rejected.",
-      )
-    ) {
-      return;
-    }
+    const ok = await confirm({
+      title: "Reject visitor?",
+      message: "This visitor request will be marked as rejected.",
+      confirmText: "Reject",
+      variant: "danger",
+    });
+    if (!ok) return;
     setActionLoading(id);
     const res = await apiPost(`/visitors/${id}/reject`, {});
     if (res.success) {

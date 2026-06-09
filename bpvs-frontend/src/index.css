@@ -6,6 +6,16 @@
   font-family: "Montserrat", sans-serif;
 }
 
+/* Recharts makes its surface focusable — hide the blue focus outline on click */
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-wrapper *:focus,
+.recharts-wrapper *:focus-visible {
+  outline: none;
+}
+
 @keyframes dp-slide-up {
   from {
     transform: translateY(100%);

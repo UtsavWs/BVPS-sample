@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import FabButton from "../../components/ui/FabButton";
 import { AuthContext } from "../../context/AuthContext";
 import InputFields from "../../components/forms/InputFields";
@@ -71,11 +72,13 @@ export default function ContactInfo() {
       if (res.success) {
         setSaved({ ...form });
         setIsEditing(false);
+        toast.success("Contact information saved.");
       } else {
-        alert(res.message || "Failed to save. Please check your inputs.");
+        toast.error(res.message || "Failed to save. Please check your inputs.");
       }
     } catch (err) {
       console.error("Failed to save contact information:", err);
+      toast.error("Failed to save contact information. Please try again.");
     } finally {
       setIsSaving(false);
     }
