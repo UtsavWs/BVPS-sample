@@ -135,23 +135,34 @@ export const ActivityDetailModal = ({ log, currentUser, onClose }) => {
               <DetailRow icon={<Info size={14} />} label="Topic of Conversation" value={rawData.topicOfConversation} />
               <DetailRow icon={<MapPin size={14} />} label="Location" value={rawData.location} />
               <DetailRow icon={<Calendar size={14} />} label="Date of B2B" value={rawData.activityDate ? formatDate(rawData.activityDate) : ""} />
-              {rawData.image && (
-                <div className="py-2.5 border-b border-stone-50 last:border-0">
-                  <p className="text-[12.5px] text-stone-400 mb-2">Image</p>
-                  <a
-                    href={rawData.image}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block"
-                  >
-                    <img
-                      src={rawData.image}
-                      alt="B2B"
-                      className="w-full max-h-64 object-cover rounded-xl border border-stone-100"
-                    />
-                  </a>
-                </div>
-              )}
+              {(() => {
+                const imgs = rawData.images || [];
+                if (imgs.length === 0) return null;
+                return (
+                  <div className="py-2.5 border-b border-stone-50 last:border-0">
+                    <p className="text-[12.5px] text-stone-400 mb-2">
+                      {imgs.length > 1 ? `Images (${imgs.length})` : "Image"}
+                    </p>
+                    <div className={imgs.length > 1 ? "grid grid-cols-2 gap-2" : "block"}>
+                      {imgs.map((src, i) => (
+                        <a
+                          key={i}
+                          href={src}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block"
+                        >
+                          <img
+                            src={src}
+                            alt={`B2B ${i + 1}`}
+                            className="w-full max-h-64 object-cover rounded-xl border border-stone-100"
+                          />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </>
           )}
 

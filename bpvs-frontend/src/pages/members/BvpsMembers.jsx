@@ -418,6 +418,7 @@ export default function BvpsMembers() {
       status: selectedMember.status || "active",
       profileImage: selectedMember.profileImage,
       contactInformation: selectedMember.contactInformation,
+      businessInformation: selectedMember.businessInformation,
     }
     : null;
 

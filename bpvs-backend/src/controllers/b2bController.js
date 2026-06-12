@@ -15,9 +15,11 @@ exports.addB2b = async (req, res) => {
       location,
       topicOfConversation,
       activityDate,
-      image,
+      images,
     } = req.body;
     const givenBy = req.user._id;
+
+    const imageList = Array.isArray(images) ? images.filter(Boolean) : [];
 
     // Validate activityDate is within last 30 days
     const date = new Date(activityDate);
@@ -57,7 +59,7 @@ exports.addB2b = async (req, res) => {
       location,
       topicOfConversation,
       activityDate: date,
-      image: image || "",
+      images: imageList,
     });
 
     // Push B2B reference into both users' arrays

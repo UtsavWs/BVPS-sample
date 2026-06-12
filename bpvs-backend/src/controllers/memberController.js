@@ -29,16 +29,22 @@ exports.getAllMembers = async (req, res) => {
       filter.createdAt = { $gte: cutoff };
     }
 
-    // Search logic: fullName, companyName, or mobile
+    // Search logic: match across name, mobile, and business details
+    // (company, brand, category, profession, about) + keywords.
     if (search) {
       // Escape regex special characters to prevent errors
       const safeSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       const searchRegex = { $regex: safeSearch, $options: "i" };
-      
+
       filter.$or = [
         { fullName: searchRegex },
-        { "businessInformation.companyName": searchRegex },
         { mobile: searchRegex },
+        { "businessInformation.companyName": searchRegex },
+        { "businessInformation.brandName": searchRegex },
+        { "businessInformation.category": searchRegex },
+        { "businessInformation.profession": searchRegex },
+        { "businessInformation.aboutBusiness": searchRegex },
+        { "otherInformation.keywords": searchRegex },
       ];
     }
 

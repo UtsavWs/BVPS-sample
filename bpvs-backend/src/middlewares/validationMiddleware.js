@@ -115,9 +115,29 @@ const contactInfoSchema = Joi.object({
   nativePlace: Joi.string().trim().allow(""),
 });
 
+const businessAddressSchema = Joi.object({
+  line: Joi.string().trim().allow(""),
+  area: Joi.string().trim().allow(""),
+  city: Joi.string().trim().allow(""),
+  state: Joi.string().trim().allow(""),
+  pincode: Joi.string()
+    .trim()
+    .allow("")
+    .pattern(/^\d{6}$/)
+    .messages({
+      "string.pattern.base": "Pincode must be exactly 6 digits.",
+    }),
+});
+
+const businessDocumentSchema = Joi.object({
+  url: Joi.string().uri().required(),
+  name: Joi.string().trim().allow(""),
+});
+
 const businessInfoSchema = Joi.object({
   companyName: Joi.string().trim().allow(""),
   brandName: Joi.string().trim().allow(""),
+  category: Joi.string().trim().allow(""),
   gstNo: Joi.string()
     .trim()
     .allow("")
@@ -130,6 +150,15 @@ const businessInfoSchema = Joi.object({
   dateOfJoin: Joi.date().allow(null),
   profession: Joi.string().trim().allow(""),
   aboutBusiness: Joi.string().trim().allow(""),
+  businessAddress: businessAddressSchema,
+  businessImages: Joi.array().items(Joi.string().uri()).max(10).messages({
+    "array.max": "You can upload up to 10 business images.",
+  }),
+  visitingCardFront: Joi.string().uri().allow(""),
+  visitingCardBack: Joi.string().uri().allow(""),
+  documents: Joi.array().items(businessDocumentSchema).max(5).messages({
+    "array.max": "You can upload up to 5 documents.",
+  }),
 });
 
 const otherInfoSchema = Joi.object({
@@ -271,9 +300,14 @@ exports.addB2bSchema = Joi.object({
     "date.format": "Activity date must be a valid date.",
     "any.required": "Activity date is required.",
   }),
-  image: Joi.string().uri().allow("", null).optional().messages({
-    "string.uri": "Image must be a valid URL.",
-  }),
+  images: Joi.array()
+    .items(Joi.string().uri())
+    .max(10)
+    .optional()
+    .messages({
+      "string.uri": "Each image must be a valid URL.",
+      "array.max": "You can upload up to 10 images.",
+    }),
 });
 
 // ── Admin Create User Schema ─────────────────────────────────────────────────

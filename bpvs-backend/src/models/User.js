@@ -119,6 +119,10 @@ const UserSchema = new mongoose.Schema(
         type: String,
         trim: true,
       },
+      category: {
+        type: String,
+        trim: true,
+      },
       gstNo: {
         type: String,
         trim: true,
@@ -134,10 +138,35 @@ const UserSchema = new mongoose.Schema(
         type: String,
         trim: true,
       },
+      // Structured business address (replaces the old freeform string)
       businessAddress: {
-        type: String,
-        trim: true,
+        line: { type: String, trim: true },
+        area: { type: String, trim: true },
+        city: { type: String, trim: true },
+        state: { type: String, trim: true },
+        pincode: { type: String, trim: true },
       },
+      // Gallery of business images
+      businessImages: {
+        type: [String],
+        default: [],
+      },
+      // Visiting card (both sides)
+      visitingCardFront: {
+        type: String,
+        default: "",
+      },
+      visitingCardBack: {
+        type: String,
+        default: "",
+      },
+      // Uploaded documents (pdf / excel / word) — store url + original name
+      documents: [
+        {
+          url: { type: String, trim: true },
+          name: { type: String, trim: true },
+        },
+      ],
     },
 
     // ─────────────────────────────

@@ -1,7 +1,9 @@
 const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 
-const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+// resourceType: "image" for photos, "auto"/"raw" for documents (pdf/excel/word).
+const endpoint = (resourceType = 'image') =>
+  `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/${resourceType}/upload`;
 
 export const uploadToCloudinary = async (file, options = {}) => {
   if (!CLOUD_NAME || !UPLOAD_PRESET) {
@@ -17,19 +19,26 @@ export const uploadToCloudinary = async (file, options = {}) => {
     formData.append('folder', options.folder);
   }
 
-  const res = await fetch(CLOUDINARY_URL, {
+  const res = await fetch(endpoint(options.resourceType), {
     method: 'POST',
     body: formData,
     signal: options.signal,
   });
 
   if (!res.ok) {
-    throw new Error('Failed to upload image to Cloudinary');
+    throw new Error('Failed to upload file to Cloudinary');
   }
 
   const data = await res.json();
   return data.secure_url;
 };
+
+/**
+ * Upload a non-image document (pdf, excel, word, …) using Cloudinary's
+ * "auto" resource type so it stores the raw file. Returns the secure URL.
+ */
+export const uploadDocumentToCloudinary = (file, options = {}) =>
+  uploadToCloudinary(file, { ...options, resourceType: 'auto' });
 
 export const getOptimizedUrl = (url, { width, height, crop = 'fill', gravity = 'face' } = {}) => {
   if (!url || !url.includes('cloudinary.com')) return url;

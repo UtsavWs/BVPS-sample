@@ -26,10 +26,10 @@ const B2bSchema = new mongoose.Schema(
       type: Date,
       required: [true, "Activity date is required"],
     },
-    image: {
-      type: String,
-      trim: true,
-      default: "",
+    // Images
+    images: {
+      type: [String],
+      default: [],
     },
   },
   { timestamps: true },

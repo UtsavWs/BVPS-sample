@@ -1,14 +1,18 @@
 import { useState, useMemo, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CalendarDays, X } from "lucide-react";
+import { ArrowLeft, CalendarDays, X, Camera } from "lucide-react";
 import { AuthContext } from "../../context/AuthContext";
 import { MemberContext } from "../../context/MemberContext";
 import { apiPost } from "../../api/api";
 import Dropdown from "../../components/forms/Dropdown";
 import InputFields from "../../components/forms/InputFields";
 import DatePicker from "../../components/forms/DatePicker";
+import CameraCapture from "../../components/ui/CameraCapture";
 import { parseDateDisplay } from "../../utils/dateUtils";
 import { uploadToCloudinary } from "../../utils/cloudinary";
+import { compressImage } from "../../utils/image";
+
+const MAX_IMAGES = 10;
 
 
 // Min date = 30 days ago (at start of day)
@@ -17,6 +21,15 @@ const getMinDate = () => {
   d.setDate(d.getDate() - 30);
   d.setHours(0, 0, 0, 0);
   return d;
+};
+
+// Build a single-line address from the member's structured business address.
+const formatBusinessAddress = (addr) => {
+  if (!addr) return "";
+  return [addr.line, addr.area, addr.city, addr.state, addr.pincode]
+    .map((part) => (part || "").trim())
+    .filter(Boolean)
+    .join(", ");
 };
 
 const AddB2B = () => {
@@ -51,6 +64,7 @@ const AddB2B = () => {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
   const [uploadedImages, setUploadedImages] = useState([]);
   const [dragging, setDragging] = useState(false);
 
@@ -61,8 +75,9 @@ const AddB2B = () => {
     setErrors((e) => ({ ...e, [key]: "" }));
   };
 
-  // When a member is selected from the dropdown, also store their _id
-  // and auto-populate companyName from the member's businessInformation.
+  // When a member is selected from the dropdown, also store their _id and
+  // auto-populate companyName + location from the member's business details.
+  // Both fields stay editable afterwards.
   const handleMemberSelect = (name) => {
     const selected = filteredMembers.find((m) => m.fullName === name);
     setForm((f) => ({
@@ -70,8 +85,9 @@ const AddB2B = () => {
       memberName: name,
       receivedBy: selected?._id || "",
       companyName: selected?.businessInformation?.companyName || "",
+      location: formatBusinessAddress(selected?.businessInformation?.businessAddress),
     }));
-    setErrors((e) => ({ ...e, memberName: "" }));
+    setErrors((e) => ({ ...e, memberName: "", location: "" }));
   };
 
   const handleDateConfirm = (dateStr) => {
@@ -79,26 +95,36 @@ const AddB2B = () => {
     setShowDatePicker(false);
   };
 
-  const handleFile = (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    setUploadedImages((prev) => {
-      prev.forEach((img) => URL.revokeObjectURL(img.url));
-      return [
-        {
-          file,
-          url: URL.createObjectURL(file),
-          name: file.name,
-          id: Date.now() + Math.random(),
-        },
-      ];
-    });
+  // Accept one or many files (browser select, drag-drop, or camera),
+  // compress each (quality-preserving), and append up to MAX_IMAGES.
+  const addFiles = async (fileList) => {
+    const images = Array.from(fileList).filter((f) => f.type.startsWith("image/"));
+    if (images.length === 0) return;
+
+    const room = MAX_IMAGES - uploadedImages.length;
+    if (room <= 0) {
+      setErrors((e) => ({ ...e, images: `You can upload up to ${MAX_IMAGES} images.` }));
+      return;
+    }
+    const toAdd = images.slice(0, room);
+
+    const compressed = await Promise.all(toAdd.map((f) => compressImage(f)));
+    setUploadedImages((prev) => [
+      ...prev,
+      ...compressed.map((file) => ({
+        file,
+        url: URL.createObjectURL(file),
+        name: file.name,
+        id: `${Date.now()}-${Math.random()}`,
+      })),
+    ]);
+    setErrors((e) => ({ ...e, images: "" }));
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
     setDragging(false);
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) handleFile(files[0]);
+    if (e.dataTransfer.files?.length) addFiles(e.dataTransfer.files);
   };
 
   const removeImage = (id) => {
@@ -132,14 +158,16 @@ const AddB2B = () => {
 
     setSubmitting(true);
     try {
-      let imageUrl = "";
-      const pendingFile = uploadedImages[0]?.file;
-      if (pendingFile) {
+      let imageUrls = [];
+      const pendingFiles = uploadedImages.map((img) => img.file);
+      if (pendingFiles.length > 0) {
         try {
-          imageUrl = await uploadToCloudinary(pendingFile, { folder: "bpvs/b2b" });
+          imageUrls = await Promise.all(
+            pendingFiles.map((file) => uploadToCloudinary(file, { folder: "bpvs/b2b" })),
+          );
         } catch (uploadErr) {
           console.error("Cloudinary upload error:", uploadErr);
-          setErrors({ memberName: "Failed to upload image. Please try again." });
+          setErrors({ memberName: "Failed to upload one or more images. Please try again." });
           setSubmitting(false);
           return;
         }
@@ -151,7 +179,7 @@ const AddB2B = () => {
         activityDate: dateObj.toISOString(),
         location: form.location,
         topicOfConversation: form.topicOfConversation,
-        image: imageUrl,
+        images: imageUrls,
       });
       if (res.success) {
         setSubmitted(true);
@@ -286,9 +314,16 @@ const AddB2B = () => {
 
           {/* Upload Images — full width on desktop */}
           <div className="w-full lg:col-span-2 flex flex-col gap-1.5">
-            <label className="text-[13px] font-semibold text-gray-700">
-              Upload Images
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-[13px] font-semibold text-gray-700">
+                Upload Images
+              </label>
+              {uploadedImages.length > 0 && (
+                <span className="text-[12px] text-gray-400">
+                  {uploadedImages.length}/{MAX_IMAGES}
+                </span>
+              )}
+            </div>
             <div
               onDragOver={(e) => {
                 e.preventDefault();
@@ -330,9 +365,9 @@ const AddB2B = () => {
 
               {uploadedImages.length === 0 && (
                 <p className="text-[13px] text-gray-600 text-center">
-                  Drag and Drop or{" "}
-                  <span className="text-[#111111] font-medium">
-                    Browse for files
+                  Drag and Drop, browse, or take photos
+                  <span className="block text-[11px] text-gray-400 mt-0.5">
+                    Up to {MAX_IMAGES} images · auto-compressed
                   </span>
                 </p>
               )}
@@ -341,20 +376,33 @@ const AddB2B = () => {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
                 onChange={(e) => {
-                  if (e.target.files[0]) handleFile(e.target.files[0]);
+                  if (e.target.files?.length) addFiles(e.target.files);
                   e.target.value = "";
                 }}
               />
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="px-6 py-2.5 bg-[#C0441F] hover:bg-[#A63818] active:scale-[0.98] text-white text-[13px] font-semibold rounded-lg transition-all shadow-sm cursor-pointer"
-              >
-                Browse File
-              </button>
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="px-5 py-2.5 bg-[#C0441F] hover:bg-[#A63818] active:scale-[0.98] text-white text-[13px] font-semibold rounded-lg transition-all shadow-sm cursor-pointer"
+                >
+                  Browse File
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowCamera(true)}
+                  className="flex items-center gap-1.5 px-5 py-2.5 bg-white border border-[#C0441F] text-[#C0441F] hover:bg-[#FDF3EE] active:scale-[0.98] text-[13px] font-semibold rounded-lg transition-all shadow-sm cursor-pointer"
+                >
+                  <Camera size={15} /> Take Photo
+                </button>
+              </div>
             </div>
+            {errors.images && (
+              <p className="text-[12px] text-red-500 mt-0.5">{errors.images}</p>
+            )}
           </div>
 
           {/* Submit button */}
@@ -387,6 +435,14 @@ const AddB2B = () => {
           onConfirm={handleDateConfirm}
           onClose={() => setShowDatePicker(false)}
           minDate={getMinDate()}
+        />
+      )}
+
+      {/* Camera Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={(file) => addFiles([file])}
+          onClose={() => setShowCamera(false)}
         />
       )}
     </div>
